@@ -4,23 +4,32 @@ package com.codeverification;
  * Created by 1 on 08.04.2017.
  */
 public class ConditionGraphNode<T> extends GraphNode<T> {
-    T trueNextNode;
-    T falseNextNode;
+    GraphNode<T> trueNextNode;
+    GraphNode<T> falseNextNode;
 
-    public T getTrueNextNode() {
+    public GraphNode<T> getTrueNextNode() {
         return trueNextNode;
     }
 
-    public void setTrueNextNode(T trueNextNode) {
+    public void setTrueNextNode(GraphNode<T> trueNextNode) {
         this.trueNextNode = trueNextNode;
     }
 
-    public T getFalseNextNode() {
+    public GraphNode<T> getFalseNextNode() {
         return falseNextNode;
     }
 
-    public void setFalseNextNode(T falseNextNode) {
+    public void setFalseNextNode(GraphNode<T> falseNextNode) {
         this.falseNextNode = falseNextNode;
     }
 
+    @Override
+    void setNextNode(GraphNode<T> nextNode) {
+
+    }
+
+    @Override
+    GraphNode<T> getNextNode() {
+        return null;
+    }
 }

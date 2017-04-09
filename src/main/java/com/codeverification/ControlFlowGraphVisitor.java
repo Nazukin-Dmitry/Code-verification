@@ -1,16 +1,14 @@
 package com.codeverification;
 
 import com.codeverification.Var3Parser.ExprContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.RuleNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.collections.CollectionUtils;
 
 /**
  * Created by 1 on 09.04.2017.
  */
 public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisitor<GraphNode<ExprContext>> {
 
+    private OrdinaryGraphNode<ExprContext> lastNode;
 
     @Override
     public GraphNode<ExprContext> visitSource(com.codeverification.Var3Parser.SourceContext ctx) {
@@ -19,11 +17,11 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
 
     @Override
     public GraphNode<ExprContext> visitFuncDef(com.codeverification.Var3Parser.FuncDefContext ctx) {
-        GraphNode<ExprContext> startNode = new OrdinaryGraphNode<>();
-        GraphNode<ExprContext> lastNode = startNode;
-//        for (StatementContext context :  ) {
-        lastNode = visit(ctx.statement(1));
-
+        GraphNode<ExprContext> startNode = visit(ctx.statement(0));
+        for (int i = 0; i < ctx.statement().size(); i++) {
+            lastNode.setNextNode(visit(ctx.statement(i)));
+        }
+        return startNode;
     }
 
     @Override
@@ -48,7 +46,18 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
 
     @Override
     public GraphNode<ExprContext> visitIfStatement(com.codeverification.Var3Parser.IfStatementContext ctx) {
-        return null;
+        ConditionGraphNode<ExprContext> startNode = new ConditionGraphNode<>();
+        startNode.setNode(ctx.expr());
+        if (CollectionUtils.isNotEmpty(ctx.trueSts)) {
+            startNode.setTrueNextNode(visit(ctx.trueSts.get(0)));
+            for (int i = 0; i < ctx.trueSts.size(); i++) {
+                lastNode.setNextNode();
+            }
+        }
+
+
+        startNode.setFalseNextNode(visit(ctx.falseSts.get(0)));
+        return startNode;
     }
 
     @Override

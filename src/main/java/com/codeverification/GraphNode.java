@@ -13,4 +13,8 @@ public abstract class GraphNode<T> {
     public void setNode(T node) {
         this.node = node;
     }
+
+    abstract void setNextNode(GraphNode<T> nextNode);
+
+    abstract GraphNode<T> getNextNode();
 }

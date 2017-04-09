@@ -1,0 +1,9 @@
+function sum(A as int, B as int) as int 
+    A + B ;
+    if (true)
+    then A-B;
+        2 * 2 ;
+        0b01;
+     else
+        false;
+end function

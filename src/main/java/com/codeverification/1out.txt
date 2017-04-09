@@ -1,0 +1,37 @@
+Source
+  FuncDef
+    FuncSignature
+      Identifier: sum
+      ListArgDef
+        ArgDef
+          Identifier: A
+          Builtin: int
+        ArgDef
+          Identifier: B
+          Builtin: int
+      Builtin: int
+    ExpressionStatement
+      BinaryExpr
+        PlaceExpr
+          Identifier: A
+        BinOp: +
+        PlaceExpr
+          Identifier: B
+    IfStatement
+      BracesExpr
+        PlaceExpr
+          Identifier: true
+      ExpressionStatement
+        BinaryExpr
+          PlaceExpr
+            Identifier: A
+          BinOp: -
+          PlaceExpr
+            Identifier: B
+      ExpressionStatement
+        BinaryExpr
+          LiteralExpr: 2
+          BinOp: *
+          LiteralExpr: 2
+      ExpressionStatement
+        LiteralExpr: 0b01

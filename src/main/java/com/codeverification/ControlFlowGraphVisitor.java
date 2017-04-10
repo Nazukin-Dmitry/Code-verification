@@ -1,7 +1,11 @@
 package com.codeverification;
 
-import com.codeverification.Var3Parser.ExprContext;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import org.apache.commons.collections.CollectionUtils;
+
+import com.codeverification.Var3Parser.ExprContext;
 
 /**
  * Created by 1 on 09.04.2017.
@@ -9,6 +13,10 @@ import org.apache.commons.collections.CollectionUtils;
 public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisitor<GraphNode<ExprContext>> {
 
     private OrdinaryGraphNode<ExprContext> lastNode;
+
+    private Deque<OrdinaryGraphNode<ExprContext> > loopsStack = new ArrayDeque<>();
+
+    private boolean isBreak;
 
     @Override
     public GraphNode<ExprContext> visitSource(com.codeverification.Var3Parser.SourceContext ctx) {
@@ -18,7 +26,7 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
     @Override
     public GraphNode<ExprContext> visitFuncDef(com.codeverification.Var3Parser.FuncDefContext ctx) {
         GraphNode<ExprContext> startNode = visit(ctx.statement(0));
-        for (int i = 0; i < ctx.statement().size(); i++) {
+        for (int i = 1; i < ctx.statement().size(); i++) {
             lastNode.setNextNode(visit(ctx.statement(i)));
         }
         return startNode;
@@ -46,38 +54,129 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
 
     @Override
     public GraphNode<ExprContext> visitIfStatement(com.codeverification.Var3Parser.IfStatementContext ctx) {
-        ConditionGraphNode<ExprContext> startNode = new ConditionGraphNode<>();
-        startNode.setNode(ctx.expr());
+        ConditionGraphNode<ExprContext> ifNode = new ConditionGraphNode<>();
+        ifNode.setNodeValue(ctx.expr());
+
+        OrdinaryGraphNode<ExprContext> endIfNode = new OrdinaryGraphNode<ExprContext>();
+
         if (CollectionUtils.isNotEmpty(ctx.trueSts)) {
-            startNode.setTrueNextNode(visit(ctx.trueSts.get(0)));
-            for (int i = 0; i < ctx.trueSts.size(); i++) {
-                lastNode.setNextNode();
+            ifNode.setTrueNextNode(visit(ctx.trueSts.get(0)));
+            for (int i = 1; i < ctx.trueSts.size(); i++) {
+                if (!isBreak) {
+                    lastNode.setNextNode(visit(ctx.trueSts.get(i)));
+                } else {
+                    break;
+                }
             }
+            if (!isBreak) {
+                lastNode.setNextNode(endIfNode);
+            }
+        } else {
+            ifNode.setTrueNextNode(endIfNode);
         }
 
+        if (CollectionUtils.isNotEmpty(ctx.falseSts)) {
+            ifNode.setFalseNextNode(visit(ctx.falseSts.get(0)));
+            for (int i = 1; i < ctx.falseSts.size(); i++) {
+                if (!isBreak) {
+                    lastNode.setNextNode(visit(ctx.falseSts.get(i)));
+                } else {
+                    break;
+                }
+            }
+            if (!isBreak) {
+                lastNode.setNextNode(endIfNode);
+            }
+        } else {
+            ifNode.setFalseNextNode(endIfNode);
+        }
 
-        startNode.setFalseNextNode(visit(ctx.falseSts.get(0)));
-        return startNode;
+        lastNode = endIfNode;
+        return ifNode;
     }
 
     @Override
     public GraphNode<ExprContext> visitWhileStatement(com.codeverification.Var3Parser.WhileStatementContext ctx) {
-        return null;
+        ConditionGraphNode<ExprContext> whileNode = new ConditionGraphNode<>();
+        whileNode.setNodeValue(ctx.expr());
+        OrdinaryGraphNode<ExprContext> endWhileNode = new OrdinaryGraphNode<ExprContext>();
+        loopsStack.push(endWhileNode);
+        whileNode.setFalseNextNode(endWhileNode);
+
+        if (CollectionUtils.isNotEmpty(ctx.statement())) {
+            whileNode.setTrueNextNode(visit(ctx.statement().get(0)));
+            for (int i = 1; i < ctx.statement().size(); i++) {
+                if (!isBreak){
+                    lastNode.setNextNode(visit(ctx.statement().get(i)));
+                } else {
+                    break;
+                }
+            }
+            if (!isBreak) {
+                lastNode.setNextNode(whileNode);
+            }
+        } else {
+            whileNode.setTrueNextNode(whileNode);
+        }
+
+        lastNode = endWhileNode;
+        loopsStack.pop();
+        isBreak = false;
+        return whileNode;
     }
 
     @Override
     public GraphNode<ExprContext> visitDoStatement(com.codeverification.Var3Parser.DoStatementContext ctx) {
-        return null;
+        GraphNode<ExprContext> startDoNode;
+        ConditionGraphNode<ExprContext> doNode = new ConditionGraphNode<>();
+        doNode.setNodeValue(ctx.expr());
+
+        OrdinaryGraphNode<ExprContext> endDoNode = new OrdinaryGraphNode<ExprContext>();
+        loopsStack.push(endDoNode);
+
+        if (CollectionUtils.isNotEmpty(ctx.statement())) {
+            startDoNode = visit(ctx.statement(0));
+            for (int i = 1; i < ctx.statement().size(); i++) {
+                if (!isBreak) {
+                    lastNode.setNextNode(visit(ctx.statement(i)));
+                } else {
+                    break;
+                }
+            }
+            if (!isBreak) {
+                lastNode.setNextNode(doNode);
+            }
+
+        } else {
+            startDoNode = doNode;
+
+        }
+        if (ctx.type.getType() == com.codeverification.Var3Lexer.WHILE) {
+            doNode.setTrueNextNode(startDoNode);
+            doNode.setFalseNextNode(endDoNode);
+        } else {
+            doNode.setFalseNextNode(startDoNode);
+            doNode.setTrueNextNode(endDoNode);
+        }
+        lastNode = endDoNode;
+
+        loopsStack.pop();
+        isBreak = false;
+        return startDoNode;
     }
 
     @Override
     public GraphNode<ExprContext> visitBreakStatement(com.codeverification.Var3Parser.BreakStatementContext ctx) {
-        return null;
+        isBreak = true;
+        return loopsStack.peek();
     }
 
     @Override
     public GraphNode<ExprContext> visitExpressionStatement(com.codeverification.Var3Parser.ExpressionStatementContext ctx) {
-        return null;
+        GraphNode<ExprContext> node = new OrdinaryGraphNode<>();
+        node.setNodeValue(ctx.expr());
+        lastNode = (OrdinaryGraphNode<ExprContext>)node;
+        return node;
     }
 
     @Override

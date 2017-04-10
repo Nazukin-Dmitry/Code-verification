@@ -26,7 +26,7 @@ typeRef
 statement
 : 'if' expr 'then' trueSts += statement* ('else' falseSts += statement*)? 'end' 'if' #ifStatement
  |'while' expr statement* 'wend'  #whileStatement
- |'do' statement* 'loop' ('while'|'until') expr  #doStatement
+ |'do' statement* 'loop' type=('while'|'until') expr  #doStatement
  |'break'  #breakStatement
  |expr ';'   #expressionStatement
 ;
@@ -56,6 +56,9 @@ binOp
 unOp
     : '-'| '+'
     ;
+
+WHILE: 'while';
+UNTIL: 'until';
 
 BOOL: 'true'|'false';
 IDENTIFIER

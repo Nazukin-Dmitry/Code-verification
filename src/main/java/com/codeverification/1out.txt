@@ -10,28 +10,17 @@ Source
           Identifier: B
           Builtin: int
       Builtin: int
-    ExpressionStatement
-      BinaryExpr
-        PlaceExpr
-          Identifier: A
-        BinOp: +
-        PlaceExpr
-          Identifier: B
-    IfStatement
+    WhileStatement
       BracesExpr
-        PlaceExpr
-          Identifier: true
+        LiteralExpr: true
       ExpressionStatement
         BinaryExpr
-          PlaceExpr
-            Identifier: A
+          LiteralExpr: 2
           BinOp: -
-          PlaceExpr
-            Identifier: B
+          LiteralExpr: 2
+      BreakStatement
       ExpressionStatement
         BinaryExpr
           LiteralExpr: 2
-          BinOp: *
+          BinOp: +
           LiteralExpr: 2
-      ExpressionStatement
-        LiteralExpr: 0b01

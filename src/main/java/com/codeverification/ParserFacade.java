@@ -1,25 +1,43 @@
 package com.codeverification;
 
-import com.codeverification.Var3Parser.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import com.codeverification.Var3Parser.BinOpContext;
+import com.codeverification.Var3Parser.BuiltinContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.FuncDefContext;
+import com.codeverification.Var3Parser.IdentifierContext;
+import com.codeverification.Var3Parser.IfStatementContext;
+import com.codeverification.Var3Parser.LiteralExprContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.StatementContext;
+import com.codeverification.Var3Parser.UnOpContext;
 
 /**
  * Created by 1 on 08.04.2017.
  */
 public class ParserFacade {
-    public static com.codeverification.Var3Parser.SourceContext parse(String filePath) {
+    private com.codeverification.Var3Parser parser;
+    private com.codeverification.Var3Lexer lexer;
+    private Map<GraphNode<ExprContext>, Integer> map = new HashMap<>();
+    int count = 0;
+
+    public com.codeverification.Var3Parser.SourceContext parse(String filePath) {
         try {
-            com.codeverification.Var3Lexer lexer = new com.codeverification.Var3Lexer(CharStreams.fromFileName("F:\\учеба\\codeerification\\src\\main\\java\\com\\codeverification\\1.txt"));
+            lexer = new com.codeverification.Var3Lexer(CharStreams
+                    .fromFileName(filePath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
-            com.codeverification.Var3Parser parser = new com.codeverification.Var3Parser(tokens);
+            parser = new com.codeverification.Var3Parser(tokens);
             return parser.source();
         } catch (IOException e) {
             e.printStackTrace();
@@ -27,7 +45,7 @@ public class ParserFacade {
         }
     }
 
-    public static void printAST(SourceContext ctx, String outputPath) {
+    public void printAST(SourceContext ctx, String outputPath) {
         PrintStream printStream = null;
         try {
             printStream = new PrintStream(new FileOutputStream(outputPath));
@@ -37,54 +55,115 @@ public class ParserFacade {
         explore(ctx, 0, printStream);
     }
 
-    private static void explore(RuleContext ctx, int indentation, PrintStream printStream) {
+    private void explore(RuleContext ctx, int indentation, PrintStream printStream) {
         String ruleName = com.codeverification.Var3Parser.ruleNames[ctx.getRuleIndex()];
 
-        for (int i=0;i<indentation;i++) {
+        for (int i = 0; i < indentation; i++) {
             printStream.print("  ");
-            System.out.print("  ");
         }
 
-        if (ctx instanceof LiteralExprContext || ctx instanceof BinOpContext || ctx instanceof UnOpContext
-                || ctx instanceof IdentifierContext || ctx instanceof BuiltinContext) {
-            printStream.println(ctx.getClass().getSimpleName().replaceAll("Context", "") + ": " + ctx.getChild(0).getText());
+        if (ctx instanceof LiteralExprContext
+                || ctx instanceof BinOpContext
+                || ctx instanceof UnOpContext
+                || ctx instanceof IdentifierContext
+                || ctx instanceof BuiltinContext) {
+            printStream.println(
+                    ctx.getClass().getSimpleName().replaceAll("Context", "") + ": " + ctx.getChild(0).getText());
+        } else if (ctx instanceof IfStatementContext) {
+            printStream.println(ctx.getClass().getSimpleName().replaceAll("Context", ""));
+            for (int i = 0; i < indentation; i++) {
+                printStream.print("  ");
+            }
+            printStream.println("trueStmts");
+            for (StatementContext stmt : ((IfStatementContext) ctx).trueSts) {
+                explore((RuleContext)stmt, indentation + 1, printStream);
+            }
+            for (int i = 0; i < indentation; i++) {
+                printStream.print("  ");
+            }
+            printStream.println("falseStmts");
+            for (StatementContext stmt : ((IfStatementContext) ctx).falseSts) {
+                explore((RuleContext)stmt, indentation + 1, printStream);
+            }
         } else {
             printStream.println(ctx.getClass().getSimpleName().replaceAll("Context", ""));
-        }
-        for (int i=0;i<ctx.getChildCount();i++) {
-            ParseTree element = ctx.getChild(i);
-            if (element instanceof RuleContext) {
-                explore((RuleContext)element, indentation + 1, printStream);
+            for (int i = 0; i < ctx.getChildCount(); i++) {
+                ParseTree element = ctx.getChild(i);
+                if (element instanceof RuleContext) {
+                    explore((RuleContext)element, indentation + 1, printStream);
+                }
             }
         }
+
     }
 
-    public GraphNode<ExprContext> createControlFlowGraph(FuncDefContext ctx) {
-        GraphNode<ExprContext> startNode = new OrdinaryGraphNode<>();
-        GraphNode<ExprContext> lastNode = startNode;
-//        for (StatementContext context :  ) {
-            lastNode = visit(ctx.statement(1), lastNode);
+    public GraphNode<ExprContext> createControlFlowGraph(SourceContext ctx) {
+        return new ControlFlowGraphVisitor().visitFuncDef((FuncDefContext) ctx.sourceItem(0));
+    }
+
+    public void printCFG(GraphNode<ExprContext> node) {
+        int incr = 0;
+
+//        if (node instanceof OrdinaryGraphNode) {
+//            if (map.containsKey(node)) {
+//                System.out.println("goto" + map.get(node));
+//            } else {
+//                System.out.println(count + ":" + node.getNodeValue().getText());
+//                map.put(node, count);
+//            }
+//            printCFG(node.getNextNode());
 //        }
-        return null;
+//        if (node instanceof ConditionGraphNode) {
+//            System.out.println();
+//        }
+
+        if (node instanceof OrdinaryGraphNode) {
+            System.out.println(node.getNodeValue().getText() + "->" + node.getNextNode().getNodeValue().getText());
+            printCFG(node.getNextNode(), incr++);
+            map.put(node, 0);
+        }
+        if (node instanceof ConditionGraphNode) {
+            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getTrueNextNode().getNodeValue().getText());
+            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getFalseNextNode().getNodeValue().getText());
+            incr++;
+            printCFG(((ConditionGraphNode<ExprContext>) node).getTrueNextNode(), incr);
+            printCFG(((ConditionGraphNode<ExprContext>) node).getFalseNextNode(), incr);
+        }
     }
 
-    private GraphNode<ExprContext> visit(IfStatementContext ctx, GraphNode<ExprContext> lastNode) {
-        return null;
+    private void printCFG(GraphNode<ExprContext> node, int incr) {
+        for (int i = 0; i < incr; i++) {
+            System.out.println("  ");
+        }
+        if (node instanceof OrdinaryGraphNode) {
+            System.out.println(node.getNodeValue().getText() + "->" + node.getNextNode().getNodeValue().getText());
+            if (!map.containsKey(node)) {
+                printCFG(node.getNextNode(), incr++);
+            }
+        }
+        if (node instanceof ConditionGraphNode) {
+            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getTrueNextNode().getNodeValue().getText());
+            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getFalseNextNode().getNodeValue().getText());
+            incr++;
+            printCFG(((ConditionGraphNode<ExprContext>) node).getTrueNextNode(), incr);
+            printCFG(((ConditionGraphNode<ExprContext>) node).getFalseNextNode(), incr);
+        }
     }
 
-    private GraphNode<ExprContext> visit(WhileStatementContext ctx, GraphNode<ExprContext> lastNode) {
-        return null;
+
+    public com.codeverification.Var3Parser getParser() {
+        return parser;
     }
 
-    private GraphNode<ExprContext> visit(DoStatementContext ctx, GraphNode<ExprContext> lastNode) {
-        return null;
+    public void setParser(com.codeverification.Var3Parser parser) {
+        this.parser = parser;
     }
 
-    private GraphNode<ExprContext> visit(BreakStatementContext ctx, GraphNode<ExprContext> lastNode) {
-        return null;
+    public com.codeverification.Var3Lexer getLexer() {
+        return lexer;
     }
 
-    private GraphNode<ExprContext> visit(ExpressionStatementContext ctx, GraphNode<ExprContext> lastNode) {
-        return null;
+    public void setLexer(com.codeverification.Var3Lexer lexer) {
+        this.lexer = lexer;
     }
 }

@@ -18,9 +18,31 @@ Source
           LiteralExpr: 2
           BinOp: -
           LiteralExpr: 2
-      BreakStatement
+      IfStatement
+      trueStmts
+        BreakStatement
+      falseStmts
+        ExpressionStatement
+          BinaryExpr
+            LiteralExpr: 2
+            BinOp: -
+            LiteralExpr: 1
       ExpressionStatement
         BinaryExpr
           LiteralExpr: 2
           BinOp: +
           LiteralExpr: 2
+    DoStatement
+      ExpressionStatement
+        BinaryExpr
+          LiteralExpr: 5
+          BinOp: +
+          LiteralExpr: 5
+      LiteralExpr: true
+    DoStatement
+      ExpressionStatement
+        BinaryExpr
+          LiteralExpr: 5
+          BinOp: +
+          LiteralExpr: 5
+      LiteralExpr: true

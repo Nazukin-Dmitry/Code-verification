@@ -1,5 +1,11 @@
 package com.codeverification;
 
+import com.codeverification.Var3Parser.*;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,30 +13,12 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import com.codeverification.Var3Parser.BinOpContext;
-import com.codeverification.Var3Parser.BuiltinContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.IdentifierContext;
-import com.codeverification.Var3Parser.IfStatementContext;
-import com.codeverification.Var3Parser.LiteralExprContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.StatementContext;
-import com.codeverification.Var3Parser.UnOpContext;
-
 /**
  * Created by 1 on 08.04.2017.
  */
 public class ParserFacade {
     private com.codeverification.Var3Parser parser;
     private com.codeverification.Var3Lexer lexer;
-    private Map<GraphNode<ExprContext>, Integer> map = new HashMap<>();
-    int count = 0;
 
     public com.codeverification.Var3Parser.SourceContext parse(String filePath) {
         try {
@@ -101,8 +89,18 @@ public class ParserFacade {
         return new ControlFlowGraphVisitor().visitFuncDef((FuncDefContext) ctx.sourceItem(0));
     }
 
+    private Map<GraphNode<ExprContext>, Integer> map = new HashMap<>();
+    private int count = 0;
+
     public void printCFG(GraphNode<ExprContext> node) {
-        int incr = 0;
+            map.put(node, count);
+            count++;
+            System.out.println("start" +" -> " + (count-1));
+            printCFG(node, 0);
+        map.entrySet().stream().sorted((o1, o2) -> Integer.compare(o1.getValue(), o2.getValue())).forEach(s -> System.out.println(s.getValue() + ":" + s.getKey().getNodeValue().getText()));
+    }
+
+    public void printCFG(GraphNode<ExprContext> node, int space) {
 
 //        if (node instanceof OrdinaryGraphNode) {
 //            if (map.containsKey(node)) {
@@ -117,38 +115,108 @@ public class ParserFacade {
 //            System.out.println();
 //        }
 
+
         if (node instanceof OrdinaryGraphNode) {
-            System.out.println(node.getNodeValue().getText() + "->" + node.getNextNode().getNodeValue().getText());
-            printCFG(node.getNextNode(), incr++);
-            map.put(node, 0);
+            for (int i = 0; i < space; i++) {
+                System.out.print("  ");
+            }
+            System.out.print(map.get(node)+" -> ");
+
+            if (node.getNextNode() == null) {
+                System.out.println("end");
+                return;
+            } else {
+                GraphNode<ExprContext> nextNode = node.getNextNode();
+                if (nextNode.getNodeValue() == null) {
+                    nextNode = nextNode.getNextNode();
+                    if (nextNode == null) {
+                        System.out.println("end");
+                        return;
+                    }
+                }
+
+                if (map.containsKey(nextNode)) {
+                    System.out.println(map.get(nextNode));
+                    return;
+                } else {
+                    map.put(nextNode, count++);
+                    System.out.println(count-1);
+                    printCFG(nextNode, space);
+                }
+            }
+
         }
         if (node instanceof ConditionGraphNode) {
-            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getTrueNextNode().getNodeValue().getText());
-            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getFalseNextNode().getNodeValue().getText());
-            incr++;
-            printCFG(((ConditionGraphNode<ExprContext>) node).getTrueNextNode(), incr);
-            printCFG(((ConditionGraphNode<ExprContext>) node).getFalseNextNode(), incr);
+            for (int i = 0; i < space; i++) {
+                System.out.print("  ");
+            }
+            System.out.print(map.get(node)+" -> ");
+
+            if (((ConditionGraphNode) node).getTrueNextNode() == null) {
+                System.out.println("end"+ " (true)");
+            } else {
+                GraphNode<ExprContext> nextTrueNode = ((ConditionGraphNode) node).getTrueNextNode();
+                if (nextTrueNode.getNodeValue() == null) {
+                    nextTrueNode = nextTrueNode.getNextNode();
+                }
+                if (nextTrueNode == null) {
+                    System.out.println("end"+ " (true)");
+                } else {
+
+                    if (map.containsKey(nextTrueNode)) {
+                        System.out.println(map.get(nextTrueNode) + " (true)");
+                    } else {
+                        map.put(nextTrueNode, count++);
+                        System.out.println(count - 1 + " (true)");
+                        printCFG(nextTrueNode, space + 1);
+                    }
+                }
+            }
+
+            for (int i = 0; i < space; i++) {
+                System.out.print("  ");
+            }
+            System.out.print(map.get(node)+" -> ");
+            if (((ConditionGraphNode) node).getFalseNextNode() == null) {
+                System.out.println("end"+ " (false)");
+            } else {
+                GraphNode<ExprContext> nextFalseNode = ((ConditionGraphNode) node).getFalseNextNode();
+                if (nextFalseNode.getNodeValue() == null) {
+                    nextFalseNode = nextFalseNode.getNextNode();
+                }
+                if (nextFalseNode == null) {
+                    System.out.println("end"+ " (false)");
+                }else {
+                    if (map.containsKey(nextFalseNode)) {
+                        System.out.println(map.get(nextFalseNode) + " (false)");
+                    } else {
+                        map.put(nextFalseNode, count++);
+                        System.out.println(count - 1 + " (false)");
+                        printCFG(nextFalseNode, space + 1);
+                    }
+                }
+            }
         }
     }
 
-    private void printCFG(GraphNode<ExprContext> node, int incr) {
-        for (int i = 0; i < incr; i++) {
-            System.out.println("  ");
-        }
-        if (node instanceof OrdinaryGraphNode) {
-            System.out.println(node.getNodeValue().getText() + "->" + node.getNextNode().getNodeValue().getText());
-            if (!map.containsKey(node)) {
-                printCFG(node.getNextNode(), incr++);
-            }
-        }
-        if (node instanceof ConditionGraphNode) {
-            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getTrueNextNode().getNodeValue().getText());
-            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getFalseNextNode().getNodeValue().getText());
-            incr++;
-            printCFG(((ConditionGraphNode<ExprContext>) node).getTrueNextNode(), incr);
-            printCFG(((ConditionGraphNode<ExprContext>) node).getFalseNextNode(), incr);
-        }
-    }
+//    private void printCFG(GraphNode<ExprContext> node, int incr) {
+//        for (int i = 0; i < incr; i++) {
+//            System.out.println("  ");
+//        }
+//        if (node instanceof OrdinaryGraphNode) {
+//            System.out.println(node.getNodeValue().getText() + "->" + node.getNextNode().getNodeValue().getText());
+//            if (!map.containsKey(node)) {
+//                printCFG(node.getNextNode(), incr++);
+//            }
+//        }
+//        if (node instanceof ConditionGraphNode) {
+//            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getTrueNextNode().getNodeValue().getText());
+//            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getFalseNextNode().getNodeValue().getText());
+//            incr++;
+//            printCFG(((ConditionGraphNode<ExprContext>) node).getTrueNextNode(), incr);
+//            printCFG(((ConditionGraphNode<ExprContext>) node).getFalseNextNode(), incr);
+//        }
+//    }
 
 
     public com.codeverification.Var3Parser getParser() {

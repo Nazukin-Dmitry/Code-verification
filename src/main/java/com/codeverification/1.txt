@@ -1,7 +1,20 @@
 function sum(A as int, B as int) as int
      while (true)
         2-2;
-        break
+        if (2>1)
+        then
+            break
+        else
+            2-1;
+        end if
         2+2;
       wend
+
+      do
+      5+5 ;
+      loop while true
+
+        do
+        5+5 ;
+        loop until true
 end function

@@ -57,6 +57,8 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
         ConditionGraphNode<ExprContext> ifNode = new ConditionGraphNode<>();
         ifNode.setNodeValue(ctx.expr());
 
+        boolean initialIsBreak = isBreak;
+
         OrdinaryGraphNode<ExprContext> endIfNode = new OrdinaryGraphNode<ExprContext>();
 
         if (CollectionUtils.isNotEmpty(ctx.trueSts)) {
@@ -68,12 +70,16 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
                     break;
                 }
             }
-            if (!isBreak) {
-                lastNode.setNextNode(endIfNode);
-            }
+
+            lastNode.setNextNode(endIfNode);
+
         } else {
             ifNode.setTrueNextNode(endIfNode);
         }
+
+        initialIsBreak = isBreak;
+
+        isBreak = false;
 
         if (CollectionUtils.isNotEmpty(ctx.falseSts)) {
             ifNode.setFalseNextNode(visit(ctx.falseSts.get(0)));
@@ -84,13 +90,14 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
                     break;
                 }
             }
-            if (!isBreak) {
-                lastNode.setNextNode(endIfNode);
-            }
+
+            lastNode.setNextNode(endIfNode);
+
         } else {
             ifNode.setFalseNextNode(endIfNode);
         }
 
+        isBreak = isBreak && initialIsBreak;
         lastNode = endIfNode;
         return ifNode;
     }

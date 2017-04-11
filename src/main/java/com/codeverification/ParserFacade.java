@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by 1 on 08.04.2017.
@@ -37,10 +39,13 @@ public class ParserFacade {
         PrintStream printStream = null;
         try {
             printStream = new PrintStream(new FileOutputStream(outputPath));
+            explore(ctx, 0, printStream);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            printStream.close();
         }
-        explore(ctx, 0, printStream);
+
     }
 
     private void explore(RuleContext ctx, int indentation, PrintStream printStream) {
@@ -199,24 +204,45 @@ public class ParserFacade {
         }
     }
 
-//    private void printCFG(GraphNode<ExprContext> node, int incr) {
-//        for (int i = 0; i < incr; i++) {
-//            System.out.println("  ");
-//        }
-//        if (node instanceof OrdinaryGraphNode) {
-//            System.out.println(node.getNodeValue().getText() + "->" + node.getNextNode().getNodeValue().getText());
-//            if (!map.containsKey(node)) {
-//                printCFG(node.getNextNode(), incr++);
-//            }
-//        }
-//        if (node instanceof ConditionGraphNode) {
-//            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getTrueNextNode().getNodeValue().getText());
-//            System.out.println("Success:" + node.getNodeValue().getText() + "->" + ((ConditionGraphNode<ExprContext>) node).getFalseNextNode().getNodeValue().getText());
-//            incr++;
-//            printCFG(((ConditionGraphNode<ExprContext>) node).getTrueNextNode(), incr);
-//            printCFG(((ConditionGraphNode<ExprContext>) node).getFalseNextNode(), incr);
-//        }
-//    }
+    public void printFuncCFG(String outPath, Map<FuncDefContext, Set<String>> cfg) {
+        for (FuncDefContext ctx : cfg.keySet()) {
+            PrintStream printStream = null;
+            try {
+                String funcName = ctx.funcSignature().identifier().getText();
+                printStream = new PrintStream(new FileOutputStream(outPath + "\\"+funcName +".txt"));
+                for (String func : cfg.get(ctx)) {
+                    printStream.println(funcName + "->" + func);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                printStream.close();
+            }
+        }
+    }
+
+    public void checkFuncCGF(Map<FuncDefContext, Set<String>> cfg) throws Exception {
+        Set<String> funcs = cfg.keySet().stream().map(func -> func.funcSignature().identifier().getText()).collect(Collectors.toSet());
+        for (FuncDefContext ctx : cfg.keySet()) {
+            for (String func : cfg.get(ctx)) {
+                if (!funcs.contains(func)) {
+                    throw new Exception("Function with name \" " + func + " \" doesn't exist");
+                }
+            }
+        }
+    }
+
+    public Map<FuncDefContext, Set<String>> getFuncCFG(Set<SourceContext> sources) {
+        Map<FuncDefContext, Set<String>> funcCFG = new HashMap<>();
+        for (SourceContext ctx : sources) {
+            for (com.codeverification.Var3Parser.SourceItemContext item : ctx.sourceItem()) {
+                CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
+                cfgVisitor.visitFuncDef((FuncDefContext) item);
+                funcCFG.put((FuncDefContext) item, cfgVisitor.getSet());
+            }
+        }
+        return funcCFG;
+    }
 
 
     public com.codeverification.Var3Parser getParser() {

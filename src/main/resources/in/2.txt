@@ -1,0 +1,11 @@
+function func2(A as int, B as int) as int
+    do
+    5+5 ;
+    loop while true
+
+    do
+    5+5 ;
+    loop until true
+
+    sum(A,B);
+end function

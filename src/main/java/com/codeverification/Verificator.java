@@ -7,14 +7,20 @@ import com.codeverification.Var3Parser.SourceContext;
  */
 public class Verificator {
     public static void main(String[] args) {
-        ParserFacade parserFacade = new ParserFacade();
-        SourceContext source = parserFacade.parse("F:\\учеба\\codeerification\\src\\main\\java\\com\\codeverification\\1.txt");
-        parserFacade.printAST(source, "F:\\учеба\\codeerification\\src\\main\\java\\com\\codeverification\\1out.txt");
-        GraphNode<com.codeverification.Var3Parser.ExprContext> graph = parserFacade.createControlFlowGraph(source);
-        parserFacade.printCFG(graph);
+        try {
+            ParserFacade parserFacade = new ParserFacade();
+            SourceContext source = parserFacade.parse("F:\\учеба\\codeerification\\src\\main\\java\\com\\codeverification\\1.txt");
+            parserFacade.printAST(source, "F:\\учеба\\codeerification\\src\\main\\java\\com\\codeverification\\1out.txt");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+//        GraphNode<com.codeverification.Var3Parser.ExprContext> graph = parserFacade.createControlFlowGraph(source);
+//        parserFacade.printCFG(graph);
 //        System.out.println("hello");
 //        System.out.println(graph.getNodeValue().getText());
     }
+
+
 
 
 }

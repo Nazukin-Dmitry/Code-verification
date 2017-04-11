@@ -19,9 +19,9 @@ Source
           BinOp: -
           LiteralExpr: 2
       IfStatement
-      trueStmts
+        trueStmts
         BreakStatement
-      falseStmts
+        falseStmts
         ExpressionStatement
           BinaryExpr
             LiteralExpr: 2
@@ -33,6 +33,7 @@ Source
           BinOp: +
           LiteralExpr: 2
     DoStatement
+      Type: while
       ExpressionStatement
         BinaryExpr
           LiteralExpr: 5
@@ -40,6 +41,7 @@ Source
           LiteralExpr: 5
       LiteralExpr: true
     DoStatement
+      Type: until
       ExpressionStatement
         BinaryExpr
           LiteralExpr: 5

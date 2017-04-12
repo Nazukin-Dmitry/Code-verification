@@ -1,16 +1,12 @@
-function sum(A as int, B as int) as int
-     while (true)
-        2-2;
-        if (2>1)
-        then
-            break
-        else
-            2-1;
-        end if
-        2+2;
-      wend
+function calc(A as int, B as int, Op as string) as int
+     if (Op == "+") then
+        calc = (sum(A, B));
+     end if
+     if (Op == "-") then
+        calc = (minus(A,B));
+     end if
 end function
 
-function sum1(A as int, B as int) as int
-    sum(A,B);
+function sum(A as int, B as int) as int
+    sum = (A+B);
 end function

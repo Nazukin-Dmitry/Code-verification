@@ -1,11 +1,6 @@
 package com.codeverification;
 
-import com.codeverification.Var3Parser.*;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,6 +9,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import com.codeverification.Var3Parser.BinOpContext;
+import com.codeverification.Var3Parser.BuiltinContext;
+import com.codeverification.Var3Parser.DoStatementContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.FuncDefContext;
+import com.codeverification.Var3Parser.IdentifierContext;
+import com.codeverification.Var3Parser.IfStatementContext;
+import com.codeverification.Var3Parser.LiteralExprContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.StatementContext;
+import com.codeverification.Var3Parser.UnOpContext;
 
 /**
  * Created by 1 on 08.04.2017.
@@ -24,13 +36,18 @@ public class ParserFacade {
     private Map<GraphNode<ExprContext>, Integer> map = new HashMap<>();
     private int count = 0;
 
-    public com.codeverification.Var3Parser.SourceContext parse(String filePath) throws IOException {
+    public com.codeverification.Var3Parser.SourceContext parse(String filePath) throws Exception {
         try {
             lexer = new com.codeverification.Var3Lexer(CharStreams
                     .fromFileName(filePath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             parser = new com.codeverification.Var3Parser(tokens);
-            return parser.source();
+
+            SourceContext source = parser.source();
+            if (parser.getNumberOfSyntaxErrors() != 0) {
+                throw new Exception("Parse error!");
+            }
+            return source;
         } catch (IOException e) {
             throw e;
         }
@@ -61,19 +78,20 @@ public class ParserFacade {
                     ctx.getClass().getSimpleName().replaceAll("Context", "") + ": " + ctx.getChild(0).getText());
         } else if (ctx instanceof IfStatementContext) {
             printStream.println(ctx.getClass().getSimpleName().replaceAll("Context", ""));
+            explore(((IfStatementContext) ctx).expr(), indentation + 1, printStream);
             for (int i = 0; i < indentation + 1; i++) {
                 printStream.print("  ");
             }
             printStream.println("trueStmts");
             for (StatementContext stmt : ((IfStatementContext) ctx).trueSts) {
-                explore((RuleContext) stmt, indentation + 1, printStream);
+                explore((RuleContext) stmt, indentation + 2, printStream);
             }
             for (int i = 0; i < indentation + 1; i++) {
                 printStream.print("  ");
             }
             printStream.println("falseStmts");
             for (StatementContext stmt : ((IfStatementContext) ctx).falseSts) {
-                explore((RuleContext) stmt, indentation + 1, printStream);
+                explore((RuleContext) stmt, indentation + 2, printStream);
             }
         } else if (ctx instanceof DoStatementContext) {
             printStream.println(ctx.getClass().getSimpleName().replaceAll("Context", ""));
@@ -105,7 +123,9 @@ public class ParserFacade {
     }
 
     public void printCFG(GraphNode<ExprContext> node, String outputPath) throws FileNotFoundException {
-        try (PrintStream printStream = new PrintStream(new FileOutputStream(outputPath))) {
+        File file = new File(outputPath);
+        file.getParentFile().mkdirs();
+        try (PrintStream printStream = new PrintStream(new FileOutputStream(file))) {
             map = new HashMap<>();
             count = 0;
 
@@ -205,7 +225,9 @@ public class ParserFacade {
     }
 
     public void printFuncCFG(String outPath, Map<FuncDefContext, Set<String>> cfg) throws FileNotFoundException {
-        try (PrintStream printStream = new PrintStream(new FileOutputStream(outPath))) {
+        File file = new File(outPath);
+        file.getParentFile().mkdirs();
+        try (PrintStream printStream = new PrintStream(new FileOutputStream(file))) {
             for (FuncDefContext ctx : cfg.keySet()) {
                 String funcName = ctx.funcSignature().identifier().getText();
 

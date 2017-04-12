@@ -1,0 +1,11 @@
+start -> 0
+0 -> 1 (true)
+1 -> 2
+2 -> 3 (true)
+3 -> end
+2 -> end (false)
+0 -> 2 (false)
+0:(Op=="+")
+1:calc=(sum(A,B))
+2:(Op=="-")
+3:calc=(minus(A,B))

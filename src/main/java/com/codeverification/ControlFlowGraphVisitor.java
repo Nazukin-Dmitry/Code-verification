@@ -33,26 +33,6 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
     }
 
     @Override
-    public GraphNode<ExprContext> visitFuncSignature(com.codeverification.Var3Parser.FuncSignatureContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitArgDef(com.codeverification.Var3Parser.ArgDefContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitBuiltin(com.codeverification.Var3Parser.BuiltinContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitCustom(com.codeverification.Var3Parser.CustomContext ctx) {
-        return null;
-    }
-
-    @Override
     public GraphNode<ExprContext> visitIfStatement(com.codeverification.Var3Parser.IfStatementContext ctx) {
         ConditionGraphNode<ExprContext> ifNode = new ConditionGraphNode<>();
         ifNode.setNodeValue(ctx.expr());
@@ -175,6 +155,9 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
     @Override
     public GraphNode<ExprContext> visitBreakStatement(com.codeverification.Var3Parser.BreakStatementContext ctx) {
         isBreak = true;
+        if (loopsStack.peek() == null){
+            throw new RuntimeException("Break statement is not inside loop");
+        }
         return loopsStack.peek();
     }
 
@@ -186,53 +169,4 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
         return node;
     }
 
-    @Override
-    public GraphNode<ExprContext> visitPlaceExpr(com.codeverification.Var3Parser.PlaceExprContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitUnaryExpr(com.codeverification.Var3Parser.UnaryExprContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitBracesExpr(com.codeverification.Var3Parser.BracesExprContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitLiteralExpr(com.codeverification.Var3Parser.LiteralExprContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitBinaryExpr(com.codeverification.Var3Parser.BinaryExprContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitCallExpr(com.codeverification.Var3Parser.CallExprContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitListArgDef(com.codeverification.Var3Parser.ListArgDefContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitListExpr(com.codeverification.Var3Parser.ListExprContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitIdentifier(com.codeverification.Var3Parser.IdentifierContext ctx) {
-        return null;
-    }
-
-    @Override
-    public GraphNode<ExprContext> visitBinOp(com.codeverification.Var3Parser.BinOpContext ctx) {
-        return null;
-    }
 }

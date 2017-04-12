@@ -1,16 +1,18 @@
 package com.codeverification;
 
-import com.codeverification.Var3Parser.*;
-import com.codeverification.Var3Parser.SourceItemContext;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.FuncDefContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.SourceItemContext;
 
 /**
  * Created by 1 on 11.04.2017.
  */
 public class Zadanie2 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             System.out.println("Enter at least 2 arguments!!!");
             return;
@@ -31,7 +33,8 @@ public class Zadanie2 {
 
             parserFacade.printFuncCFG(outputPath + "\\" + "funcsCFG.txt", parserFacade.getFuncCFG(sources));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw e;
+//            System.out.println(Arrays.toString(e.getStackTrace()));
         }
 
 //        parserFacade.printAST(source, "F:\\учеба\\codeerification\\src\\main\\java\\com\\codeverification\\1out.txt");

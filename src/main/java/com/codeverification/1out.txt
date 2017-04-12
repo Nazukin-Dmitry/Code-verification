@@ -1,50 +1,27 @@
 Source
   FuncDef
     FuncSignature
-      Identifier: sum
+      Identifier: Fib
       ListArgDef
         ArgDef
           Identifier: A
           Builtin: int
-        ArgDef
-          Identifier: B
-          Builtin: int
       Builtin: int
-    WhileStatement
-      BracesExpr
-        LiteralExpr: true
-      ExpressionStatement
-        BinaryExpr
-          LiteralExpr: 2
-          BinOp: -
-          LiteralExpr: 2
-      IfStatement
-        trueStmts
-        BreakStatement
-        falseStmts
-        ExpressionStatement
-          BinaryExpr
-            LiteralExpr: 2
-            BinOp: -
-            LiteralExpr: 1
-      ExpressionStatement
-        BinaryExpr
-          LiteralExpr: 2
-          BinOp: +
-          LiteralExpr: 2
-    DoStatement
-      Type: while
-      ExpressionStatement
-        BinaryExpr
-          LiteralExpr: 5
-          BinOp: +
-          LiteralExpr: 5
-      LiteralExpr: true
-    DoStatement
-      Type: until
-      ExpressionStatement
-        BinaryExpr
-          LiteralExpr: 5
-          BinOp: +
-          LiteralExpr: 5
-      LiteralExpr: true
+    ExpressionStatement
+      UnaryExpr
+        UnOp: -
+        PlaceExpr
+          Identifier: a
+    ExpressionStatement
+      LiteralExpr: 0x9999
+    ExpressionStatement
+      LiteralExpr: 'a'
+    ExpressionStatement
+      LiteralExpr: 0b01010
+    ExpressionStatement
+      LiteralExpr: "fdsfs"
+    ExpressionStatement
+      PlaceExpr
+        Identifier: ytry
+    ExpressionStatement
+      LiteralExpr: 5555

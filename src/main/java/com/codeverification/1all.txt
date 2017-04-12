@@ -1,0 +1,9 @@
+function Fib(A as int) as int
+    -a;
+    0x9999;
+    'a';
+    0b01010;
+    "fdsfs";
+    ytry;
+    5555;
+end function

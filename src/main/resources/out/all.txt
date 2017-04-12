@@ -1,0 +1,28 @@
+start -> 0
+0 -> 1 (true)
+1 -> 2
+2 -> 3 (true)
+3 -> 2
+2 -> 4 (false)
+4 -> 5
+5 -> 6 (true)
+6 -> 7
+7 -> 6 (true)
+7 -> 8 (false)
+8 -> 9 (true)
+9 -> end
+8 -> 9 (false)
+5 -> 4 (false)
+0 -> 10 (false)
+10 -> 2
+0:(A>B)
+1:A+B
+2:(A==B)
+3:A*B
+4:A/B
+5:A<B
+6:A%B
+7:A>B
+8:(A==B)
+9:A=B
+10:A-B

@@ -1,5 +1,11 @@
 package com.codeverification;
 
+import com.codeverification.Var3Parser.*;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,23 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import com.codeverification.Var3Parser.BinOpContext;
-import com.codeverification.Var3Parser.BuiltinContext;
-import com.codeverification.Var3Parser.DoStatementContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.IdentifierContext;
-import com.codeverification.Var3Parser.IfStatementContext;
-import com.codeverification.Var3Parser.LiteralExprContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.StatementContext;
-import com.codeverification.Var3Parser.UnOpContext;
 
 /**
  * Created by 1 on 08.04.2017.
@@ -142,10 +131,10 @@ public class ParserFacade {
     public void printCFG(GraphNode<ExprContext> node, int space, PrintStream printStream) {
 
         if (node instanceof OrdinaryGraphNode) {
-//            for (int i = 0; i < space; i++) {
-//                printStream.print("  ");
-//            }
-            printStream.print(map.get(node) + " -> ");
+            if (! (node.getNodeValue() == null)) {
+                printStream.print(map.get(node) + " -> ");
+            }
+
 
             if (node.getNextNode() == null) {
                 printStream.println("end");
@@ -153,11 +142,13 @@ public class ParserFacade {
             } else {
                 GraphNode<ExprContext> nextNode = node.getNextNode();
                 if (nextNode.getNodeValue() == null) {
-                    nextNode = nextNode.getNextNode();
-                    if (nextNode == null) {
-                        printStream.println("end");
-                        return;
-                    }
+                    printCFG(nextNode,0, printStream);
+                    return;
+//                    nextNode = nextNode.getNextNode();
+//                    if (nextNode == null) {
+//                        printStream.println("end");
+//                        return;
+//                    }
                 }
 
                 if (map.containsKey(nextNode)) {
@@ -172,56 +163,47 @@ public class ParserFacade {
 
         }
         if (node instanceof ConditionGraphNode) {
-//            for (int i = 0; i < space; i++) {
-//                System.out.print("  ");
-//            }
-            printStream.print(map.get(node) + " -> ");
+            printStream.print("true: " +map.get(node) + " -> ");
 
             if (((ConditionGraphNode) node).getTrueNextNode() == null) {
-                printStream.println("end" + " (true)");
+                printStream.println("end");
             } else {
                 GraphNode<ExprContext> nextTrueNode = ((ConditionGraphNode) node).getTrueNextNode();
                 if (nextTrueNode.getNodeValue() == null) {
-                    nextTrueNode = nextTrueNode.getNextNode();
-                }
-                if (nextTrueNode == null) {
-                    printStream.println("end" + " (true)");
+                    printCFG(nextTrueNode,0, printStream);
                 } else {
-
                     if (map.containsKey(nextTrueNode)) {
-                        printStream.println(map.get(nextTrueNode) + " (true)");
+                        printStream.println(map.get(nextTrueNode));
                     } else {
                         map.put(nextTrueNode, count++);
-                        printStream.println(count - 1 + " (true)");
+                        printStream.println(count - 1);
                         printCFG(nextTrueNode, 0, printStream);
                     }
                 }
             }
 
-//            for (int i = 0; i < space; i++) {
-//                System.out.print("  ");
-//            }
-            printStream.print(map.get(node) + " -> ");
+            printStream.print("false:" + map.get(node) + " -> ");
             if (((ConditionGraphNode) node).getFalseNextNode() == null) {
-                printStream.println("end" + " (false)");
+                printStream.println("end");
             } else {
                 GraphNode<ExprContext> nextFalseNode = ((ConditionGraphNode) node).getFalseNextNode();
                 if (nextFalseNode.getNodeValue() == null) {
-                    nextFalseNode = nextFalseNode.getNextNode();
-                }
-                if (nextFalseNode == null) {
-                    printStream.println("end" + " (false)");
-                } else {
+                    printCFG(nextFalseNode,0, printStream);
+                }else {
                     if (map.containsKey(nextFalseNode)) {
-                        printStream.println(map.get(nextFalseNode) + " (false)");
+                        printStream.println(map.get(nextFalseNode));
                     } else {
                         map.put(nextFalseNode, count++);
-                        printStream.println(count - 1 + " (false)");
+                        printStream.println(count - 1);
                         printCFG(nextFalseNode, 0, printStream);
                     }
                 }
             }
         }
+    }
+
+    private void printIfStatement(GraphNode<ExprContext> node, PrintStream printStream) {
+
     }
 
     public void printFuncCFG(String outPath, Map<FuncDefContext, Set<String>> cfg) throws FileNotFoundException {

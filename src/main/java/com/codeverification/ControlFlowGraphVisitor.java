@@ -3,6 +3,7 @@ package com.codeverification;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import com.codeverification.ConditionGraphNode.ConditionType;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.codeverification.Var3Parser.ExprContext;
@@ -35,11 +36,12 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
     @Override
     public GraphNode<ExprContext> visitIfStatement(com.codeverification.Var3Parser.IfStatementContext ctx) {
         ConditionGraphNode<ExprContext> ifNode = new ConditionGraphNode<>();
+        ifNode.setType(ConditionType.IF);
         ifNode.setNodeValue(ctx.expr());
 
         boolean initialIsBreak = isBreak;
 
-        OrdinaryGraphNode<ExprContext> endIfNode = new OrdinaryGraphNode<ExprContext>();
+        OrdinaryGraphNode<ExprContext> endIfNode = new EndIfGraphNode<>();
 
         if (CollectionUtils.isNotEmpty(ctx.trueSts)) {
             ifNode.setTrueNextNode(visit(ctx.trueSts.get(0)));
@@ -85,6 +87,7 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
     @Override
     public GraphNode<ExprContext> visitWhileStatement(com.codeverification.Var3Parser.WhileStatementContext ctx) {
         ConditionGraphNode<ExprContext> whileNode = new ConditionGraphNode<>();
+        whileNode.setType(ConditionType.WHILE);
         whileNode.setNodeValue(ctx.expr());
         OrdinaryGraphNode<ExprContext> endWhileNode = new OrdinaryGraphNode<ExprContext>();
         loopsStack.push(endWhileNode);
@@ -139,9 +142,11 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
 
         }
         if (ctx.type.getType() == com.codeverification.Var3Lexer.WHILE) {
+            doNode.setType(ConditionType.DO_WHILE);
             doNode.setTrueNextNode(startDoNode);
             doNode.setFalseNextNode(endDoNode);
         } else {
+            doNode.setType(ConditionType.DO_UNTIL);
             doNode.setFalseNextNode(startDoNode);
             doNode.setTrueNextNode(endDoNode);
         }

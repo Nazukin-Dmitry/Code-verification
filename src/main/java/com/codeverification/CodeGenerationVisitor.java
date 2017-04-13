@@ -36,6 +36,8 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
 
     int lastFuncNum = -1;
 
+    int breakJumpCom = -1;
+
 
     @Override
     public Void visitFuncDef(com.codeverification.Var3Parser.FuncDefContext ctx) {
@@ -63,9 +65,9 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         for (com.codeverification.Var3Parser.StatementContext stCtx : ctx.trueSts) {
             visit(stCtx);
         }
-        programm.get(adr1).addArg(lastComNum + 1);
         gen("JMP");
         int adr2 = lastComNum;
+        programm.get(adr1).addArg(lastComNum + 1);
         for (com.codeverification.Var3Parser.StatementContext stCtx : ctx.falseSts) {
             visit(stCtx);
         }
@@ -85,6 +87,10 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         gen("JMP", startWhile);
 
         programm.get(jmpFalse).addArg(lastComNum + 1);
+        if (breakJumpCom != -1) {
+            programm.get(breakJumpCom).addArg(lastComNum + 1);
+            breakJumpCom = -1;
+        }
         return null;
     }
 
@@ -101,12 +107,19 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         if (ctx.type.getType() == com.codeverification.Var3Lexer.UNTIL) {
             gen("JMPFALSE", startDo);
         }
+
+        if (breakJumpCom != -1) {
+            programm.get(breakJumpCom).addArg(lastComNum + 1);
+            breakJumpCom = -1;
+        }
         return null;
     }
 
     @Override
     public Void visitBreakStatement(com.codeverification.Var3Parser.BreakStatementContext ctx) {
-        return super.visitBreakStatement(ctx);
+        gen("JMP");
+        breakJumpCom = lastComNum;
+        return null;
     }
 
     @Override

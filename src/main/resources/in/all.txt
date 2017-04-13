@@ -8,17 +8,17 @@ function all(A as int, B as int) as int
         A*B;
      wend
 
-     do
+    do
         A/B;
-     loop until A<B
+    loop until A<B
 
-      do
-         A%B;
-      loop while A>B
+    do
+     A%B;
+    loop while A>B
 
-          while (A==B)
-              break
-           wend
+    while (A==B)
+      break
+    wend
 
       A=B;
 end function

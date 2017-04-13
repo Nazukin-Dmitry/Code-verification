@@ -1,3 +1,16 @@
 start -> 0
 0 -> end
+
 0:sum=(A+B)
+
+.funcs
+.vars
+0:sum
+1:A
+2:B
+.consts
+.programm
+0: PUSHVAR 1 0 
+1: PUSHVAR 2 1 
+2: ADD 0 1 2 
+3: LOADVAR 2 0 

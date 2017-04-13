@@ -1,20 +1,21 @@
 start -> 0
-0 -> 1 (true)
+0 t-> 1
 1 -> 2
-2 -> 3 (true)
+2 t-> 3
 3 -> 2
-2 -> 4 (false)
+2 f-> 4
 4 -> 5
-5 -> 6 (true)
+5 t-> 6
 6 -> 7
-7 -> 6 (true)
-7 -> 8 (false)
-8 -> 9 (true)
+7 t-> 6
+7 f-> 8
+8 t-> 9
 9 -> end
-8 -> 9 (false)
-5 -> 4 (false)
-0 -> 10 (false)
+8 f-> 9
+5 f-> 4
+0 f-> 10
 10 -> 2
+
 0:(A>B)
 1:A+B
 2:(A==B)
@@ -26,3 +27,28 @@ start -> 0
 8:(A==B)
 9:A=B
 10:A-B
+
+function all(A as int, B as int) as int
+    if (A>B) then
+        A+B;
+    else A-B;
+    end if
+
+    while (A==B)
+        A*B;
+     wend
+
+    do
+        A/B;
+    loop until A<B
+
+    do
+     A%B;
+    loop while A>B
+
+    while (A==B)
+      break
+    wend
+
+      A=B;
+end function

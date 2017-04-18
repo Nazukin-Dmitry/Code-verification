@@ -2,6 +2,7 @@ package com.codeverification.compiler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class Zadanie4 {
         List<GraphNode<ExprContext>> graphs = new ArrayList<>();
         Map<FuncSignatureContext,  Set<MethodSignature>> funcCFG = new HashMap<>();
         List<CodeGenerationVisitor> mnemFuncs = new ArrayList<>();
-        List<MethodDefinition> binFuncs = new ArrayList<>();
+        Map<String, MethodDefinition> binFuncs = new LinkedHashMap<>();
 
         try {
             ParserFacade parserFacade = new ParserFacade();
@@ -67,7 +68,8 @@ public class Zadanie4 {
                     CodeGenerationVisitor codeGenerationVisitor = new CodeGenerationVisitor();
                     codeGenerationVisitor.visit(itemContext);
                     mnemFuncs.add(codeGenerationVisitor);
-                    binFuncs.add(codeGenerationVisitor.map2MethodDefinition());
+                    MethodDefinition methodDefinition = codeGenerationVisitor.map2MethodDefinition();
+                    binFuncs.put(methodDefinition.getMethodSignature().getFuncName(), methodDefinition);
                 }
             }
             funcCFG = parserFacade.getFuncCFG(sources);
@@ -81,7 +83,7 @@ public class Zadanie4 {
                 parserFacade.printBinCodes(binFuncs, outputBinPath);
             }
 
-            List<MethodDefinition> methodDefinitions = parserFacade.readBinCodes(outputBinPath);
+            Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(outputBinPath);
             System.out.println("fd");
 
         } catch (Exception e) {

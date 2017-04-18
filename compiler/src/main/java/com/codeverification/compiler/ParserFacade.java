@@ -354,7 +354,7 @@ public class ParserFacade {
         }
     }
 
-    public void printBinCodes(List<MethodDefinition> binFuncs, String outputPath) throws IOException {
+    public void printBinCodes(Map<String, MethodDefinition> binFuncs, String outputPath) throws IOException {
         File file = new File(outputPath);
         file.getParentFile().mkdirs();
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
@@ -365,9 +365,9 @@ public class ParserFacade {
         }
     }
 
-    public List<MethodDefinition> readBinCodes(String path) throws IOException, ClassNotFoundException {
+    public Map<String, MethodDefinition> readBinCodes(String path) throws IOException, ClassNotFoundException {
         try (ObjectInputStream oin = new ObjectInputStream(new FileInputStream(path))) {
-            List<MethodDefinition> methods = (List<MethodDefinition>) oin.readObject();
+            Map<String, MethodDefinition> methods = (Map<String, MethodDefinition>) oin.readObject();
             return methods;
         } catch (Exception e) {
             throw e;

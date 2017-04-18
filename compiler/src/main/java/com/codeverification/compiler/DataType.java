@@ -14,7 +14,7 @@ public enum DataType {
     CHAR("char"),
     STRING("string");
 
-    String rawText;
+    private String rawText;
 
     DataType(String rawText) {
         this.rawText = rawText;
@@ -27,6 +27,10 @@ public enum DataType {
             }
         }
         return null;
+    }
+
+    public String getRawText() {
+        return rawText;
     }
 
     @Override

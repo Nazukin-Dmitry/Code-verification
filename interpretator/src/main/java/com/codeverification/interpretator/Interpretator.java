@@ -7,13 +7,15 @@ import com.codeverification.compiler.MethodDefinition;
 /**
  * @author Dmitrii Nazukin
  */
-public class Enterpretator {
+public class Interpretator {
 
     Map<String, MethodDefinition> functions;
 
-    public Enterpretator(Map<String, MethodDefinition> functions) {
+    public Interpretator(Map<String, MethodDefinition> functions) {
         this.functions = functions;
     }
+
+
 
 
 }

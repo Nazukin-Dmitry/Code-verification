@@ -1,0 +1,3 @@
+function minus(A as int, B as int) as int
+    minus = (A-B);
+end function

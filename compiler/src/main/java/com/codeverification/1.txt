@@ -1,0 +1,15 @@
+function Evkl(A as int, B as int) as int
+    while (true)
+        if (A==0) then
+            if (B==0) then
+                break
+            end if
+        end if
+        if (A>B) then
+            A = (A % B);
+        else
+            B = (B % A)
+        end if
+    wend
+    Evkl = (A+B);
+end function

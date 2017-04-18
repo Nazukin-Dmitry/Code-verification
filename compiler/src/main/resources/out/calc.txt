@@ -1,0 +1,45 @@
+start -> 0
+0 t-> 1
+1 -> 2
+2 t-> 3
+3 -> end
+2 f-> end
+0 f-> 2
+
+0:(Op=="+")
+1:calc=(sum(A,B))
+2:(Op=="-")
+3:calc=(minus(A,B))
+
+.methodSignature
+MethodSignature{funcName='calc', argCount=3, argsType=[int, int, string], returnType=int}
+.funcs
+0:sum
+1:minus
+.vars
+0:calc
+1:A
+2:B
+3:Op
+.consts
+0:"+"
+1:"-"
+.programm
+0: PUSHVAR 3 0 
+1: PUSHCONST 0 1 
+2: EQUAL 0 1 2 
+3: JMPFALSE 2 8 
+4: PUSHVAR 1 3 
+5: PUSHVAR 2 4 
+6: CALL 5 0 3 4 
+7: LOADVAR 5 0 
+8: JMP 9 
+9: PUSHVAR 3 6 
+10: PUSHCONST 1 7 
+11: EQUAL 6 7 8 
+12: JMPFALSE 8 17 
+13: PUSHVAR 1 9 
+14: PUSHVAR 2 10 
+15: CALL 11 1 9 10 
+16: LOADVAR 11 0 
+17: JMP 18 

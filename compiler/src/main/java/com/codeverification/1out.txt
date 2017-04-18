@@ -1,0 +1,27 @@
+Source
+  FuncDef
+    FuncSignature
+      Identifier: Fib
+      ListArgDef
+        ArgDef
+          Identifier: A
+          Builtin: int
+      Builtin: int
+    ExpressionStatement
+      UnaryExpr
+        UnOp: -
+        PlaceExpr
+          Identifier: a
+    ExpressionStatement
+      LiteralExpr: 0x9999
+    ExpressionStatement
+      LiteralExpr: 'a'
+    ExpressionStatement
+      LiteralExpr: 0b01010
+    ExpressionStatement
+      LiteralExpr: "fdsfs"
+    ExpressionStatement
+      PlaceExpr
+        Identifier: ytry
+    ExpressionStatement
+      LiteralExpr: 5555

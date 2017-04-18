@@ -1,0 +1,12 @@
+function calc(A as int, B as int, Op as string) as int
+     if (Op == "+") then
+        calc = (sum(A, B));
+     end if
+     if (Op == "-") then
+        calc = (minus(A,B));
+     end if
+end function
+
+function sum(A as int, B as int) as int
+    sum = (A+B);
+end function

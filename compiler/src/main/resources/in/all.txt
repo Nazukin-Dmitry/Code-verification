@@ -1,0 +1,24 @@
+function all(A as int, B as int) as int
+    if (A>B) then
+        A+B;
+    else A-B;
+    end if
+
+    while (A==B)
+        A*B;
+     wend
+
+    do
+        A/B;
+    loop until A<B
+
+    do
+     A%B;
+    loop while A>B
+
+    while (A==B)
+      break
+    wend
+
+      A=B;
+end function

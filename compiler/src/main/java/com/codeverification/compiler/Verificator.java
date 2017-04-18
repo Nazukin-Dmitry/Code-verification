@@ -1,4 +1,4 @@
-package com.codeverification;
+package com.codeverification.compiler;
 
 import com.codeverification.Var3Parser.SourceContext;
 

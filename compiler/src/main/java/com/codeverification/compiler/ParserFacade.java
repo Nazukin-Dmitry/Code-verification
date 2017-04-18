@@ -1,9 +1,11 @@
-package com.codeverification;
+package com.codeverification.compiler;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.util.Comparator;
@@ -358,6 +360,15 @@ public class ParserFacade {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(binFuncs);
             oos.flush();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public List<MethodDefinition> readBinCodes(String path) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream oin = new ObjectInputStream(new FileInputStream(path))) {
+            List<MethodDefinition> methods = (List<MethodDefinition>) oin.readObject();
+            return methods;
         } catch (Exception e) {
             throw e;
         }

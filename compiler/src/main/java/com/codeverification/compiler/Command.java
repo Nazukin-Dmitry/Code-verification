@@ -1,5 +1,6 @@
-package com.codeverification;
+package com.codeverification.compiler;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +8,10 @@ import java.util.List;
 /**
  * @author Dmitrii Nazukin
  */
-public class Command {
+public class Command implements Serializable {
+
+    private static final long serialVersionUID = 3;
+
     String name;
 
     List<Integer> args = new ArrayList<>();

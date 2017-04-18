@@ -1,4 +1,4 @@
-package com.codeverification;
+package com.codeverification.compiler;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.codeverification;
+package com.codeverification.compiler;
 
 /**
  * Created by 1 on 12.04.2017.

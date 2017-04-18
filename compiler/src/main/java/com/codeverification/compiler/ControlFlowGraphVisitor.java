@@ -1,11 +1,11 @@
-package com.codeverification;
+package com.codeverification.compiler;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import com.codeverification.ConditionGraphNode.ConditionType;
+import com.codeverification.compiler.ConditionGraphNode.ConditionType;
 import com.codeverification.Var3Parser.ExprContext;
 
 /**

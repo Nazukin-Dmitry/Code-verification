@@ -67,7 +67,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.codeverification.Zadanie2</mainClass>
+                            <mainClass>com.codeverification.compiler.Zadanie2</mainClass>
                         </manifest>
                     </archive>
 

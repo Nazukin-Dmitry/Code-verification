@@ -1,4 +1,4 @@
-package com.codeverification;
+package com.codeverification.compiler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,9 +30,7 @@ public class Zadanie4 {
                 startIn = true;
                 continue;
             }
-            if (startIn) {
-                inDocs.add(arg);
-            }
+
             if (arg.equals("-outGraph")) {
                 outputGraphPath = args[i+1];
                 startIn = false;
@@ -44,6 +42,10 @@ public class Zadanie4 {
             if (arg.equals("-outBin")) {
                 outputBinPath = args[i+1];
                 startIn = false;
+            }
+
+            if (startIn) {
+                inDocs.add(arg);
             }
 
         }
@@ -78,6 +80,10 @@ public class Zadanie4 {
             if (outputBinPath != null) {
                 parserFacade.printBinCodes(binFuncs, outputBinPath);
             }
+
+            List<MethodDefinition> methodDefinitions = parserFacade.readBinCodes(outputBinPath);
+            System.out.println("fd");
+
         } catch (Exception e) {
             throw e;
 //            System.out.println(Arrays.toString(e.getStackTrace()));

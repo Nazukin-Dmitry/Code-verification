@@ -9,6 +9,13 @@ public class CharValue implements Value {
 
     private Character value;
 
+    public CharValue() {
+    }
+
+    public CharValue(Character value) {
+        this.value = value;
+    }
+
     @Override
     public DataType getType() {
         return DataType.CHAR;
@@ -27,5 +34,18 @@ public class CharValue implements Value {
     @Override
     public int compareTo(Value value) {
         return 0;
+    }
+
+    @Override
+    public void setValue(String value) {
+        this.value = value.charAt(1);
+    }
+
+    public Character getValue() {
+        return value;
+    }
+
+    public void setValue(Character value) {
+        this.value = value;
     }
 }

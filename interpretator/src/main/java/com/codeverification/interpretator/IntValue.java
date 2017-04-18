@@ -9,6 +9,11 @@ public class IntValue implements Value {
 
     private Integer value;
 
+
+    public IntValue(Integer value) {
+        this.value = value;
+    }
+
     @Override
     public DataType getType() {
         return DataType.INT;
@@ -27,5 +32,18 @@ public class IntValue implements Value {
     @Override
     public Integer asInt() {
         return value;
+    }
+
+    @Override
+    public void setValue(String value) {
+
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
     }
 }

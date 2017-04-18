@@ -37,7 +37,7 @@ expr
  | '(' expr ')' #bracesExpr
  | expr '(' listExpr ')' #callExpr
  | identifier #placeExpr
- | (BOOL|STR|CHAR|HEX|BITS|DEC) #literalExpr
+ | value = (BOOL|STR|CHAR|HEX|BITS|DEC) #literalExpr
 ;
 
 listArgDef

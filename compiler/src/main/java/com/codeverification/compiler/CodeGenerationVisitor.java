@@ -1,16 +1,17 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.PlaceExprContext;
+import com.codeverification.Var3Parser.StatementContext;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.StatementContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -27,7 +28,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
 
     int lastVarNum = -1;
 
-    Map<String, Integer> consts = new LinkedHashMap<>();
+    Map<Const, Integer> consts = new LinkedHashMap<>();
 
     int lastConstNum = -1;
 
@@ -133,16 +134,16 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     public Void visitUnaryExpr(com.codeverification.Var3Parser.UnaryExprContext ctx) {
         String unOp = ctx.unOp().getText();
         switch (unOp) {
-        case "-":
-            visit(ctx.expr());
-            gen("UNMINUS", lastRegistrNum, ++lastRegistrNum);
-            break;
-        case "+":
-            visit(ctx.expr());
-            gen("UNADD", lastRegistrNum, ++lastRegistrNum);
-            break;
-        default:
-            throw new RuntimeException("Unexpected unary operator" + unOp);
+            case "-":
+                visit(ctx.expr());
+                gen("UNMINUS", lastRegistrNum, ++lastRegistrNum);
+                break;
+            case "+":
+                visit(ctx.expr());
+                gen("UNADD", lastRegistrNum, ++lastRegistrNum);
+                break;
+            default:
+                throw new RuntimeException("Unexpected unary operator" + unOp);
         }
         return null;
     }
@@ -155,7 +156,30 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
 
     @Override
     public Void visitLiteralExpr(com.codeverification.Var3Parser.LiteralExprContext ctx) {
-        consts.put(ctx.getText(), ++lastConstNum);
+        Const constt = new Const(ctx.getText());
+        switch (ctx.value.getType()) {
+            case Var3Lexer.BOOL:
+                constt.setType(DataType.BOOL);
+                break;
+            case Var3Lexer.STR:
+                constt.setType(DataType.STRING);
+                break;
+            case Var3Lexer.CHAR:
+                constt.setType(DataType.CHAR);
+                break;
+            case Var3Lexer.HEX:
+                constt.setType(DataType.INT);
+                break;
+            case Var3Lexer.BITS:
+                constt.setType(DataType.INT);
+                break;
+            case Var3Lexer.DEC:
+                constt.setType(DataType.INT);
+                break;
+            default:
+                throw new RuntimeException();
+        }
+        consts.put(constt, ++lastConstNum);
         gen("PUSHCONST", lastConstNum, ++lastRegistrNum);
         return null;
     }
@@ -166,70 +190,70 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         String binOp = ctx.binOp().getText();
         int firstReg;
         switch (binOp) {
-        case "=":
-            if (!(ctx.expr(0) instanceof com.codeverification.Var3Parser.PlaceExprContext)) {
-                throw new RuntimeException("=. Left operand should be identifier");
-            } else {
-                String var = ((com.codeverification.Var3Parser.PlaceExprContext)ctx.expr(0)).identifier().getText();
-                visit(ctx.expr(1));
-                if (vars.containsKey(var)) {
-                    gen("LOADVAR", lastRegistrNum, vars.get(var));
+            case "=":
+                if (!(ctx.expr(0) instanceof com.codeverification.Var3Parser.PlaceExprContext)) {
+                    throw new RuntimeException("=. Left operand should be identifier");
                 } else {
-                    vars.put(var, ++lastVarNum);
-                    gen("LOADVAR", lastRegistrNum, vars.get(var));
+                    String var = ((com.codeverification.Var3Parser.PlaceExprContext) ctx.expr(0)).identifier().getText();
+                    visit(ctx.expr(1));
+                    if (vars.containsKey(var)) {
+                        gen("LOADVAR", lastRegistrNum, vars.get(var));
+                    } else {
+                        vars.put(var, ++lastVarNum);
+                        gen("LOADVAR", lastRegistrNum, vars.get(var));
+                    }
                 }
-            }
-            break;
-        case "+":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("ADD", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        case "-":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("MINUS", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        case "*":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("MULT", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        case "/":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("DIV", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        case "%":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("MOD", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        case "<":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("LESS", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        case ">":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("LARGER", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        case "==":
-            visit(ctx.expr(0));
-            firstReg = lastRegistrNum;
-            visit(ctx.expr(1));
-            gen("EQUAL", firstReg, lastRegistrNum, ++lastRegistrNum);
-            break;
-        default:
-            throw new RuntimeException("Unexpected binary operator" + binOp);
+                break;
+            case "+":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("ADD", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            case "-":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("MINUS", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            case "*":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("MULT", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            case "/":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("DIV", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            case "%":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("MOD", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            case "<":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("LESS", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            case ">":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("LARGER", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            case "==":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("EQUAL", firstReg, lastRegistrNum, ++lastRegistrNum);
+                break;
+            default:
+                throw new RuntimeException("Unexpected binary operator" + binOp);
         }
         return null;
     }
@@ -302,5 +326,30 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         methodDefinition.getConsts().addAll(consts.keySet());
         methodDefinition.getFuncs().addAll(funcs.keySet());
         return methodDefinition;
+    }
+
+    public class Const {
+        private String constName;
+        private DataType type;
+
+        public Const(String constName) {
+            this.constName = constName;
+        }
+
+        public String getConstName() {
+            return constName;
+        }
+
+        public void setConstName(String constName) {
+            this.constName = constName;
+        }
+
+        public DataType getType() {
+            return type;
+        }
+
+        public void setType(DataType type) {
+            this.type = type;
+        }
     }
 }

@@ -28,4 +28,12 @@ public class UIntValue implements Value {
     public int compareTo(Value value) {
         return 0;
     }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
 }

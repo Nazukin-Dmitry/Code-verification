@@ -9,6 +9,13 @@ public class StringValue implements Value {
 
     private String value;
 
+    public StringValue() {
+    }
+
+    public StringValue(String value) {
+        this.value = value;
+    }
+
     @Override
     public DataType getType() {
         return DataType.STRING;
@@ -27,5 +34,13 @@ public class StringValue implements Value {
     @Override
     public String asString() {
         return value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

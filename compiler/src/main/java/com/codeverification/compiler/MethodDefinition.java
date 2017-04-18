@@ -1,5 +1,7 @@
 package com.codeverification.compiler;
 
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ public class MethodDefinition implements Serializable {
 
     private MethodSignature methodSignature;
     private List<String> funcs = new ArrayList<>();
-    private List<String> consts = new ArrayList<>();
+    private List<Const> consts = new ArrayList<>();
     private int varsCount;
     private List<Command> commands = new ArrayList<>();
 
@@ -21,7 +23,7 @@ public class MethodDefinition implements Serializable {
         return funcs;
     }
 
-    public List<String> getConsts() {
+    public List<Const> getConsts() {
         return consts;
     }
 

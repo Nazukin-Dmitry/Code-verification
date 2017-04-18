@@ -28,4 +28,17 @@ public class ByteValue implements Value {
     public Byte asByte() {
         return value;
     }
+
+    @Override
+    public void setValue(String value) {
+        this.value = Byte.parseByte(value);
+    }
+
+    public Byte getValue() {
+        return value;
+    }
+
+    public void setValue(Byte value) {
+        this.value = value;
+    }
 }

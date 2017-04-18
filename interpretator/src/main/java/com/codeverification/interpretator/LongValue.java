@@ -9,6 +9,13 @@ public class LongValue implements Value {
 
     private Long value;
 
+    public LongValue() {
+    }
+
+    public LongValue(Long value) {
+        this.value = value;
+    }
+
     @Override
     public DataType getType() {
         return DataType.LONG;
@@ -20,6 +27,11 @@ public class LongValue implements Value {
     }
 
     @Override
+    public void setValue(String value) {
+
+    }
+
+    @Override
     public int compareTo(Value value) {
         return 0;
     }
@@ -27,5 +39,13 @@ public class LongValue implements Value {
     @Override
     public Long asLong() {
         return value;
+    }
+
+    public Long getValue() {
+        return value;
+    }
+
+    public void setValue(Long value) {
+        this.value = value;
     }
 }

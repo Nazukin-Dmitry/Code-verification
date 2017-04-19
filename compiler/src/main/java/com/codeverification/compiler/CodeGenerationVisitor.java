@@ -360,5 +360,13 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         public void setType(DataType type) {
             this.type = type;
         }
+
+        @Override
+        public String toString() {
+            return "Const{" +
+                    "constName='" + constName + '\'' +
+                    ", type=" + type +
+                    '}';
+        }
     }
 }

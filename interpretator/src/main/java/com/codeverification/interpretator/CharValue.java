@@ -22,11 +22,6 @@ public class CharValue extends AbstractValue {
     }
 
     @Override
-    public String getRaw() {
-        return null;
-    }
-
-    @Override
     public Character asChar() {
         return value;
     }

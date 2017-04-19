@@ -22,11 +22,6 @@ public class LongValue extends AbstractValue {
     }
 
     @Override
-    public String getRaw() {
-        return null;
-    }
-
-    @Override
     public int compareTo(Value value) {
         return 0;
     }

@@ -14,7 +14,7 @@ public class CFGBetweenFuncsVisitor extends com.codeverification.Var3BaseVisitor
     public Void visitCallExpr(com.codeverification.Var3Parser.CallExprContext ctx) {
         String name = ctx.expr().getText();
         set.add(new MethodSignature(name, ctx.listExpr().expr().size()));
-        return super.visitCallExpr(ctx);
+        return null;
     }
 
     public Set<MethodSignature> getSet() {

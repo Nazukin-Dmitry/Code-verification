@@ -1,5 +1,11 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.PlaceExprContext;
+import com.codeverification.Var3Parser.StatementContext;
+
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -7,12 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.StatementContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -38,6 +38,8 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     Map<String, Integer> funcs = new LinkedHashMap<>();
 
     int lastFuncNum = -1;
+
+    List<Integer> breakJumpCom = new ArrayList<>();
 
 
     @Override
@@ -69,14 +71,14 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     @Override
     public Void visitIfStatement(com.codeverification.Var3Parser.IfStatementContext ctx) {
         visit(ctx.expr());
-        gen("JMPFALSE", lastRegistrNum);
+        gen("JMPFALSE", lastRegistrNum--);
         int adr1 = lastComNum;
         for (com.codeverification.Var3Parser.StatementContext stCtx : ctx.trueSts) {
             visit(stCtx);
         }
-        programm.get(adr1).addArg(lastComNum + 1);
         gen("JMP");
         int adr2 = lastComNum;
+        programm.get(adr1).addArg(lastComNum + 1);
         for (com.codeverification.Var3Parser.StatementContext stCtx : ctx.falseSts) {
             visit(stCtx);
         }
@@ -88,7 +90,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     public Void visitWhileStatement(com.codeverification.Var3Parser.WhileStatementContext ctx) {
         int startWhile = lastComNum + 1;
         visit(ctx.expr());
-        gen("JMPFALSE", lastRegistrNum);
+        gen("JMPFALSE", lastRegistrNum--);
         int jmpFalse = lastComNum;
         for (com.codeverification.Var3Parser.StatementContext stCtx : ctx.statement()) {
             visit(stCtx);
@@ -96,6 +98,10 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         gen("JMP", startWhile);
 
         programm.get(jmpFalse).addArg(lastComNum + 1);
+        if (!breakJumpCom.isEmpty()) {
+            breakJumpCom.forEach(com -> programm.get(com).addArg(lastComNum + 1));
+            breakJumpCom.clear();
+        }
         return null;
     }
 
@@ -107,17 +113,24 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         }
         visit(ctx.expr());
         if (ctx.type.getType() == com.codeverification.Var3Lexer.WHILE) {
-            gen("JMPTRUE", startDo);
+            gen("JMPTRUE", lastRegistrNum--, startDo);
         }
         if (ctx.type.getType() == com.codeverification.Var3Lexer.UNTIL) {
-            gen("JMPFALSE", startDo);
+            gen("JMPFALSE", lastRegistrNum--, startDo);
+        }
+
+        if (!breakJumpCom.isEmpty()) {
+            breakJumpCom.forEach(com -> programm.get(com).addArg(lastComNum + 1));
+            breakJumpCom.clear();
         }
         return null;
     }
 
     @Override
     public Void visitBreakStatement(com.codeverification.Var3Parser.BreakStatementContext ctx) {
-        return super.visitBreakStatement(ctx);
+        gen("JMP");
+        breakJumpCom.add(lastComNum);
+        return null;
     }
 
     @Override
@@ -138,11 +151,11 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         switch (unOp) {
             case "-":
                 visit(ctx.expr());
-                gen("UNMINUS", lastRegistrNum, ++lastRegistrNum);
+                gen("UNMINUS", lastRegistrNum, lastRegistrNum);
                 break;
             case "+":
                 visit(ctx.expr());
-                gen("UNADD", lastRegistrNum, ++lastRegistrNum);
+                gen("UNADD", lastRegistrNum, lastRegistrNum);
                 break;
             default:
                 throw new RuntimeException("Unexpected unary operator" + unOp);
@@ -196,7 +209,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
                 if (!(ctx.expr(0) instanceof com.codeverification.Var3Parser.PlaceExprContext)) {
                     throw new RuntimeException("=. Left operand should be identifier");
                 } else {
-                    String var = ((com.codeverification.Var3Parser.PlaceExprContext) ctx.expr(0)).identifier().getText();
+                    String var = ((com.codeverification.Var3Parser.PlaceExprContext)ctx.expr(0)).identifier().getText();
                     visit(ctx.expr(1));
                     if (vars.containsKey(var)) {
                         gen("LOADVAR", lastRegistrNum, vars.get(var));
@@ -210,49 +223,57 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("ADD", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("ADD", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             case "-":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("MINUS", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("MINUS", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             case "*":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("MULT", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("MULT", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             case "/":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("DIV", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("DIV", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             case "%":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("MOD", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("MOD", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             case "<":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("LESS", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("LESS", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             case ">":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("LARGER", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("LARGER", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             case "==":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
-                gen("EQUAL", firstReg, lastRegistrNum, ++lastRegistrNum);
+                gen("EQUAL", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
                 break;
             default:
                 throw new RuntimeException("Unexpected binary operator" + binOp);
@@ -268,8 +289,9 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
             args.add(lastRegistrNum);
         }
         if (ctx.expr() instanceof PlaceExprContext) {
-            gen("CALL", ++lastRegistrNum, getFunNum(ctx.expr().getText()));
+            gen("CALL", args.get(0), getFunNum(ctx.expr().getText()));
             programm.get(lastComNum).addArg(args.toArray(new Integer[args.size()]));
+            lastRegistrNum = args.get(0);
         } else {
             throw new RuntimeException("Wrong func name:" + ctx.expr().getText());
         }
@@ -282,8 +304,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         if (vars.containsKey(varName)) {
             gen("PUSHVAR", vars.get(varName), ++lastRegistrNum);
         } else {
-            vars.put(varName, ++lastVarNum);
-            gen("PUSHVAR", vars.get(varName), ++lastRegistrNum);
+            throw new RuntimeException("Variable is not defined:" + varName);
         }
         return null;
     }
@@ -308,13 +329,13 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         printStream.println(".methodSignature");
         printStream.println(methodSignature);
         printStream.println(".funcs");
-        funcs.entrySet().stream()
+        funcs.entrySet()
                 .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
         printStream.println(".vars");
-        vars.entrySet().stream()
+        vars.entrySet()
                 .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
         printStream.println(".consts");
-        consts.entrySet().stream()
+        consts.entrySet()
                 .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
         printStream.println(".programm");
         IntStream.range(0, programm.size()).forEach(idx -> printStream.println(idx + ": " + programm.get(idx)));

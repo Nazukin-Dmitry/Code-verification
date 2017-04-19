@@ -15,11 +15,6 @@ public class UIntValue extends AbstractValue {
     }
 
     @Override
-    public String getRaw() {
-        return null;
-    }
-
-    @Override
     public Integer asUInt() {
         return value;
     }

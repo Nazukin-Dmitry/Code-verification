@@ -21,11 +21,6 @@ public class BoolValue extends AbstractValue {
     }
 
     @Override
-    public String getRaw() {
-        return value.toString();
-    }
-
-    @Override
     public int compareTo(Value value) {
         return 0;
     }

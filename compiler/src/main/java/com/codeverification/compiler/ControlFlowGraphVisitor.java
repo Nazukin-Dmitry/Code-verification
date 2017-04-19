@@ -1,12 +1,11 @@
 package com.codeverification.compiler;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.compiler.ConditionGraphNode.ConditionType;
 import org.apache.commons.collections.CollectionUtils;
 
-import com.codeverification.compiler.ConditionGraphNode.ConditionType;
-import com.codeverification.Var3Parser.ExprContext;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * Created by 1 on 09.04.2017.
@@ -53,8 +52,10 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
                 }
             }
 
-            lastNode.setNextNode(endIfNode);
+            if (!isBreak) {
+                lastNode.setNextNode(endIfNode);
 
+            }
         } else {
             ifNode.setTrueNextNode(endIfNode);
         }
@@ -73,8 +74,9 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
                 }
             }
 
-            lastNode.setNextNode(endIfNode);
-
+            if (!isBreak) {
+                lastNode.setNextNode(endIfNode);
+            }
         } else {
             ifNode.setFalseNextNode(endIfNode);
         }

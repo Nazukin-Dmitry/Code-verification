@@ -1,11 +1,11 @@
 function Fib(A as int) as int
-    if (A == 1) then
-        Fib = 1;
-     else
-        if (A == 0) then
-            Fib = 0;
-         else
-            Fib = (Fib(A-1) + Fib(A-2));
-        end if
-     end if
-end function
+                if (A == 1) then
+                    Fib = 1;
+                 else
+                    if (A == 0) then
+                        Fib = 0;
+                     else
+                        Fib = (Fib(A-1) + Fib(A-2));
+                    end if
+                 end if
+            end function

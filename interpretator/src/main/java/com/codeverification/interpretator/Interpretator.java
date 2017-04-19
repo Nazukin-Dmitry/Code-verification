@@ -1,5 +1,10 @@
 package com.codeverification.interpretator;
 
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.ParserFacade;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,11 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-
-import com.codeverification.compiler.CodeGenerationVisitor.Const;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.ParserFacade;
 
 /**
  * @author Dmitrii Nazukin
@@ -26,7 +26,7 @@ public class Interpretator {
 
     Pattern patternBits = Pattern.compile("0[bB][01]+");
 
-    Pattern patternDec = Pattern.compile("[0-9]+");
+    Pattern patternDec = Pattern.compile("[+-]?[0-9]+");
 
     Pattern patternBool = Pattern.compile("true|false");
 

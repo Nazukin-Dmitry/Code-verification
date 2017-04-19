@@ -1,16 +1,16 @@
 package com.codeverification.interpretator;
 
+import com.codeverification.compiler.Command;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.MethodSignature;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.codeverification.compiler.Command;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
 
 /**
  * @author Dmitrii Nazukin
@@ -50,11 +50,17 @@ public class FuncExecutor {
     }
 
     public static FuncExecutor getInstance(List<AbstractValue> args,
-            MethodDefinition methodDefinition,
-            Interpretator interpretator) {
-        // checkArgs(args, methodDefinition);
+                                           MethodDefinition methodDefinition,
+                                           Interpretator interpretator) {
+//        checkCall(args, methodDefinition);
         FuncExecutor funcExecutor = new FuncExecutor(args, methodDefinition, interpretator);
         return funcExecutor;
+    }
+
+    public void checkCall(List<AbstractValue> args, MethodDefinition methodDefinition, String funcName) {
+        if (methodDefinition == null || methodDefinition.getMethodSignature().getArgCount() != args.size()) {
+            throw new RuntimeException(funcName + " function for args " + args.toString() + " not found!!!");
+        }
     }
 
     private void addArgs(List<AbstractValue> args, MethodDefinition methodDefinition) {
@@ -99,6 +105,9 @@ public class FuncExecutor {
                 executeCommand(command);
             }
         }
+        if (vars.get(0) == null) {
+            throw new RuntimeException("Return value - " + methodSignature.getFuncName() + " - hasn't been initialized!!!");
+        }
         if (methodSignature.getReturnType() == DataType.UNDEFINED) {
             return vars.get(0);
         } else if (methodSignature.getReturnType() == vars.get(0).getType()) {
@@ -115,89 +124,91 @@ public class FuncExecutor {
 
     private void executeCommand(Command command) {
         switch (CommandType.valueOf(command.getName())) {
-        case ADD:
-            addCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case MINUS:
-            minusCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case DIV:
-            divCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case MOD:
-            modCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case MULT:
-            multCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case UNMINUS:
-            unMinusCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case UNADD:
-            unAddCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case LESS:
-            lessCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case LARGER:
-            largerCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case EQUAL:
-            equalCommand(command.getArgs());
-            currentCommand++;
-            break;
-        case PUSHVAR:
-            registers.put(command.getArgs().get(1), vars.get(command.getArgs().get(0)));
-            currentCommand++;
-            break;
-        case LOADVAR:
-            AbstractValue v = registers.get(command.getArgs().get(0));
-            vars.put(command.getArgs().get(1), v);
-            currentCommand++;
-            break;
-        case PUSHCONST:
-            registers.put(command.getArgs().get(1), consts.get(command.getArgs().get(0)));
-            currentCommand++;
-            break;
-        case JMPFALSE:
-            AbstractValue v1 = registers.get(command.getArgs().get(0));
-            if (!v1.asBool()) {
-                currentCommand = command.getArgs().get(1);
-            } else {
+            case ADD:
+                addCommand(command.getArgs());
                 currentCommand++;
-            }
-            break;
-        case JMPTRUE:
-            AbstractValue v2 = registers.get(command.getArgs().get(0));
-            if (v2.asBool()) {
-                currentCommand = command.getArgs().get(1);
-            } else {
+                break;
+            case MINUS:
+                minusCommand(command.getArgs());
                 currentCommand++;
-            }
-            break;
-        case JMP:
-            currentCommand = command.getArgs().get(0);
-            break;
-        case CALL:
-            List<AbstractValue> args = new ArrayList<>();
-            for (int i = 2; i < command.getArgs().size(); i++) {
-                args.add(registers.get(command.getArgs().get(i)));
-            }
-            FuncExecutor funcExecutor = FuncExecutor.getInstance(args,
-                    interpretator.functions.get(funcs.get(command.getArgs().get(1))),
-                    interpretator);
-            AbstractValue v3 = funcExecutor.executeMethod();
-            registers.put(command.getArgs().get(0), v3);
-            currentCommand++;
+                break;
+            case DIV:
+                divCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case MOD:
+                modCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case MULT:
+                multCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case UNMINUS:
+                unMinusCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case UNADD:
+                unAddCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case LESS:
+                lessCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case LARGER:
+                largerCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case EQUAL:
+                equalCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case PUSHVAR:
+                registers.put(command.getArgs().get(1), vars.get(command.getArgs().get(0)));
+                currentCommand++;
+                break;
+            case LOADVAR:
+                AbstractValue v = registers.get(command.getArgs().get(0));
+                vars.put(command.getArgs().get(1), v);
+                currentCommand++;
+                break;
+            case PUSHCONST:
+                registers.put(command.getArgs().get(1), consts.get(command.getArgs().get(0)));
+                currentCommand++;
+                break;
+            case JMPFALSE:
+                AbstractValue v1 = registers.get(command.getArgs().get(0));
+                if (!v1.asBool()) {
+                    currentCommand = command.getArgs().get(1);
+                } else {
+                    currentCommand++;
+                }
+                break;
+            case JMPTRUE:
+                AbstractValue v2 = registers.get(command.getArgs().get(0));
+                if (v2.asBool()) {
+                    currentCommand = command.getArgs().get(1);
+                } else {
+                    currentCommand++;
+                }
+                break;
+            case JMP:
+                currentCommand = command.getArgs().get(0);
+                break;
+            case CALL:
+                List<AbstractValue> args = new ArrayList<>();
+                for (int i = 2; i < command.getArgs().size(); i++) {
+                    args.add(registers.get(command.getArgs().get(i)));
+                }
+                checkCall(args, interpretator.functions.get(funcs.get(command.getArgs().get(1))),
+                        funcs.get(command.getArgs().get(1)));
+                FuncExecutor funcExecutor = FuncExecutor.getInstance(args,
+                        interpretator.functions.get(funcs.get(command.getArgs().get(1))),
+                        interpretator);
+                AbstractValue v3 = funcExecutor.executeMethod();
+                registers.put(command.getArgs().get(0), v3);
+                currentCommand++;
 
         }
     }
@@ -210,24 +221,24 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case STRING:
-            String strValue = first.asString() + second.asString();
-            registers.put(args.get(2), new StringValue(strValue));
-            break;
-        case INT:
-            Integer intValue = first.asInt() + second.asInt();
-            registers.put(args.get(2), new IntValue(intValue));
-            break;
-        case LONG:
-            Long longValue = first.asLong() + second.asLong();
-            registers.put(args.get(2), new LongValue(longValue));
-            break;
-        case BYTE:
-            int byteValue = first.asByte() + second.asByte();
-            registers.put(args.get(2), new ByteValue((byte)byteValue));
-            break;
-        default:
-            throw new RuntimeException("+ is unavailable for data type" + first.getType());
+            case STRING:
+                String strValue = first.asString() + second.asString();
+                registers.put(args.get(2), new StringValue(strValue));
+                break;
+            case INT:
+                Integer intValue = first.asInt() + second.asInt();
+                registers.put(args.get(2), new IntValue(intValue));
+                break;
+            case LONG:
+                Long longValue = first.asLong() + second.asLong();
+                registers.put(args.get(2), new LongValue(longValue));
+                break;
+            case BYTE:
+                int byteValue = first.asByte() + second.asByte();
+                registers.put(args.get(2), new ByteValue((byte) byteValue));
+                break;
+            default:
+                throw new RuntimeException("+ is unavailable for data type" + first.getType());
         }
     }
 
@@ -239,20 +250,20 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case INT:
-            Integer intValue = first.asInt() - second.asInt();
-            registers.put(args.get(2), new IntValue(intValue));
-            break;
-        case LONG:
-            Long longValue = first.asLong() - second.asLong();
-            registers.put(args.get(2), new LongValue(longValue));
-            break;
-        case BYTE:
-            int byteValue = first.asByte() - second.asByte();
-            registers.put(args.get(2), new ByteValue((byte)byteValue));
-            break;
-        default:
-            throw new RuntimeException("- is unavailable for data type" + first.getType());
+            case INT:
+                Integer intValue = first.asInt() - second.asInt();
+                registers.put(args.get(2), new IntValue(intValue));
+                break;
+            case LONG:
+                Long longValue = first.asLong() - second.asLong();
+                registers.put(args.get(2), new LongValue(longValue));
+                break;
+            case BYTE:
+                int byteValue = first.asByte() - second.asByte();
+                registers.put(args.get(2), new ByteValue((byte) byteValue));
+                break;
+            default:
+                throw new RuntimeException("- is unavailable for data type" + first.getType());
         }
     }
 
@@ -264,20 +275,20 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case INT:
-            Integer intValue = first.asInt() * second.asInt();
-            registers.put(args.get(2), new IntValue(intValue));
-            break;
-        case LONG:
-            Long longValue = first.asLong() * second.asLong();
-            registers.put(args.get(2), new LongValue(longValue));
-            break;
-        case BYTE:
-            int byteValue = first.asByte() * second.asByte();
-            registers.put(args.get(2), new ByteValue((byte)byteValue));
-            break;
-        default:
-            throw new RuntimeException("* is unavailable for data type" + first.getType());
+            case INT:
+                Integer intValue = first.asInt() * second.asInt();
+                registers.put(args.get(2), new IntValue(intValue));
+                break;
+            case LONG:
+                Long longValue = first.asLong() * second.asLong();
+                registers.put(args.get(2), new LongValue(longValue));
+                break;
+            case BYTE:
+                int byteValue = first.asByte() * second.asByte();
+                registers.put(args.get(2), new ByteValue((byte) byteValue));
+                break;
+            default:
+                throw new RuntimeException("* is unavailable for data type" + first.getType());
         }
     }
 
@@ -289,20 +300,20 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case INT:
-            Integer intValue = first.asInt() / second.asInt();
-            registers.put(args.get(2), new IntValue(intValue));
-            break;
-        case LONG:
-            Long longValue = first.asLong() / second.asLong();
-            registers.put(args.get(2), new LongValue(longValue));
-            break;
-        case BYTE:
-            int byteValue = first.asByte() / second.asByte();
-            registers.put(args.get(2), new ByteValue((byte)byteValue));
-            break;
-        default:
-            throw new RuntimeException("/ is unavailable for data type" + first.getType());
+            case INT:
+                Integer intValue = first.asInt() / second.asInt();
+                registers.put(args.get(2), new IntValue(intValue));
+                break;
+            case LONG:
+                Long longValue = first.asLong() / second.asLong();
+                registers.put(args.get(2), new LongValue(longValue));
+                break;
+            case BYTE:
+                int byteValue = first.asByte() / second.asByte();
+                registers.put(args.get(2), new ByteValue((byte) byteValue));
+                break;
+            default:
+                throw new RuntimeException("/ is unavailable for data type" + first.getType());
         }
     }
 
@@ -314,20 +325,20 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case INT:
-            Integer intValue = first.asInt() % second.asInt();
-            registers.put(args.get(2), new IntValue(intValue));
-            break;
-        case LONG:
-            Long longValue = first.asLong() % second.asLong();
-            registers.put(args.get(2), new LongValue(longValue));
-            break;
-        case BYTE:
-            int byteValue = first.asByte() % second.asByte();
-            registers.put(args.get(2), new ByteValue((byte)byteValue));
-            break;
-        default:
-            throw new RuntimeException("% is unavailable for data type" + first.getType());
+            case INT:
+                Integer intValue = first.asInt() % second.asInt();
+                registers.put(args.get(2), new IntValue(intValue));
+                break;
+            case LONG:
+                Long longValue = first.asLong() % second.asLong();
+                registers.put(args.get(2), new LongValue(longValue));
+                break;
+            case BYTE:
+                int byteValue = first.asByte() % second.asByte();
+                registers.put(args.get(2), new ByteValue((byte) byteValue));
+                break;
+            default:
+                throw new RuntimeException("% is unavailable for data type" + first.getType());
         }
     }
 
@@ -339,20 +350,20 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case INT:
-            boolean intValue = first.asInt() < second.asInt();
-            registers.put(args.get(2), new BoolValue(intValue));
-            break;
-        case LONG:
-            boolean longValue = first.asLong() < second.asLong();
-            registers.put(args.get(2), new BoolValue(longValue));
-            break;
-        case BYTE:
-            boolean byteValue = first.asByte() < second.asByte();
-            registers.put(args.get(2), new BoolValue(byteValue));
-            break;
-        default:
-            throw new RuntimeException("< is unavailable for data type" + first.getType());
+            case INT:
+                boolean intValue = first.asInt() < second.asInt();
+                registers.put(args.get(2), new BoolValue(intValue));
+                break;
+            case LONG:
+                boolean longValue = first.asLong() < second.asLong();
+                registers.put(args.get(2), new BoolValue(longValue));
+                break;
+            case BYTE:
+                boolean byteValue = first.asByte() < second.asByte();
+                registers.put(args.get(2), new BoolValue(byteValue));
+                break;
+            default:
+                throw new RuntimeException("< is unavailable for data type" + first.getType());
         }
     }
 
@@ -364,20 +375,20 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case INT:
-            boolean intValue = first.asInt() > second.asInt();
-            registers.put(args.get(2), new BoolValue(intValue));
-            break;
-        case LONG:
-            boolean longValue = first.asLong() > second.asLong();
-            registers.put(args.get(2), new BoolValue(longValue));
-            break;
-        case BYTE:
-            boolean byteValue = first.asByte() > second.asByte();
-            registers.put(args.get(2), new BoolValue(byteValue));
-            break;
-        default:
-            throw new RuntimeException("> is unavailable for data type" + first.getType());
+            case INT:
+                boolean intValue = first.asInt() > second.asInt();
+                registers.put(args.get(2), new BoolValue(intValue));
+                break;
+            case LONG:
+                boolean longValue = first.asLong() > second.asLong();
+                registers.put(args.get(2), new BoolValue(longValue));
+                break;
+            case BYTE:
+                boolean byteValue = first.asByte() > second.asByte();
+                registers.put(args.get(2), new BoolValue(byteValue));
+                break;
+            default:
+                throw new RuntimeException("> is unavailable for data type" + first.getType());
         }
     }
 
@@ -389,32 +400,32 @@ public class FuncExecutor {
         }
 
         switch (first.getType()) {
-        case INT:
-            boolean intValue = first.asInt().equals(second.asInt());
-            registers.put(args.get(2), new BoolValue(intValue));
-            break;
-        case LONG:
-            boolean longValue = first.asLong().equals(second.asLong());
-            registers.put(args.get(2), new BoolValue(longValue));
-            break;
-        case BYTE:
-            boolean byteValue = first.asByte().equals(second.asByte());
-            registers.put(args.get(2), new BoolValue(byteValue));
-            break;
-        case STRING:
-            boolean stringValue = first.asString().equals(second.asString());
-            registers.put(args.get(2), new BoolValue(stringValue));
-            break;
-        case CHAR:
-            boolean charValue = first.asChar().equals(second.asChar());
-            registers.put(args.get(2), new BoolValue(charValue));
-            break;
-        case BOOL:
-            boolean boolValue = first.asBool().equals(second.asBool());
-            registers.put(args.get(2), new BoolValue(boolValue));
-            break;
-        default:
-            throw new RuntimeException("== is unavailable for data type" + first.getType());
+            case INT:
+                boolean intValue = first.asInt().equals(second.asInt());
+                registers.put(args.get(2), new BoolValue(intValue));
+                break;
+            case LONG:
+                boolean longValue = first.asLong().equals(second.asLong());
+                registers.put(args.get(2), new BoolValue(longValue));
+                break;
+            case BYTE:
+                boolean byteValue = first.asByte().equals(second.asByte());
+                registers.put(args.get(2), new BoolValue(byteValue));
+                break;
+            case STRING:
+                boolean stringValue = first.asString().equals(second.asString());
+                registers.put(args.get(2), new BoolValue(stringValue));
+                break;
+            case CHAR:
+                boolean charValue = first.asChar().equals(second.asChar());
+                registers.put(args.get(2), new BoolValue(charValue));
+                break;
+            case BOOL:
+                boolean boolValue = first.asBool().equals(second.asBool());
+                registers.put(args.get(2), new BoolValue(boolValue));
+                break;
+            default:
+                throw new RuntimeException("== is unavailable for data type" + first.getType());
         }
     }
 
@@ -422,20 +433,20 @@ public class FuncExecutor {
         AbstractValue first = registers.get(args.get(0));
 
         switch (first.getType()) {
-        case INT:
-            Integer intValue = first.asInt();
-            registers.put(args.get(2), new IntValue(intValue));
-            break;
-        case LONG:
-            Long longValue = first.asLong();
-            registers.put(args.get(2), new LongValue(longValue));
-            break;
-        case BYTE:
-            byte byteValue = first.asByte();
-            registers.put(args.get(2), new ByteValue(byteValue));
-            break;
-        default:
-            throw new RuntimeException("unary + is unavailable for data type" + first.getType());
+            case INT:
+                Integer intValue = first.asInt();
+                registers.put(args.get(2), new IntValue(intValue));
+                break;
+            case LONG:
+                Long longValue = first.asLong();
+                registers.put(args.get(2), new LongValue(longValue));
+                break;
+            case BYTE:
+                byte byteValue = first.asByte();
+                registers.put(args.get(2), new ByteValue(byteValue));
+                break;
+            default:
+                throw new RuntimeException("unary + is unavailable for data type" + first.getType());
         }
     }
 
@@ -443,45 +454,21 @@ public class FuncExecutor {
         AbstractValue first = registers.get(args.get(0));
 
         switch (first.getType()) {
-        case INT:
-            Integer intValue = first.asInt() * (-1);
-            registers.put(args.get(2), new IntValue(intValue));
-            break;
-        case LONG:
-            Long longValue = first.asLong() * (-1);
-            registers.put(args.get(2), new LongValue(longValue));
-            break;
-        case BYTE:
-            int byteValue = first.asByte() * (-1);
-            registers.put(args.get(2), new ByteValue((byte)byteValue));
-            break;
-        default:
-            throw new RuntimeException("unary + is unavailable for data type" + first.getType());
+            case INT:
+                Integer intValue = first.asInt() * (-1);
+                registers.put(args.get(2), new IntValue(intValue));
+                break;
+            case LONG:
+                Long longValue = first.asLong() * (-1);
+                registers.put(args.get(2), new LongValue(longValue));
+                break;
+            case BYTE:
+                int byteValue = first.asByte() * (-1);
+                registers.put(args.get(2), new ByteValue((byte) byteValue));
+                break;
+            default:
+                throw new RuntimeException("unary + is unavailable for data type" + first.getType());
         }
     }
 
-    public enum CommandType {
-        ADD,
-        MINUS,
-        MULT,
-        DIV,
-        MOD,
-
-        LESS,
-        LARGER,
-        EQUAL,
-
-        UNADD,
-        UNMINUS,
-
-        PUSHVAR,
-        LOADVAR,
-        PUSHCONST,
-
-        JMPFALSE,
-        JMPTRUE,
-        JMP,
-
-        CALL;
-    }
 }

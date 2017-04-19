@@ -5,10 +5,12 @@ import com.codeverification.compiler.DataType;
 /**
  * @author Dmitrii Nazukin
  */
-public class IntValue implements Value {
+public class IntValue extends AbstractValue {
 
     private Integer value;
 
+    public IntValue() {
+    }
 
     public IntValue(Integer value) {
         this.value = value;
@@ -34,16 +36,41 @@ public class IntValue implements Value {
         return value;
     }
 
-    @Override
-    public void setValue(String value) {
-
-    }
-
     public Integer getValue() {
         return value;
     }
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    @Override
+    public void parse(String value) {
+        this.value = Integer.valueOf(value);
+    }
+
+    @Override
+    public Byte asByte() {
+        if (isConst()) {
+            return Byte.valueOf(getRaw());
+        } else {
+            return super.asByte();
+        }
+    }
+
+    @Override
+    public Long asLong() {
+        if (isConst()) {
+            return Long.valueOf(getRaw());
+        } else {
+            return super.asLong();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "IntValue{" +
+                "value=" + value +
+                '}';
     }
 }

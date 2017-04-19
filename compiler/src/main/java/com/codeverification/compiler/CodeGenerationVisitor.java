@@ -1,17 +1,18 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.StatementContext;
-
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.PlaceExprContext;
+import com.codeverification.Var3Parser.StatementContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -45,6 +46,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         for (StatementContext st : ctx.statement()) {
             visit(st);
         }
+        gen("END");
         return null;
     }
 
@@ -328,12 +330,19 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         return methodDefinition;
     }
 
-    public class Const {
+    public static class Const implements Serializable {
+        private static final long serialVersionUID = 4;
+
         private String constName;
         private DataType type;
 
         public Const(String constName) {
             this.constName = constName;
+        }
+
+        public Const(String constName, DataType type) {
+            this.constName = constName;
+            this.type = type;
         }
 
         public String getConstName() {

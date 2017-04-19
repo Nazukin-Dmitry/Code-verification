@@ -5,7 +5,7 @@ import com.codeverification.compiler.DataType;
 /**
  * @author Dmitrii Nazukin
  */
-public class LongValue implements Value {
+public class LongValue extends AbstractValue {
 
     private Long value;
 
@@ -27,11 +27,6 @@ public class LongValue implements Value {
     }
 
     @Override
-    public void setValue(String value) {
-
-    }
-
-    @Override
     public int compareTo(Value value) {
         return 0;
     }
@@ -47,5 +42,17 @@ public class LongValue implements Value {
 
     public void setValue(Long value) {
         this.value = value;
+    }
+
+    @Override
+    public void parse(String value) {
+        this.value = Long.valueOf(value);
+    }
+
+    @Override
+    public String toString() {
+        return "LongValue{" +
+                "value=" + value +
+                '}';
     }
 }

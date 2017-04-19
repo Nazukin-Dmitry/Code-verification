@@ -5,7 +5,7 @@ import com.codeverification.compiler.DataType;
 /**
  * @author Dmitrii Nazukin
  */
-public class ByteValue implements Value {
+public class ByteValue extends AbstractValue {
 
     private Byte value;
 
@@ -29,16 +29,30 @@ public class ByteValue implements Value {
         return value;
     }
 
-    @Override
-    public void setValue(String value) {
-        this.value = Byte.parseByte(value);
-    }
-
     public Byte getValue() {
         return value;
     }
 
     public void setValue(Byte value) {
         this.value = value;
+    }
+
+    public ByteValue(Byte value) {
+        this.value = value;
+    }
+
+    public ByteValue() {
+    }
+
+    @Override
+    public void parse(String value) {
+        this.value = Byte.parseByte(value);
+    }
+
+    @Override
+    public String toString() {
+        return "ByteValue{" +
+                "value=" + value +
+                '}';
     }
 }

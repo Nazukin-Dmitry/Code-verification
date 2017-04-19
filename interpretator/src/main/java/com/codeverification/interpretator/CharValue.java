@@ -5,7 +5,7 @@ import com.codeverification.compiler.DataType;
 /**
  * @author Dmitrii Nazukin
  */
-public class CharValue implements Value {
+public class CharValue extends AbstractValue {
 
     private Character value;
 
@@ -36,16 +36,23 @@ public class CharValue implements Value {
         return 0;
     }
 
-    @Override
-    public void setValue(String value) {
-        this.value = value.charAt(1);
-    }
-
     public Character getValue() {
         return value;
     }
 
     public void setValue(Character value) {
         this.value = value;
+    }
+
+    @Override
+    public void parse(String value) {
+//        this.value = Byte.parseByte(value);
+    }
+
+    @Override
+    public String toString() {
+        return "CharValue{" +
+                "value=" + value +
+                '}';
     }
 }

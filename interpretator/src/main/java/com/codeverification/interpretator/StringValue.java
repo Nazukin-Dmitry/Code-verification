@@ -5,7 +5,7 @@ import com.codeverification.compiler.DataType;
 /**
  * @author Dmitrii Nazukin
  */
-public class StringValue implements Value {
+public class StringValue extends AbstractValue {
 
     private String value;
 
@@ -42,5 +42,17 @@ public class StringValue implements Value {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public void parse(String value) {
+
+    }
+
+    @Override
+    public String toString() {
+        return "StringValue{" +
+                "value='" + value + '\'' +
+                '}';
     }
 }

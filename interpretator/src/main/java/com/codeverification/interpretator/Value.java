@@ -8,10 +8,6 @@ import com.codeverification.compiler.DataType;
 public interface Value extends Comparable<Value> {
     DataType getType();
 
-    String getRaw();
-
-    void setValue(String value);
-
     default Boolean asBool() {
         throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'bool'");
     }
@@ -44,4 +40,5 @@ public interface Value extends Comparable<Value> {
         throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'string'");
     }
 
+    void parse(String value);
 }

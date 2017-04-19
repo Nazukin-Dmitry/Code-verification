@@ -82,9 +82,9 @@ public class Zadanie4 {
             if (outputBinPath != null) {
                 parserFacade.printBinCodes(binFuncs, outputBinPath);
             }
-
-            Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(outputBinPath);
-            System.out.println("fd");
+//
+//            Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(outputBinPath);
+//            System.out.println("fd");
 
         } catch (Exception e) {
             throw e;

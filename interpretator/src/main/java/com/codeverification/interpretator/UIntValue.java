@@ -5,7 +5,7 @@ import com.codeverification.compiler.DataType;
 /**
  * @author Dmitrii Nazukin
  */
-public class UIntValue implements Value {
+public class UIntValue extends AbstractValue {
 
     private Integer value;
 
@@ -35,5 +35,17 @@ public class UIntValue implements Value {
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    @Override
+    public void parse(String value) {
+
+    }
+
+    @Override
+    public String toString() {
+        return "UIntValue{" +
+                "value=" + value +
+                '}';
     }
 }

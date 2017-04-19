@@ -5,7 +5,7 @@ import com.codeverification.compiler.DataType;
 /**
  * @author Dmitrii Nazukin
  */
-public class BoolValue implements Value {
+public class BoolValue extends AbstractValue {
     private Boolean value;
 
     public BoolValue(Boolean value) {
@@ -44,7 +44,14 @@ public class BoolValue implements Value {
     }
 
     @Override
-    public void setValue(String value) {
+    public void parse(String value) {
         this.value = Boolean.parseBoolean(value);
+    }
+
+    @Override
+    public String toString() {
+        return "BoolValue{" +
+                "value=" + value +
+                '}';
     }
 }

@@ -9,6 +9,13 @@ public class UIntValue extends AbstractValue {
 
     private Integer value;
 
+    public UIntValue(Integer value) {
+        this.value = value;
+    }
+
+    public UIntValue() {
+    }
+
     @Override
     public DataType getType() {
         return DataType.UINT;

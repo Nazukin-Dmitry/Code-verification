@@ -103,4 +103,37 @@ public class ValueFactory {
         result.parse(raw);
         return result;
     }
+
+    public static AbstractValue getValue(DataType dataType, AbstractValue value) {
+        AbstractValue result;
+        switch (dataType){
+            case INT:
+                result = new IntValue(value.asInt());
+                break;
+            case BOOL:
+                result = new BoolValue(value.asBool());
+                break;
+            case BYTE:
+                result = new ByteValue(value.asByte());
+                break;
+            case CHAR:
+                result = new CharValue(value.asChar());
+                break;
+            case LONG:
+                result = new LongValue(value.asLong());
+                break;
+            case UINT:
+                result = new UIntValue(value.asUInt());
+                break;
+            case ULONG:
+                result = new ULongValue(value.asULong());
+                break;
+            case STRING:
+                result = new StringValue(value.asString());
+                break;
+            default:
+                throw new RuntimeException();
+        }
+        return result;
+    }
 }

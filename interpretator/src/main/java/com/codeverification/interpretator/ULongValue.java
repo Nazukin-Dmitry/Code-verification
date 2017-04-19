@@ -9,6 +9,13 @@ public class ULongValue extends AbstractValue {
 
     private Long value;
 
+    public ULongValue() {
+    }
+
+    public ULongValue(Long value) {
+        this.value = value;
+    }
+
     @Override
     public DataType getType() {
         return DataType.ULONG;

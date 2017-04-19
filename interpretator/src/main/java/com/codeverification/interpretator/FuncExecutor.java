@@ -71,27 +71,15 @@ public class FuncExecutor {
         for (int i = 0; i < argsTypes.size(); i++) {
             AbstractValue arg = args.get(i);
             DataType argType = argsTypes.get(i);
-            if (argType != arg.getType()) {
-                if (!arg.isConst()) {
+            if (!arg.isConst()) {
+                if (argType != arg.getType()) {
                     throw new RuntimeException(
                             "Wrong functions args!!!" + methodDefinition.getMethodSignature().getFuncName());
-                } else {
-                    if (arg.getType() == DataType.STRING
-                            || arg.getType() == DataType.CHAR
-                            || arg.getType() == DataType.BOOL) {
-                        throw new RuntimeException("Can not cast  "
-                                + arg.getRaw()
-                                + " to type "
-                                + argType
-                                + " in method "
-                                + methodDefinition.getMethodSignature().getFuncName());
-                    } else {
-                        arg = ValueFactory.getValue(argType, arg.getRaw());
-                    }
                 }
             } else {
-                arg.setConst(false);
+                arg = ValueFactory.getValue(argType, arg);
             }
+
             vars.put(i + 1, arg);
         }
     }

@@ -14,6 +14,9 @@ public enum CommandType {
     LARGER,
     EQUAL,
 
+    OR,
+    AND,
+
     UNADD,
     UNMINUS,
 

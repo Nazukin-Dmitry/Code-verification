@@ -102,7 +102,7 @@ MethodSignature{funcName='sto', argCount=0, argsType=[], returnType=indefined}
 .consts
 0:Const{constName='0', type=int}
 1:Const{constName='1', type=int}
-2:Const{constName='101', type=int}
+2:Const{constName='100', type=int}
 .programm
 0: PUSHCONST 0 0 
 1: LOADVAR 0 0 
@@ -144,38 +144,36 @@ MethodSignature{funcName='Evkl', argCount=2, argsType=[long, long], returnType=i
 2:Const{constName='0', type=int}
 .programm
 0: PUSHCONST 0 0 
-1: JMPFALSE 0 28 
+1: JMPFALSE 0 26 
 2: PUSHVAR 1 0 
 3: PUSHCONST 1 1 
 4: EQUAL 0 1 0 
-5: JMPFALSE 0 8 
-6: JMP 28 
-7: JMP 8 
-8: PUSHVAR 2 0 
-9: PUSHCONST 2 1 
-10: EQUAL 0 1 0 
-11: JMPFALSE 0 14 
-12: JMP 28 
-13: JMP 14 
-14: PUSHVAR 1 0 
-15: PUSHVAR 2 1 
-16: LARGER 0 1 0 
-17: JMPFALSE 0 23 
-18: PUSHVAR 1 0 
-19: PUSHVAR 2 1 
-20: MOD 0 1 0 
-21: LOADVAR 0 1 
-22: JMP 27 
-23: PUSHVAR 2 1 
-24: PUSHVAR 1 2 
-25: MOD 1 2 1 
-26: LOADVAR 1 2 
-27: JMP 0 
-28: PUSHVAR 1 2 
-29: PUSHVAR 2 3 
-30: ADD 2 3 2 
-31: LOADVAR 2 0 
-32: END 
+5: PUSHVAR 2 1 
+6: PUSHCONST 2 2 
+7: EQUAL 1 2 1 
+8: OR 0 1 0 
+9: JMPFALSE 0 12 
+10: JMP 26 
+11: JMP 12 
+12: PUSHVAR 1 0 
+13: PUSHVAR 2 1 
+14: LARGER 0 1 0 
+15: JMPFALSE 0 21 
+16: PUSHVAR 1 0 
+17: PUSHVAR 2 1 
+18: MOD 0 1 0 
+19: LOADVAR 0 1 
+20: JMP 25 
+21: PUSHVAR 2 1 
+22: PUSHVAR 1 2 
+23: MOD 1 2 1 
+24: LOADVAR 1 2 
+25: JMP 0 
+26: PUSHVAR 1 2 
+27: PUSHVAR 2 3 
+28: ADD 2 3 2 
+29: LOADVAR 2 0 
+30: END 
 --------------------
 .methodSignature
 MethodSignature{funcName='Fib', argCount=1, argsType=[int], returnType=int}
@@ -212,6 +210,112 @@ MethodSignature{funcName='Fib', argCount=1, argsType=[int], returnType=int}
 17: CALL 2 0 2 
 18: PUSHVAR 1 3 
 19: PUSHCONST 5 4 
+20: MINUS 3 4 3 
+21: CALL 3 0 3 
+22: ADD 2 3 2 
+23: LOADVAR 2 0 
+24: END 
+--------------------
+.methodSignature
+MethodSignature{funcName='and', argCount=2, argsType=[bool, bool], returnType=indefined}
+.funcs
+.vars
+0:and
+1:A
+2:B
+.consts
+.programm
+0: PUSHVAR 1 0 
+1: PUSHVAR 2 1 
+2: AND 0 1 0 
+3: LOADVAR 0 0 
+4: END 
+--------------------
+.methodSignature
+MethodSignature{funcName='dummy', argCount=0, argsType=[], returnType=indefined}
+.funcs
+.vars
+0:dummy
+.consts
+0:Const{constName='0b01010', type=int}
+1:Const{constName='0xFA22', type=int}
+.programm
+0: PUSHCONST 0 0 
+1: PUSHCONST 1 1 
+2: ADD 0 1 0 
+3: LOADVAR 0 0 
+4: END 
+--------------------
+.methodSignature
+MethodSignature{funcName='Factorial', argCount=1, argsType=[int], returnType=int}
+.funcs
+.vars
+0:Factorial
+1:A
+2:result
+3:count
+.consts
+0:Const{constName='1', type=int}
+1:Const{constName='0', type=int}
+2:Const{constName='1', type=int}
+.programm
+0: PUSHCONST 0 0 
+1: LOADVAR 0 2 
+2: PUSHCONST 1 1 
+3: LOADVAR 1 3 
+4: PUSHVAR 3 2 
+5: PUSHCONST 2 3 
+6: ADD 2 3 2 
+7: LOADVAR 2 3 
+8: PUSHVAR 2 3 
+9: PUSHVAR 3 4 
+10: MULT 3 4 3 
+11: LOADVAR 3 2 
+12: PUSHVAR 3 4 
+13: PUSHVAR 1 5 
+14: EQUAL 4 5 4 
+15: PUSHVAR 3 5 
+16: PUSHVAR 1 6 
+17: LARGER 5 6 5 
+18: OR 4 5 4 
+19: JMPFALSE 4 4 
+20: PUSHVAR 2 4 
+21: LOADVAR 4 0 
+22: END 
+--------------------
+.methodSignature
+MethodSignature{funcName='FibByte', argCount=1, argsType=[byte], returnType=indefined}
+.funcs
+0:FibByte
+.vars
+0:FibByte
+1:A
+.consts
+0:Const{constName='1', type=int}
+1:Const{constName='0', type=int}
+2:Const{constName='1', type=int}
+3:Const{constName='2', type=int}
+.programm
+0: PUSHVAR 1 0 
+1: PUSHCONST 0 1 
+2: EQUAL 0 1 0 
+3: JMPFALSE 0 7 
+4: PUSHVAR 1 0 
+5: LOADVAR 0 0 
+6: JMP 24 
+7: PUSHVAR 1 1 
+8: PUSHCONST 1 2 
+9: EQUAL 1 2 1 
+10: JMPFALSE 1 14 
+11: PUSHVAR 1 1 
+12: LOADVAR 1 0 
+13: JMP 24 
+14: PUSHVAR 1 2 
+15: PUSHCONST 2 3 
+16: MINUS 2 3 2 
+17: CALL 2 0 2 
+18: PUSHVAR 1 3 
+19: PUSHCONST 3 4 
 20: MINUS 3 4 3 
 21: CALL 3 0 3 
 22: ADD 2 3 2 

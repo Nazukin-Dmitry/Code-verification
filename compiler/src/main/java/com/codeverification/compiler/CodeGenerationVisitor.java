@@ -1,11 +1,5 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.StatementContext;
-
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,6 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.PlaceExprContext;
+import com.codeverification.Var3Parser.StatementContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -273,6 +273,20 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
                 firstReg = lastRegistrNum;
                 visit(ctx.expr(1));
                 gen("EQUAL", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
+                break;
+            case "||":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("OR", firstReg, lastRegistrNum, firstReg);
+                lastRegistrNum = firstReg;
+                break;
+            case "&&":
+                visit(ctx.expr(0));
+                firstReg = lastRegistrNum;
+                visit(ctx.expr(1));
+                gen("AND", firstReg, lastRegistrNum, firstReg);
                 lastRegistrNum = firstReg;
                 break;
             default:

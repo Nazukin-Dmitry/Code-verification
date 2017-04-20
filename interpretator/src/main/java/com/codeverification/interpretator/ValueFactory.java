@@ -26,8 +26,8 @@ public class ValueFactory {
                 result.setConst(true);
                 break;
             case INT:
-                Integer i = Integer.parseInt(value.getConstName());
-                result = new IntValue(i);
+                result = new IntValue();
+                result.parse(value.getConstName());
                 result.setConst(true);
                 break;
             default:

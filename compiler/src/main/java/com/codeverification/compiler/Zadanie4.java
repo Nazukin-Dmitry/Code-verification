@@ -52,7 +52,7 @@ public class Zadanie4 {
         }
 
         List<GraphNode<ExprContext>> graphs = new ArrayList<>();
-        Map<FuncSignatureContext,  Set<MethodSignature>> funcCFG = new HashMap<>();
+        Map<MethodSignature,  Set<MethodSignature>> funcCFG = new HashMap<>();
         List<CodeGenerationVisitor> mnemFuncs = new ArrayList<>();
         Map<String, MethodDefinition> binFuncs = new LinkedHashMap<>();
 

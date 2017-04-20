@@ -34,10 +34,7 @@ end function
 
 function Evkl(A as long, B as long)
     while (true)
-        if (A==0) then
-        break
-        end if
-        if (B==0) then
+        if ((A==0) || (B==0)) then
             break
         end if
         if (A>B) then
@@ -60,3 +57,33 @@ function Fib(A as int) as int
                     end if
                  end if
             end function
+
+function and(A as bool, B as bool)
+    and = (A&&B);
+end function
+
+function dummy()
+    dummy = (0b01010 + 0xFA22);
+end function
+
+function Factorial(A as int) as int
+    result = 1;
+    count = 0;
+    do
+        count = (count + 1);
+        result = (result*count);
+   loop until ((count == A) || (count > A))
+   Factorial = result;
+end function
+
+function FibByte(A as byte)
+    if (A == 1) then
+        FibByte = A;
+     else
+        if (A == 0) then
+            FibByte = A;
+         else
+            FibByte = ((FibByte(A-1)) + (FibByte(A-2)));
+        end if
+     end if
+end function

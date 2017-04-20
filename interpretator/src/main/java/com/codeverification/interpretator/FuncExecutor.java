@@ -1,16 +1,16 @@
 package com.codeverification.interpretator;
 
-import com.codeverification.compiler.Command;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.codeverification.compiler.Command;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.MethodSignature;
 
 /**
  * @author Dmitrii Nazukin
@@ -57,7 +57,7 @@ public class FuncExecutor {
         return funcExecutor;
     }
 
-    public void checkCall(List<AbstractValue> args, MethodDefinition methodDefinition, String funcName) {
+    public static void checkCall(List<AbstractValue> args, MethodDefinition methodDefinition, String funcName) {
         if (methodDefinition == null || methodDefinition.getMethodSignature().getArgCount() != args.size()) {
             throw new RuntimeException(funcName + " function for args " + args.toString() + " not found!!!");
         }
@@ -66,15 +66,22 @@ public class FuncExecutor {
     private void addArgs(List<AbstractValue> args, MethodDefinition methodDefinition) {
         List<DataType> argsTypes = methodDefinition.getMethodSignature().getArgsType();
         if (args.size() != methodDefinition.getMethodSignature().getArgCount()) {
-            throw new RuntimeException("Wrong functions args!!!" + methodDefinition.getMethodSignature().getFuncName());
+            throw new RuntimeException("Wrong function args!!!"
+                    + "Function name:"
+                    + methodDefinition.getMethodSignature().getFuncName()
+                    + " Args"
+                    + args.toString());
         }
         for (int i = 0; i < argsTypes.size(); i++) {
             AbstractValue arg = args.get(i);
             DataType argType = argsTypes.get(i);
             if (!arg.isConst()) {
                 if (argType != arg.getType()) {
-                    throw new RuntimeException(
-                            "Wrong functions args!!!" + methodDefinition.getMethodSignature().getFuncName());
+                    throw new RuntimeException("Wrong function args!!!"
+                            + "Function name:"
+                            + methodDefinition.getMethodSignature().getFuncName()
+                            + " Args"
+                            + args.toString());
                 }
             } else {
                 arg = ValueFactory.getValue(argType, arg);
@@ -150,6 +157,14 @@ public class FuncExecutor {
                 break;
             case EQUAL:
                 equalCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case OR:
+                orCommand(command.getArgs());
+                currentCommand++;
+                break;
+            case AND:
+                andCommand(command.getArgs());
                 currentCommand++;
                 break;
             case PUSHVAR:
@@ -457,6 +472,28 @@ public class FuncExecutor {
             default:
                 throw new RuntimeException("unary + is unavailable for data type" + first.getType());
         }
+    }
+
+    private void andCommand(List<Integer> args) {
+        AbstractValue first = registers.get(args.get(0));
+        AbstractValue second = registers.get(args.get(1));
+        if (first.getType() != DataType.BOOL || second.getType() != DataType.BOOL) {
+            throw new RuntimeException("Operator '&&' only available for bool arguments!!!");
+        }
+
+        boolean value = first.asBool() && second.asBool();
+        registers.put(args.get(2), new BoolValue(value));
+    }
+
+    private void orCommand(List<Integer> args) {
+        AbstractValue first = registers.get(args.get(0));
+        AbstractValue second = registers.get(args.get(1));
+        if (first.getType() != DataType.BOOL || second.getType() != DataType.BOOL) {
+            throw new RuntimeException("Operator '&&' only available for bool arguments!!!");
+        }
+
+        boolean value = first.asBool() || second.asBool();
+        registers.put(args.get(2), new BoolValue(value));
     }
 
 }

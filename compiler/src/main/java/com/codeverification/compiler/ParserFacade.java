@@ -172,7 +172,7 @@ public class ParserFacade {
         }
     }
 
-    public void printCFG4(List<GraphNode<ExprContext>> graphs, Map<FuncSignatureContext,  Set<MethodSignature>> funcCFG, String outputPath) throws FileNotFoundException {
+    public void printCFG4(List<GraphNode<ExprContext>> graphs, Map<MethodSignature,  Set<MethodSignature>> funcCFG, String outputPath) throws FileNotFoundException {
         File file = new File(outputPath);
         file.getParentFile().mkdirs();
         try (PrintStream printStream = new PrintStream(new FileOutputStream(file))) {
@@ -273,12 +273,12 @@ public class ParserFacade {
 
     }
 
-    public void printFuncCFG(String outPath, Map<FuncSignatureContext, Set<MethodSignature>> cfg) throws FileNotFoundException {
+    public void printFuncCFG(String outPath, Map<MethodSignature, Set<MethodSignature>> cfg) throws FileNotFoundException {
         File file = new File(outPath);
         file.getParentFile().mkdirs();
         try (PrintStream printStream = new PrintStream(new FileOutputStream(file))) {
-            for (FuncSignatureContext ctx : cfg.keySet()) {
-                String funcName = ctx.identifier().getText();
+            for (MethodSignature ctx : cfg.keySet()) {
+                String funcName = ctx.getFuncName();
 
                 for (MethodSignature func : cfg.get(ctx)) {
                     printStream.println(funcName + "->" + func.getFuncName());
@@ -290,10 +290,10 @@ public class ParserFacade {
         }
     }
 
-    public void printFuncCFG4(Map<FuncSignatureContext, Set<MethodSignature>> cfg, PrintStream printStream)
+    public void printFuncCFG4(Map<MethodSignature, Set<MethodSignature>> cfg, PrintStream printStream)
             throws FileNotFoundException {
-        for (FuncSignatureContext ctx : cfg.keySet()) {
-            String funcName = ctx.identifier().getText();
+        for (MethodSignature ctx : cfg.keySet()) {
+            String funcName = ctx.getFuncName();
 
             for (MethodSignature func : cfg.get(ctx)) {
                 printStream.println(funcName + "->" + func.getFuncName());
@@ -302,11 +302,11 @@ public class ParserFacade {
         }
     }
 
-    public void checkFuncCGF(Map<FuncSignatureContext, Set<MethodSignature>> cfg)
+    public void checkFuncCGF(Map<MethodSignature, Set<MethodSignature>> cfg)
             throws Exception {
         Map<String, Integer> funcs = cfg.keySet().stream().collect(
-                Collectors.toMap(func -> func.identifier().getText(), func -> func.listArgDef().argDef().size()));
-        for (FuncSignatureContext ctx : cfg.keySet()) {
+                Collectors.toMap(MethodSignature::getFuncName, func -> func.getArgCount()));
+        for (MethodSignature ctx : cfg.keySet()) {
             for (MethodSignature funcSign : cfg.get(ctx)) {
                 if (!funcs.containsKey(funcSign.getFuncName())) {
                     throw new Exception("Function with name \" " + funcSign.getFuncName() + " \" doesn't exist!");
@@ -323,18 +323,21 @@ public class ParserFacade {
         }
     }
 
-    public Map<com.codeverification.Var3Parser.FuncSignatureContext, Set<MethodSignature>> getFuncCFG(
+    public Map<MethodSignature, Set<MethodSignature>> getFuncCFG(
             Set<SourceContext> sources) throws Exception {
-        Map<com.codeverification.Var3Parser.FuncSignatureContext, Set<MethodSignature>> funcCFG = new HashMap<>();
+        Map<MethodSignature, Set<MethodSignature>> funcCFG = new HashMap<>();
         for (SourceContext ctx : sources) {
             for (com.codeverification.Var3Parser.SourceItemContext item : ctx.sourceItem()) {
                 CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
                 cfgVisitor.visitFuncDef((FuncDefContext)item);
-                if (funcCFG.containsKey(item)) {
+                MethodSignature methodSignature = new MethodSignature(
+                        ((FuncDefContext)item).funcSignature().identifier().IDENTIFIER().getText(),
+                        ((FuncDefContext)item).funcSignature().listArgDef().argDef().size());
+                if (funcCFG.containsKey(methodSignature)) {
                     throw new Exception("Several functions with name "
                             + ((FuncDefContext)item).funcSignature().identifier().getText());
                 }
-                funcCFG.put(((FuncDefContext)item).funcSignature(), cfgVisitor.getSet());
+                funcCFG.put(methodSignature, cfgVisitor.getSet());
             }
         }
         checkFuncCGF(funcCFG);

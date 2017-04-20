@@ -57,14 +57,12 @@ public class MethodSignature implements Serializable {
 
         MethodSignature that = (MethodSignature) o;
 
-        if (argCount != that.argCount) return false;
         return funcName != null ? funcName.equals(that.funcName) : that.funcName == null;
     }
 
     @Override
     public int hashCode() {
         int result = funcName != null ? funcName.hashCode() : 0;
-        result = 31 * result + argCount;
         return result;
     }
 

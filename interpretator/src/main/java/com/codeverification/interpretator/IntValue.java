@@ -41,13 +41,21 @@ public class IntValue extends AbstractValue {
 
     @Override
     public void parse(String value) {
-        this.value = Integer.valueOf(value);
+        if (value.startsWith("0b") || value.startsWith("0B")) {
+            String bV = value.toLowerCase().replaceAll("0b", "");
+            this.value = Integer.valueOf(bV, 2);
+        } else if (value.startsWith("0x") || value.startsWith("0X")) {
+            String bX = value.toLowerCase().replaceAll("0x", "");
+            this.value = Integer.valueOf(bX, 16);
+        } else {
+            this.value = Integer.valueOf(value);
+        }
     }
 
     @Override
     public Byte asByte() {
         if (isConst()) {
-            return Byte.valueOf(getRaw());
+            return value.byteValue();
         } else {
             return super.asByte();
         }
@@ -56,7 +64,7 @@ public class IntValue extends AbstractValue {
     @Override
     public Long asLong() {
         if (isConst()) {
-            return Long.valueOf(getRaw());
+            return value.longValue();
         } else {
             return super.asLong();
         }
@@ -64,8 +72,6 @@ public class IntValue extends AbstractValue {
 
     @Override
     public String toString() {
-        return "IntValue{" +
-                "value=" + value +
-                '}';
+        return "IntValue{" + "value=" + value + '}';
     }
 }

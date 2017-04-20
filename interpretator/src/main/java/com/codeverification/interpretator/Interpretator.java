@@ -1,9 +1,6 @@
 package com.codeverification.interpretator;
 
-import com.codeverification.compiler.CodeGenerationVisitor.Const;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.ParserFacade;
+import static com.codeverification.interpretator.FuncExecutor.checkCall;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.ParserFacade;
 
 /**
  * @author Dmitrii Nazukin
@@ -44,11 +46,15 @@ public class Interpretator {
         Interpretator interpretator = new Interpretator(methodDefinitions);
         Scanner sc = new Scanner(System.in);
         while(sc.hasNextLine()) {
-            String line = sc.nextLine();
-            String[] lines = line.split(",");
-            List<String> tr = new ArrayList<>(Arrays.asList(lines));
-            tr.remove(0);
-            System.out.println(interpretator.executeMethod(lines[0], tr));
+            try {
+                String line = sc.nextLine();
+                String[] lines = line.split("[,()]");
+                List<String> tr = new ArrayList<>(Arrays.asList(lines));
+                tr.remove(0);
+                System.out.println(interpretator.executeMethod(lines[0], tr));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -68,7 +74,15 @@ public class Interpretator {
                 argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.STRING)));
             }
         }
+        checkCall(argsVO, functions.get(func), func);
         FuncExecutor funcExecutor = FuncExecutor.getInstance(argsVO, functions.get(func), this);
+        return funcExecutor.executeMethod();
+
+    }
+
+    public AbstractValue executeMethodArg(String func, List<AbstractValue> args) {
+        checkCall(args, functions.get(func), func);
+        FuncExecutor funcExecutor = FuncExecutor.getInstance(args, functions.get(func), this);
         return funcExecutor.executeMethod();
 
     }

@@ -1,16 +1,16 @@
 package com.codeverification.interpretator;
 
+import com.codeverification.compiler.Command;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.MethodSignature;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.codeverification.compiler.Command;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
 
 /**
  * @author Dmitrii Nazukin
@@ -219,11 +219,17 @@ public class FuncExecutor {
     private void addCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException("+. Arguments with different data types!!!" +first.getType() + " "+second.getType());
+        }
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
         }
 
-        switch (first.getType()) {
+        switch (res) {
             case STRING:
                 String strValue = first.asString() + second.asString();
                 registers.put(args.get(2), new StringValue(strValue));
@@ -243,16 +249,26 @@ public class FuncExecutor {
             default:
                 throw new RuntimeException("+ is unavailable for data type" + first.getType());
         }
+
+        if (first.isConst() && second.isConst()) {
+            registers.get(args.get(2)).setConst(true);
+        }
     }
 
     private void minusCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType()&& (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException("-.Arguments with different data types!!!" +first.getType() + " "+second.getType());
         }
 
-        switch (first.getType()) {
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
+        }
+        switch (res) {
             case INT:
                 Integer intValue = first.asInt() - second.asInt();
                 registers.put(args.get(2), new IntValue(intValue));
@@ -268,16 +284,24 @@ public class FuncExecutor {
             default:
                 throw new RuntimeException("- is unavailable for data type" + first.getType());
         }
+        if (first.isConst() && second.isConst()) {
+            registers.get(args.get(2)).setConst(true);
+        }
     }
 
     private void multCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException("*.Arguments with different data types!!!" +first.getType() + " "+second.getType());
         }
-
-        switch (first.getType()) {
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
+        }
+        switch (res) {
             case INT:
                 Integer intValue = first.asInt() * second.asInt();
                 registers.put(args.get(2), new IntValue(intValue));
@@ -293,16 +317,25 @@ public class FuncExecutor {
             default:
                 throw new RuntimeException("* is unavailable for data type" + first.getType());
         }
+        if (first.isConst() && second.isConst()) {
+            registers.get(args.get(2)).setConst(true);
+        }
     }
 
     private void divCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException("/.Arguments with different data types!!!" +first.getType() + " "+second.getType());
         }
 
-        switch (first.getType()) {
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
+        }
+        switch (res) {
             case INT:
                 Integer intValue = first.asInt() / second.asInt();
                 registers.put(args.get(2), new IntValue(intValue));
@@ -318,16 +351,25 @@ public class FuncExecutor {
             default:
                 throw new RuntimeException("/ is unavailable for data type" + first.getType());
         }
+        if (first.isConst() && second.isConst()) {
+            registers.get(args.get(2)).setConst(true);
+        }
     }
 
     private void modCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException("%.Arguments with different data types!!!" +first.getType() + " "+second.getType());
+        }
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
         }
 
-        switch (first.getType()) {
+        switch (res) {
             case INT:
                 Integer intValue = first.asInt() % second.asInt();
                 registers.put(args.get(2), new IntValue(intValue));
@@ -343,16 +385,25 @@ public class FuncExecutor {
             default:
                 throw new RuntimeException("% is unavailable for data type" + first.getType());
         }
+        if (first.isConst() && second.isConst()) {
+            registers.get(args.get(2)).setConst(true);
+        }
     }
 
     private void lessCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException("<.Arguments with different data types!!!" +first.getType() + " "+second.getType());
+        }
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
         }
 
-        switch (first.getType()) {
+        switch (res) {
             case INT:
                 boolean intValue = first.asInt() < second.asInt();
                 registers.put(args.get(2), new BoolValue(intValue));
@@ -373,11 +424,17 @@ public class FuncExecutor {
     private void largerCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException(">.Arguments with different data types!!!" +first.getType() + " "+second.getType());
         }
 
-        switch (first.getType()) {
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
+        }
+        switch (res) {
             case INT:
                 boolean intValue = first.asInt() > second.asInt();
                 registers.put(args.get(2), new BoolValue(intValue));
@@ -398,11 +455,17 @@ public class FuncExecutor {
     private void equalCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != second.getType() && !second.isConst()) {
-            throw new RuntimeException("Arguments with different data types!!!");
+        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
+            throw new RuntimeException("==.Arguments with different data types!!!" +first.getType() + " "+second.getType());
+        }
+        DataType res;
+        if (first.isConst()) {
+            res = second.getType();
+        } else {
+            res = first.getType();
         }
 
-        switch (first.getType()) {
+        switch (res) {
             case INT:
                 boolean intValue = first.asInt().equals(second.asInt());
                 registers.put(args.get(2), new BoolValue(intValue));

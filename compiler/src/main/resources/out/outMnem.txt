@@ -1,5 +1,5 @@
 .methodSignature
-MethodSignature{funcName='calc', argCount=3, argsType=[int, int, char], returnType=int}
+MethodSignature{funcName='calc', argCount=3, argsType=[int, int, char], returnType=indefined}
 .funcs
 0:sum
 1:minus
@@ -10,27 +10,32 @@ MethodSignature{funcName='calc', argCount=3, argsType=[int, int, char], returnTy
 3:Op
 .consts
 0:Const{constName=''+'', type=char}
-1:Const{constName=''-'', type=char}
+1:Const{constName='5', type=int}
+2:Const{constName='2', type=int}
+3:Const{constName='6', type=int}
+4:Const{constName=''-'', type=char}
 .programm
 0: PUSHVAR 3 0 
 1: PUSHCONST 0 1 
 2: EQUAL 0 1 0 
-3: JMPFALSE 0 9 
-4: PUSHVAR 1 0 
-5: PUSHVAR 2 1 
-6: CALL 0 0 0 1 
-7: LOADVAR 0 0 
-8: JMP 9 
-9: PUSHVAR 3 1 
-10: PUSHCONST 1 2 
-11: EQUAL 1 2 1 
-12: JMPFALSE 1 18 
-13: PUSHVAR 1 1 
-14: PUSHVAR 2 2 
-15: CALL 1 1 1 2 
-16: LOADVAR 1 0 
-17: JMP 18 
-18: END 
+3: JMPFALSE 0 11 
+4: PUSHCONST 1 0 
+5: PUSHCONST 2 1 
+6: ADD 0 1 0 
+7: PUSHCONST 3 1 
+8: CALL 0 0 0 1 
+9: LOADVAR 0 0 
+10: JMP 11 
+11: PUSHVAR 3 1 
+12: PUSHCONST 4 2 
+13: EQUAL 1 2 1 
+14: JMPFALSE 1 20 
+15: PUSHVAR 1 1 
+16: PUSHVAR 2 2 
+17: CALL 1 1 1 2 
+18: LOADVAR 1 0 
+19: JMP 20 
+20: END 
 --------------------
 .methodSignature
 MethodSignature{funcName='hello', argCount=1, argsType=[string], returnType=string}
@@ -56,7 +61,7 @@ MethodSignature{funcName='hello', argCount=1, argsType=[string], returnType=stri
 10: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='sum', argCount=2, argsType=[int, int], returnType=int}
+MethodSignature{funcName='sum', argCount=2, argsType=[long, long], returnType=indefined}
 .funcs
 .vars
 0:sum

@@ -20,6 +20,8 @@ public class Test {
         System.out.println(caller.FibByte((byte)10));
         System.out.println(caller.fun1(10, 100));
         System.out.println(caller.hello("World"));
+        System.out.println(caller.sto());
+        System.out.println(caller.sum(-50,50));
 
     }
 }

@@ -3,6 +3,8 @@ start -> 0
 
 0:sum=(A+B)
 
+-----------------------------------
+
 .methodSignature
 MethodSignature{funcName='sum', argCount=2, argsType=[int, int], returnType=int}
 .funcs
@@ -14,5 +16,6 @@ MethodSignature{funcName='sum', argCount=2, argsType=[int, int], returnType=int}
 .programm
 0: PUSHVAR 1 0 
 1: PUSHVAR 2 1 
-2: ADD 0 1 2 
-3: LOADVAR 2 0 
+2: ADD 0 1 0 
+3: LOADVAR 0 0 
+4: END 

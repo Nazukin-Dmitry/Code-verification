@@ -22,3 +22,110 @@ function all(A as int, B as int) as int
 
       A=B;
 end function
+
+
+
+
+function CreateFile(lpFileName as string,
+                    dwDesiredAccess as int,
+                    dwShareMode as int,
+                    lpSecurityAttributes as int,
+                    dwCreationDisposition as int,
+                    dwFlagsAndAttributes as int,
+                    hTemplateFile as int) as int
+                    from "kernel32.dll"
+
+function WriteFile(hFile as int,
+                   lpBuffer as string,
+                   nNumberOfBytesToWrite as int,
+                   ByRef lpNumberOfBytesWritten as int,
+                   lpOverlapped as int) as int
+                   from "kernel32.dll"
+
+function CloseHandle(hFile as int) as int from "kernel32.dll"
+
+function main(args as string[])
+    n = 0;
+    f = CreateFile("c:\out.txt", 0, 0, 0, 0, 0, 0);
+    WriteFile(f, "test string", 11, n, 0);
+    CloseHandle(f);
+end function
+
+function hello(B as string) as string
+    hello = "hello ";
+    dot = "!!!" ;
+    hello = (hello+B+dot);
+end function
+
+
+
+function fun1(A as int, B as int)
+    fun1 = (((A+B-100)*20)/50);
+end function
+
+function sto()
+    sto = 0;
+    do
+        sto = (sto+1);
+    loop while (sto < 100)
+end function
+
+function concat(A as string, B as string)
+    concat = (A+B);
+end function
+
+function Evkl(A as long, B as long)
+    while (true)
+        if ((A==0) || (B==0)) then
+            break
+        end if
+        if (A>B) then
+            A = (A % B);
+        else
+            B = (B % A);
+        end if
+    wend
+    Evkl = (A+B);
+end function
+
+function Fib(A as int) as int
+                if (A == 1) then
+                    Fib = 1;
+                 else
+                    if (A == 0) then
+                        Fib = 0;
+                     else
+                        Fib = ((Fib(A-1)) + (Fib(A-2)));
+                    end if
+                 end if
+            end function
+
+function and(A as bool, B as bool)
+    and = (A&&B);
+end function
+
+function dummy()
+    dummy = (0b01010 + 0xFA22);
+end function
+
+function Factorial(A as int) as int
+    result = 1;
+    count = 0;
+    do
+        count = (count + 1);
+        result = (result*count);
+   loop until ((count == A) || (count > A))
+   Factorial = result;
+end function
+
+function FibByte(A as byte)
+    if (A == 1) then
+        FibByte = A;
+     else
+        if (A == 0) then
+            FibByte = A;
+         else
+            FibByte = ((FibByte(A-1)) + (FibByte(A-2)));
+        end if
+     end if
+end function

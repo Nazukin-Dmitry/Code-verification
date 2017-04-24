@@ -3,6 +3,8 @@ start -> 0
 
 0:minus=(A-B)
 
+----------------------------------------
+
 .methodSignature
 MethodSignature{funcName='minus', argCount=2, argsType=[int, int], returnType=int}
 .funcs
@@ -14,5 +16,6 @@ MethodSignature{funcName='minus', argCount=2, argsType=[int, int], returnType=in
 .programm
 0: PUSHVAR 1 0 
 1: PUSHVAR 2 1 
-2: MINUS 0 1 2 
-3: LOADVAR 2 0 
+2: MINUS 0 1 0 
+3: LOADVAR 0 0 
+4: END 

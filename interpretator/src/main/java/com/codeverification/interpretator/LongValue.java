@@ -31,6 +31,13 @@ public class LongValue extends AbstractValue {
         return value;
     }
 
+    @Override
+    public String asString() {
+        return value.toString();
+    }
+
+
+
     public Long getValue() {
         return value;
     }
@@ -39,16 +46,26 @@ public class LongValue extends AbstractValue {
         this.value = value;
     }
 
-    @Override
-    public void parse(String value) {
-        this.value = Long.valueOf(value);
-    }
+
 
     @Override
     public String toString() {
         return "LongValue{" +
                 "value=" + value +
                 '}';
+    }
+
+    @Override
+    public void parse(String value) {
+        if (value.startsWith("0b") || value.startsWith("0B")) {
+            String bV = value.toLowerCase().replaceAll("0b", "");
+            this.value = Long.valueOf(bV, 2);
+        } else if (value.startsWith("0x") || value.startsWith("0X")) {
+            String bX = value.toLowerCase().replaceAll("0x", "");
+            this.value = Long.valueOf(bX, 16);
+        } else {
+            this.value = Long.valueOf(value);
+        }
     }
 
 

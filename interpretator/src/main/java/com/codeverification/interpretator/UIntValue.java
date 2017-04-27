@@ -21,10 +21,10 @@ public class UIntValue extends AbstractValue {
         return DataType.UINT;
     }
 
-    @Override
-    public Integer asUInt() {
-        return value;
-    }
+//    @Override
+//    public Integer asUInt() {
+//        return value;
+//    }
 
     @Override
     public int compareTo(Value value) {

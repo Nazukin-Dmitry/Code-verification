@@ -22,7 +22,7 @@ public class BoolValue extends AbstractValue {
 
     @Override
     public int compareTo(Value value) {
-        return 0;
+        return this.value.compareTo(value.asBool());
     }
 
     @Override

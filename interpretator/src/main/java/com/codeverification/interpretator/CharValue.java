@@ -28,7 +28,7 @@ public class CharValue extends AbstractValue {
 
     @Override
     public int compareTo(Value value) {
-        return 0;
+        return this.value.compareTo(value.asChar());
     }
 
     public Character getValue() {
@@ -49,5 +49,10 @@ public class CharValue extends AbstractValue {
         return "CharValue{" +
                 "value=" + value +
                 '}';
+    }
+
+    @Override
+    public String asString() {
+        return value.toString();
     }
 }

@@ -19,10 +19,6 @@ public class ByteValue extends AbstractValue {
         return 0;
     }
 
-    @Override
-    public Byte asByte() {
-        return value;
-    }
 
     public Byte getValue() {
         return value;

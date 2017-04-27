@@ -183,13 +183,13 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
                 constt.setType(DataType.CHAR);
                 break;
             case Var3Lexer.HEX:
-                constt.setType(DataType.INT);
+                constt.setType(DataType.LONG);
                 break;
             case Var3Lexer.BITS:
-                constt.setType(DataType.INT);
+                constt.setType(DataType.LONG);
                 break;
             case Var3Lexer.DEC:
-                constt.setType(DataType.INT);
+                constt.setType(DataType.LONG);
                 break;
             default:
                 throw new RuntimeException();

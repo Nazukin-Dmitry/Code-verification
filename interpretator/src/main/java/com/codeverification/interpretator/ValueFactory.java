@@ -25,8 +25,8 @@ public class ValueFactory {
                 result = new CharValue(ch);
                 result.setConst(true);
                 break;
-            case INT:
-                result = new IntValue();
+            case LONG:
+                result = new LongValue();
                 result.parse(value.getConstName());
                 result.setConst(true);
                 break;
@@ -40,27 +40,27 @@ public class ValueFactory {
     public static AbstractValue getEmpty(DataType dataType) {
         AbstractValue result;
         switch (dataType){
-            case INT:
-                result = new IntValue();
-                break;
+//            case INT:
+//                result = new IntValue();
+//                break;
             case BOOL:
                 result = new BoolValue();
                 break;
-            case BYTE:
-                result = new ByteValue();
-                break;
+//            case BYTE:
+//                result = new ByteValue();
+//                break;
             case CHAR:
                 result = new CharValue();
                 break;
             case LONG:
                 result = new LongValue();
                 break;
-            case UINT:
-                result = new UIntValue();
-                break;
-            case ULONG:
-                result = new ULongValue();
-                break;
+//            case UINT:
+//                result = new UIntValue();
+//                break;
+//            case ULONG:
+//                result = new ULongValue();
+//                break;
             case STRING:
                 result = new StringValue();
                 break;
@@ -73,27 +73,27 @@ public class ValueFactory {
     public static AbstractValue getValue(DataType dataType, String raw) {
         AbstractValue result;
         switch (dataType){
-            case INT:
-                result = new IntValue();
-                break;
+//            case INT:
+//                result = new IntValue();
+//                break;
             case BOOL:
                 result = new BoolValue();
                 break;
-            case BYTE:
-                result = new ByteValue();
-                break;
+//            case BYTE:
+//                result = new ByteValue();
+//                break;
             case CHAR:
                 result = new CharValue();
                 break;
             case LONG:
                 result = new LongValue();
                 break;
-            case UINT:
-                result = new UIntValue();
-                break;
-            case ULONG:
-                result = new ULongValue();
-                break;
+//            case UINT:
+//                result = new UIntValue();
+//                break;
+//            case ULONG:
+//                result = new ULongValue();
+//                break;
             case STRING:
                 result = new StringValue();
                 break;
@@ -107,27 +107,27 @@ public class ValueFactory {
     public static AbstractValue getValue(DataType dataType, AbstractValue value) {
         AbstractValue result;
         switch (dataType){
-            case INT:
-                result = new IntValue(value.asInt());
-                break;
+//            case INT:
+//                result = new IntValue(value.asInt());
+//                break;
             case BOOL:
                 result = new BoolValue(value.asBool());
                 break;
-            case BYTE:
-                result = new ByteValue(value.asByte());
-                break;
+//            case BYTE:
+//                result = new ByteValue(value.asByte());
+//                break;
             case CHAR:
                 result = new CharValue(value.asChar());
                 break;
             case LONG:
                 result = new LongValue(value.asLong());
                 break;
-            case UINT:
-                result = new UIntValue(value.asUInt());
-                break;
-            case ULONG:
-                result = new ULongValue(value.asULong());
-                break;
+//            case UINT:
+//                result = new UIntValue(value.asUInt());
+//                break;
+//            case ULONG:
+//                result = new ULongValue(value.asULong());
+//                break;
             case STRING:
                 result = new StringValue(value.asString());
                 break;

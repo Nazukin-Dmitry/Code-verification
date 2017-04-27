@@ -26,10 +26,10 @@ public class IntValue extends AbstractValue {
         return 0;
     }
 
-    @Override
-    public Integer asInt() {
-        return value;
-    }
+//    @Override
+//    public Integer asInt() {
+//        return value;
+//    }
 
     public Integer getValue() {
         return value;
@@ -52,14 +52,14 @@ public class IntValue extends AbstractValue {
         }
     }
 
-    @Override
-    public Byte asByte() {
-        if (isConst()) {
-            return value.byteValue();
-        } else {
-            return super.asByte();
-        }
-    }
+//    @Override
+//    public Byte asByte() {
+//        if (isConst()) {
+//            return value.byteValue();
+//        } else {
+//            return super.asByte();
+//        }
+//    }
 
     @Override
     public Long asLong() {

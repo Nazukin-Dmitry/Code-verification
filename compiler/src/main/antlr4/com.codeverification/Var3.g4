@@ -6,7 +6,7 @@ sourceItem* EOF
 ;
 
 sourceItem
-:'function' funcSignature statement* 'end' 'function' #funcDef
+:'function' funcSignature ('from' "kernel32.dll")? statement* 'end' 'function' #funcDef
 ;
 
 funcSignature
@@ -14,7 +14,7 @@ funcSignature
 ;
 
 argDef
-:identifier 'as' typeRef
+:identifier ('as' typeRef)?
 ;
 
 

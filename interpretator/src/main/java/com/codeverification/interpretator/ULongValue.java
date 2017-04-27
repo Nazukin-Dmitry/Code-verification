@@ -26,10 +26,10 @@ public class ULongValue extends AbstractValue {
         return 0;
     }
 
-    @Override
-    public Long asULong() {
-        return value;
-    }
+//    @Override
+//    public Long asULong() {
+//        return value;
+//    }
 
     public Long getValue() {
         return value;

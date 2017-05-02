@@ -1,4 +1,4 @@
-package cc.cc.cc.lab1;
+package cc.lab1;
 
 import java.time.LocalDateTime;
 

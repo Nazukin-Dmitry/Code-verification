@@ -1,4 +1,4 @@
-package cc.cc.cc.lab2;
+package cc.lab2;
 
 /**
  * Created by 1 on 29.04.2017.

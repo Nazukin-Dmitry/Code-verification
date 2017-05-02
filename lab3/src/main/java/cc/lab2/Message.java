@@ -1,4 +1,4 @@
-package cc.cc.cc.lab2;
+package cc.lab2;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

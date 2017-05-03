@@ -1,5 +1,10 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.FuncDefContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.SourceItemContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -7,12 +12,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.FuncSignatureContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.SourceItemContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -63,8 +62,10 @@ public class Zadanie4 {
                 SourceContext sourceContext = parserFacade.parse(inDoc);
                 sources.add(sourceContext);
                 for (SourceItemContext itemContext : sourceContext.sourceItem()) {
-                    GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
-                    graphs.add(graph);
+                    if (itemContext instanceof FuncDefContext) {
+                        GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
+                        graphs.add(graph);
+                    }
                     CodeGenerationVisitor codeGenerationVisitor = new CodeGenerationVisitor();
                     codeGenerationVisitor.visit(itemContext);
                     mnemFuncs.add(codeGenerationVisitor);

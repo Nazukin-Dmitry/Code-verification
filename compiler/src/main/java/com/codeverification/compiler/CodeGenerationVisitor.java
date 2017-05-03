@@ -1,5 +1,12 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser;
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.PlaceExprContext;
+import com.codeverification.Var3Parser.StatementContext;
+
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -7,13 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser;
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.StatementContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -354,24 +354,28 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     public void print(PrintStream printStream) {
         printStream.println(".methodSignature");
         printStream.println(methodSignature);
-        printStream.println(".funcs");
-        funcs.entrySet()
-                .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
-        printStream.println(".vars");
-        vars.entrySet()
-                .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
-        printStream.println(".consts");
-        consts.entrySet()
-                .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
-        printStream.println(".programm");
-        IntStream.range(0, programm.size()).forEach(idx -> printStream.println(idx + ": " + programm.get(idx)));
+        if (isNative) {
+            printStream.println("from " + library);
+        } else {
+            printStream.println(".funcs");
+            funcs.entrySet()
+                    .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
+            printStream.println(".vars");
+            vars.entrySet()
+                    .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
+            printStream.println(".consts");
+            consts.entrySet()
+                    .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
+            printStream.println(".programm");
+            IntStream.range(0, programm.size()).forEach(idx -> printStream.println(idx + ": " + programm.get(idx)));
+        }
     }
 
     public MethodDefinition map2MethodDefinition() {
         MethodDefinition methodDefinition = new MethodDefinition();
         methodDefinition.setMethodSignature(methodSignature);
+        methodDefinition.setVarsCount(vars.values().size());
         if (!isNative) {
-            methodDefinition.setVarsCount(vars.values().size());
             methodDefinition.getCommands().addAll(programm);
             methodDefinition.getConsts().addAll(consts.keySet());
             methodDefinition.getFuncs().addAll(funcs.keySet());

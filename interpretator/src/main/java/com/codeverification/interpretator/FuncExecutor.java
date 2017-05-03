@@ -1,16 +1,19 @@
 package com.codeverification.interpretator;
 
+import com.codeverification.compiler.Command;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.MethodSignature;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.ptr.IntByReference;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.codeverification.compiler.Command;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
 
 /**
  * @author Dmitrii Nazukin
@@ -101,7 +104,7 @@ public class FuncExecutor {
 
     public AbstractValue executeMethod() {
         if (isNative) {
-            
+            invokeNativeMethod();
         } else {
             while (true) {
                 Command command = commands.get(currentCommand);
@@ -111,9 +114,10 @@ public class FuncExecutor {
                     executeCommand(command);
                 }
             }
-            if (vars.get(0) == null) {
-                throw new RuntimeException("Return value - " + methodSignature.getFuncName() + " - hasn't been initialized!!!");
-            }
+        }
+        if (vars.get(0) == null) {
+            throw new RuntimeException("Return value - " + methodSignature.getFuncName() + " - hasn't been initialized!!!");
+        }
             return vars.get(0);
 //        if (methodSignature.getReturnType() == DataType.UNDEFINED) {
 //            return vars.get(0);
@@ -127,7 +131,6 @@ public class FuncExecutor {
 //                    + ". Current "
 //                    + vars.get(0).getType());
 //        }
-        }
     }
 
     private void executeCommand(Command command) {
@@ -594,6 +597,38 @@ public class FuncExecutor {
 
         boolean value = first.asBool() || second.asBool();
         registers.put(args.get(2), new BoolValue(value));
+    }
+
+    private void invokeNativeMethod() {
+        AbstractValue result = new ObjectValue(null);
+        if (Interpretator.nativeLibs.containsKey(libraryName)) {
+            Object nativeLib = interpretator.nativeLibs.get(libraryName);
+            if (libraryName.equals("kernel32.dll")) {
+                Kernel32 kernel32 = (Kernel32) nativeLib;
+                switch (methodSignature.getFuncName()) {
+                    case "CreateFile":
+                        Object result1 = kernel32.CreateFile(vars.get(1).asString(), vars.get(2).asLong().intValue(),
+                                vars.get(3).asLong().intValue(), null, vars.get(5).asLong().intValue(),
+                                vars.get(6).asLong().intValue(), null);
+                        result = new ObjectValue(result1);
+                        break;
+                    case "WriteFile":
+                        boolean result2 = kernel32.WriteFile((HANDLE) vars.get(1).asObject(), vars.get(2).asString().getBytes(),
+                                vars.get(2).asString().getBytes().length, new IntByReference(), null);
+                        result = new BoolValue(result2);
+                        break;
+                    case "CloseHandle":
+                        boolean result3 = kernel32.CloseHandle((HANDLE) vars.get(1).asObject());
+                        result = new BoolValue(result3);
+                        break;
+                    default:
+                        throw new RuntimeException("Function name " + methodSignature.getFuncName() + " doesnt' exist in kernel32.dll");
+                }
+            } else {
+                throw new RuntimeException("Library name " + methodSignature.getFuncName() + " doesn't exist in interpreter");
+            }
+        }
+        vars.put(0, result);
     }
 
 }

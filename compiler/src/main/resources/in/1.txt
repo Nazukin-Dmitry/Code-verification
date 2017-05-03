@@ -23,7 +23,7 @@ function CreateFile(lpFileName as string,
 function WriteFile(hFile as int,
                    lpBuffer as string,
                    nNumberOfBytesToWrite as int,
-                   ByRef lpNumberOfBytesWritten as int,
+                   lpNumberOfBytesWritten as int,
                    lpOverlapped as int) as int
                    from "kernel32.dll"
 
@@ -31,7 +31,7 @@ function CloseHandle(hFile as int) as int from "kernel32.dll"
 
 function main()
     n = 0;
-    f = CreateFile("c:\out.txt", 0, 0, 0, 0, 0, 0);
+    f = (CreateFile("c:\\out", 0, 0, 0, 0, 0, 0));
     WriteFile(f, "test string", 11, n, 0);
     CloseHandle(f);
 end function

@@ -1,7 +1,6 @@
 package com.codeverification.interpretator;
 
 import java.io.IOException;
-import com.sun.jna.platform.win32.Kernel32;
 /**
  * @author Dmitrii Nazukin
  */
@@ -22,6 +21,5 @@ public class Test {
         System.out.println(caller.hello("World"));
         System.out.println(caller.sto());
         System.out.println(caller.sum(-50,50));
-        Kernel32
     }
 }

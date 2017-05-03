@@ -1,11 +1,11 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.FuncSignatureContext;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.FuncSignatureContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -20,16 +20,15 @@ public class MethodSignature implements Serializable {
     private DataType returnType = DataType.UNDEFINED;
 
     public MethodSignature(FuncSignatureContext funcSignatureContext) {
-        MethodSignature methodSignature = new MethodSignature(
-                funcSignatureContext.identifier().IDENTIFIER().getText(),
+        this(funcSignatureContext.identifier().IDENTIFIER().getText(),
                 funcSignatureContext.listArgDef().argDef().size());
         for (ArgDefContext arg : funcSignatureContext.listArgDef().argDef()) {
-            methodSignature.getArgsType().add(DataType.getDataType(arg.typeRef().getText()));
+            argsType.add(DataType.getDataType(arg.typeRef().getText()));
         }
         if (funcSignatureContext.typeRef() != null) {
-            methodSignature.setReturnType(DataType.getDataType(funcSignatureContext.typeRef().getText()));
+            returnType = DataType.getDataType(funcSignatureContext.typeRef().getText());
         } else {
-            methodSignature.setReturnType(DataType.UNDEFINED);
+            returnType = DataType.UNDEFINED;
         }
     }
 

@@ -1,19 +1,21 @@
 package com.codeverification.interpretator;
 
-import static com.codeverification.interpretator.FuncExecutor.checkCall;
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.ParserFacade;
+import com.sun.jna.platform.win32.Kernel32;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import com.codeverification.compiler.CodeGenerationVisitor.Const;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.ParserFacade;
+import static com.codeverification.interpretator.FuncExecutor.checkCall;
 
 /**
  * @author Dmitrii Nazukin
@@ -35,6 +37,12 @@ public class Interpretator {
     String s = "\"[^\"\\]*(?:\\.[^\"\\]*)*\"";
 
     Map<String, MethodDefinition> functions;
+
+    public static final Map<String, Object> nativeLibs = new HashMap<>();
+
+    static {
+        nativeLibs.put("kernel32.dll", Kernel32.INSTANCE);
+    }
 
     public Interpretator(Map<String, MethodDefinition> functions) {
         this.functions = functions;

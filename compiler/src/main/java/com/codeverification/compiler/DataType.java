@@ -12,7 +12,8 @@ public enum DataType {
     LONG("long"),
     ULONG("ulong"),
     CHAR("char"),
-    STRING("string");
+    STRING("string"),
+    OBJECT("Object");
 
     private String rawText;
 

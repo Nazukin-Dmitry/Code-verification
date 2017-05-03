@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser;
 import com.codeverification.Var3Parser.ArgDefContext;
 import com.codeverification.Var3Parser.ExprContext;
 import com.codeverification.Var3Parser.PlaceExprContext;
@@ -41,6 +42,9 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
 
     List<Integer> breakJumpCom = new ArrayList<>();
 
+    private boolean isNative;
+    private String library;
+
 
     @Override
     public Void visitFuncDef(com.codeverification.Var3Parser.FuncDefContext ctx) {
@@ -49,6 +53,14 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
             visit(st);
         }
         gen("END");
+        return null;
+    }
+
+    @Override
+    public Void visitNativeFunc(Var3Parser.NativeFuncContext ctx) {
+        visit(ctx.funcSignature());
+        isNative = true;
+        library = ctx.library.getText();
         return null;
     }
 
@@ -358,10 +370,16 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     public MethodDefinition map2MethodDefinition() {
         MethodDefinition methodDefinition = new MethodDefinition();
         methodDefinition.setMethodSignature(methodSignature);
-        methodDefinition.setVarsCount(vars.values().size());
-        methodDefinition.getCommands().addAll(programm);
-        methodDefinition.getConsts().addAll(consts.keySet());
-        methodDefinition.getFuncs().addAll(funcs.keySet());
+        if (!isNative) {
+            methodDefinition.setVarsCount(vars.values().size());
+            methodDefinition.getCommands().addAll(programm);
+            methodDefinition.getConsts().addAll(consts.keySet());
+            methodDefinition.getFuncs().addAll(funcs.keySet());
+        } else {
+            methodDefinition.setNative(true);
+            methodDefinition.setLibraryName(library);
+        }
+
         return methodDefinition;
     }
 

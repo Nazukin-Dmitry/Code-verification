@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.FuncSignatureContext;
+
 /**
  * @author Dmitrii Nazukin
  */
@@ -15,6 +18,20 @@ public class MethodSignature implements Serializable {
     private int argCount;
     private List<DataType> argsType;
     private DataType returnType = DataType.UNDEFINED;
+
+    public MethodSignature(FuncSignatureContext funcSignatureContext) {
+        MethodSignature methodSignature = new MethodSignature(
+                funcSignatureContext.identifier().IDENTIFIER().getText(),
+                funcSignatureContext.listArgDef().argDef().size());
+        for (ArgDefContext arg : funcSignatureContext.listArgDef().argDef()) {
+            methodSignature.getArgsType().add(DataType.getDataType(arg.typeRef().getText()));
+        }
+        if (funcSignatureContext.typeRef() != null) {
+            methodSignature.setReturnType(DataType.getDataType(funcSignatureContext.typeRef().getText()));
+        } else {
+            methodSignature.setReturnType(DataType.UNDEFINED);
+        }
+    }
 
     public MethodSignature(String funcName, int argCount) {
         this.funcName = funcName;
@@ -50,6 +67,7 @@ public class MethodSignature implements Serializable {
         return argsType;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -57,12 +75,16 @@ public class MethodSignature implements Serializable {
 
         MethodSignature that = (MethodSignature) o;
 
-        return funcName != null ? funcName.equals(that.funcName) : that.funcName == null;
+        if (argCount != that.argCount) return false;
+        if (funcName != null ? !funcName.equals(that.funcName) : that.funcName != null) return false;
+        return argsType != null ? argsType.equals(that.argsType) : that.argsType == null;
     }
 
     @Override
     public int hashCode() {
         int result = funcName != null ? funcName.hashCode() : 0;
+        result = 31 * result + argCount;
+        result = 31 * result + (argsType != null ? argsType.hashCode() : 0);
         return result;
     }
 
@@ -71,7 +93,7 @@ public class MethodSignature implements Serializable {
         return "MethodSignature{" +
                 "funcName='" + funcName + '\'' +
                 ", argCount=" + argCount +
-                ", argsType=" + argsType.toString() +
+                ", argsType=" + argsType +
                 ", returnType=" + returnType +
                 '}';
     }

@@ -6,7 +6,8 @@ sourceItem* EOF
 ;
 
 sourceItem
-:'function' funcSignature ('from' "kernel32.dll")? statement* 'end' 'function' #funcDef
+:'function' funcSignature statement* 'end' 'function' #funcDef
+|'function' funcSignature 'from' library=STR #nativeFunc
 ;
 
 funcSignature

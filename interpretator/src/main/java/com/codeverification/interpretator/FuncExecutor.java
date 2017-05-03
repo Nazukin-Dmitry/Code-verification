@@ -33,19 +33,27 @@ public class FuncExecutor {
 
     private List<String> funcs = new ArrayList<>();
 
+    private boolean isNative;
+    private String libraryName;
+
     private FuncExecutor(List<AbstractValue> args, MethodDefinition methodDefinition, Interpretator interpretator) {
         this.interpretator = interpretator;
         vars.put(0, null);
         addArgs(args, methodDefinition);
-        for (int i = 1 + args.size(); i < methodDefinition.getVarsCount(); i++) {
-            vars.put(i, null);
-        }
+        if (!methodDefinition.isNative()) {
+            for (int i = 1 + args.size(); i < methodDefinition.getVarsCount(); i++) {
+                vars.put(i, null);
+            }
 
-        consts.addAll(
-                methodDefinition.getConsts().stream().map(con -> ValueFactory.get(con)).collect(Collectors.toList()));
-        methodSignature = methodDefinition.getMethodSignature();
-        commands = methodDefinition.getCommands();
-        funcs = methodDefinition.getFuncs();
+            consts.addAll(
+                    methodDefinition.getConsts().stream().map(con -> ValueFactory.get(con)).collect(Collectors.toList()));
+            methodSignature = methodDefinition.getMethodSignature();
+            commands = methodDefinition.getCommands();
+            funcs = methodDefinition.getFuncs();
+        } else {
+            isNative = true;
+            libraryName = methodDefinition.getLibraryName();
+        }
 
     }
 
@@ -92,18 +100,21 @@ public class FuncExecutor {
     }
 
     public AbstractValue executeMethod() {
-        while (true) {
-            Command command = commands.get(currentCommand);
-            if (command.getName().equals("END")) {
-                break;
-            } else {
-                executeCommand(command);
+        if (isNative) {
+            
+        } else {
+            while (true) {
+                Command command = commands.get(currentCommand);
+                if (command.getName().equals("END")) {
+                    break;
+                } else {
+                    executeCommand(command);
+                }
             }
-        }
-        if (vars.get(0) == null) {
-            throw new RuntimeException("Return value - " + methodSignature.getFuncName() + " - hasn't been initialized!!!");
-        }
-        return vars.get(0);
+            if (vars.get(0) == null) {
+                throw new RuntimeException("Return value - " + methodSignature.getFuncName() + " - hasn't been initialized!!!");
+            }
+            return vars.get(0);
 //        if (methodSignature.getReturnType() == DataType.UNDEFINED) {
 //            return vars.get(0);
 //        } else if (methodSignature.getReturnType() == vars.get(0).getType()) {
@@ -116,6 +127,7 @@ public class FuncExecutor {
 //                    + ". Current "
 //                    + vars.get(0).getType());
 //        }
+        }
     }
 
     private void executeCommand(Command command) {

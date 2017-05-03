@@ -26,10 +26,10 @@ import com.codeverification.Var3Parser.BuiltinContext;
 import com.codeverification.Var3Parser.DoStatementContext;
 import com.codeverification.Var3Parser.ExprContext;
 import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.FuncSignatureContext;
 import com.codeverification.Var3Parser.IdentifierContext;
 import com.codeverification.Var3Parser.IfStatementContext;
 import com.codeverification.Var3Parser.LiteralExprContext;
+import com.codeverification.Var3Parser.NativeFuncContext;
 import com.codeverification.Var3Parser.SourceContext;
 import com.codeverification.Var3Parser.StatementContext;
 import com.codeverification.Var3Parser.UnOpContext;
@@ -328,14 +328,17 @@ public class ParserFacade {
         Map<MethodSignature, Set<MethodSignature>> funcCFG = new HashMap<>();
         for (SourceContext ctx : sources) {
             for (com.codeverification.Var3Parser.SourceItemContext item : ctx.sourceItem()) {
+                MethodSignature methodSignature;
+                if (item instanceof FuncDefContext) {
+                    methodSignature = new MethodSignature(((FuncDefContext)item).funcSignature());
+                } else {
+                    methodSignature = new MethodSignature(((NativeFuncContext)item).funcSignature());
+                }
                 CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
-                cfgVisitor.visitFuncDef((FuncDefContext)item);
-                MethodSignature methodSignature = new MethodSignature(
-                        ((FuncDefContext)item).funcSignature().identifier().IDENTIFIER().getText(),
-                        ((FuncDefContext)item).funcSignature().listArgDef().argDef().size());
+                cfgVisitor.visit(item);
                 if (funcCFG.containsKey(methodSignature)) {
-                    throw new Exception("Several functions with name "
-                            + ((FuncDefContext)item).funcSignature().identifier().getText());
+                    throw new Exception("Several functions with signature "
+                            + methodSignature);
                 }
                 funcCFG.put(methodSignature, cfgVisitor.getSet());
             }

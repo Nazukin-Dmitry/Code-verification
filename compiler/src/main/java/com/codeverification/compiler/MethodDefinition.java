@@ -1,10 +1,10 @@
 package com.codeverification.compiler;
 
-import com.codeverification.compiler.CodeGenerationVisitor.Const;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
 
 /**
  * @author Dmitrii Nazukin
@@ -18,6 +18,9 @@ public class MethodDefinition implements Serializable {
     private List<Const> consts = new ArrayList<>();
     private int varsCount;
     private List<Command> commands = new ArrayList<>();
+
+    private boolean isNative;
+    private String libraryName;
 
     public List<String> getFuncs() {
         return funcs;
@@ -45,5 +48,21 @@ public class MethodDefinition implements Serializable {
 
     public void setVarsCount(int varsCount) {
         this.varsCount = varsCount;
+    }
+
+    public boolean isNative() {
+        return isNative;
+    }
+
+    public void setNative(boolean aNative) {
+        isNative = aNative;
+    }
+
+    public String getLibraryName() {
+        return libraryName;
+    }
+
+    public void setLibraryName(String libraryName) {
+        this.libraryName = libraryName;
     }
 }

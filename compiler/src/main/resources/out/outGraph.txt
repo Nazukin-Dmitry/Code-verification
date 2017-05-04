@@ -46,7 +46,9 @@ start -> 0
 21 -> 22
 22 -> 23
 23 -> 24
-24 -> end
+24 -> 25
+25 -> 26
+26 -> end
 
 0:f=CreateFile("out.txt",0x40000000,0,0,2,0,0)
 1:calc=Evkl(64,44)
@@ -71,8 +73,10 @@ start -> 0
 20:WriteFile(f,"hello(World) = "+helloResult+"\n",0,0,0)
 21:stoResult=sto()
 22:WriteFile(f,"sto() = "+stoResult+"\n",0,0,0)
-23:CloseHandle(f)
-24:main=0
+23:concatResult=concat(3,3)
+24:WriteFile(f,"concat(3, 3) = "+concatResult+"\n",0,0,0)
+25:CloseHandle(f)
+26:main=0
 ---------------------------------------
 start -> 0
 0 -> 1
@@ -168,13 +172,15 @@ start -> 0
 0:minus=(A-B)
 ---------------------------------------
 Functions CFG
-Fib->Fib
+calc->sum
+calc->minus
 main->dummy
 main->fun1
 main->sum
 main->sto
 main->Factorial
 main->calc
+main->concat
 main->Fib
 main->hello
 main->CreateFile
@@ -182,5 +188,4 @@ main->and
 main->CloseHandle
 main->Evkl
 main->WriteFile
-calc->sum
-calc->minus
+Fib->Fib

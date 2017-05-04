@@ -1,5 +1,5 @@
 .methodSignature
-MethodSignature{funcName='calc', argCount=3, argsType=[long, long, char], returnType=indefined}
+MethodSignature{funcName='calc', argCount=3, argsType=[long, long, char], returnType=undefined}
 .funcs
 0:sum
 1:minus
@@ -33,7 +33,7 @@ MethodSignature{funcName='calc', argCount=3, argsType=[long, long, char], return
 18: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='sum', argCount=2, argsType=[long, long], returnType=indefined}
+MethodSignature{funcName='sum', argCount=2, argsType=[long, long], returnType=undefined}
 .funcs
 .vars
 0:sum
@@ -48,7 +48,7 @@ MethodSignature{funcName='sum', argCount=2, argsType=[long, long], returnType=in
 4: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='sum', argCount=2, argsType=[string, string], returnType=indefined}
+MethodSignature{funcName='sum', argCount=2, argsType=[string, string], returnType=undefined}
 .funcs
 .vars
 0:sum
@@ -63,19 +63,19 @@ MethodSignature{funcName='sum', argCount=2, argsType=[string, string], returnTyp
 4: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='CreateFile', argCount=7, argsType=[string, int, int, int, int, int, int], returnType=indefined}
+MethodSignature{funcName='CreateFile', argCount=7, argsType=[string, int, int, int, int, int, int], returnType=undefined}
 from kernel32.dll
 --------------------
 .methodSignature
-MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, int, int], returnType=indefined}
+MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, int, int], returnType=undefined}
 from kernel32.dll
 --------------------
 .methodSignature
-MethodSignature{funcName='CloseHandle', argCount=1, argsType=[int], returnType=indefined}
+MethodSignature{funcName='CloseHandle', argCount=1, argsType=[int], returnType=undefined}
 from kernel32.dll
 --------------------
 .methodSignature
-MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}
 .funcs
 0:CreateFile
 1:Evkl
@@ -89,7 +89,8 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 9:fun1
 10:hello
 11:sto
-12:CloseHandle
+12:concat
+13:CloseHandle
 .vars
 0:main
 1:f
@@ -183,7 +184,14 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 75:Const{constName='0', type=long}
 76:Const{constName='0', type=long}
 77:Const{constName='0', type=long}
-78:Const{constName='0', type=long}
+78:Const{constName='3', type=long}
+79:Const{constName='3', type=long}
+80:Const{constName='"concat(3, 3) = "', type=string}
+81:Const{constName='"\n"', type=string}
+82:Const{constName='0', type=long}
+83:Const{constName='0', type=long}
+84:Const{constName='0', type=long}
+85:Const{constName='0', type=long}
 .programm
 0: PUSHCONST 0 0 
 1: PUSHCONST 1 1 
@@ -342,14 +350,28 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 154: PUSHCONST 76 25 
 155: PUSHCONST 77 26 
 156: CALL 22 2 22 23 24 25 26 
-157: PUSHVAR 1 23 
-158: CALL 23 12 23 
-159: PUSHCONST 78 24 
-160: LOADVAR 24 0 
-161: END 
+157: PUSHCONST 78 23 
+158: PUSHCONST 79 24 
+159: CALL 23 12 23 24 
+160: LOADVAR 23 5 
+161: PUSHVAR 1 24 
+162: PUSHCONST 80 25 
+163: PUSHVAR 5 26 
+164: ADD 25 26 25 
+165: PUSHCONST 81 26 
+166: ADD 25 26 25 
+167: PUSHCONST 82 26 
+168: PUSHCONST 83 27 
+169: PUSHCONST 84 28 
+170: CALL 24 2 24 25 26 27 28 
+171: PUSHVAR 1 25 
+172: CALL 25 13 25 
+173: PUSHCONST 85 26 
+174: LOADVAR 26 0 
+175: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='hello', argCount=1, argsType=[string], returnType=indefined}
+MethodSignature{funcName='hello', argCount=1, argsType=[string], returnType=undefined}
 .funcs
 .vars
 0:hello
@@ -372,7 +394,7 @@ MethodSignature{funcName='hello', argCount=1, argsType=[string], returnType=inde
 10: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='fun1', argCount=2, argsType=[long, long], returnType=indefined}
+MethodSignature{funcName='fun1', argCount=2, argsType=[long, long], returnType=undefined}
 .funcs
 .vars
 0:fun1
@@ -396,7 +418,7 @@ MethodSignature{funcName='fun1', argCount=2, argsType=[long, long], returnType=i
 10: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='sto', argCount=0, argsType=[], returnType=indefined}
+MethodSignature{funcName='sto', argCount=0, argsType=[], returnType=undefined}
 .funcs
 .vars
 0:sto
@@ -418,7 +440,7 @@ MethodSignature{funcName='sto', argCount=0, argsType=[], returnType=indefined}
 10: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='concat', argCount=2, argsType=[string, string], returnType=indefined}
+MethodSignature{funcName='concat', argCount=2, argsType=[undefined, undefined], returnType=undefined}
 .funcs
 .vars
 0:concat
@@ -433,7 +455,7 @@ MethodSignature{funcName='concat', argCount=2, argsType=[string, string], return
 4: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='Evkl', argCount=2, argsType=[long, long], returnType=indefined}
+MethodSignature{funcName='Evkl', argCount=2, argsType=[long, long], returnType=undefined}
 .funcs
 .vars
 0:Evkl
@@ -477,7 +499,7 @@ MethodSignature{funcName='Evkl', argCount=2, argsType=[long, long], returnType=i
 30: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='Fib', argCount=1, argsType=[long], returnType=indefined}
+MethodSignature{funcName='Fib', argCount=1, argsType=[long], returnType=undefined}
 .funcs
 0:Fib
 .vars
@@ -518,7 +540,7 @@ MethodSignature{funcName='Fib', argCount=1, argsType=[long], returnType=indefine
 24: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='and', argCount=2, argsType=[bool, bool], returnType=indefined}
+MethodSignature{funcName='and', argCount=2, argsType=[bool, bool], returnType=undefined}
 .funcs
 .vars
 0:and
@@ -533,7 +555,7 @@ MethodSignature{funcName='and', argCount=2, argsType=[bool, bool], returnType=in
 4: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='dummy', argCount=0, argsType=[], returnType=indefined}
+MethodSignature{funcName='dummy', argCount=0, argsType=[], returnType=undefined}
 .funcs
 .vars
 0:dummy
@@ -548,7 +570,7 @@ MethodSignature{funcName='dummy', argCount=0, argsType=[], returnType=indefined}
 4: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='Factorial', argCount=1, argsType=[long], returnType=indefined}
+MethodSignature{funcName='Factorial', argCount=1, argsType=[long], returnType=undefined}
 .funcs
 .vars
 0:Factorial

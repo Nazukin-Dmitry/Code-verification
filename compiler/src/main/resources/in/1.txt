@@ -69,6 +69,9 @@ function main()
     stoResult = sto();
     WriteFile(f, "sto() = " + stoResult + "\n", 0, 0, 0);
 
+    concatResult = concat(3, 3);
+    WriteFile(f, "concat(3, 3) = " + concatResult + "\n", 0, 0, 0);
+
     CloseHandle(f);
     main=0;
 end function
@@ -90,7 +93,7 @@ function sto()
     loop while (sto < 100)
 end function
 
-function concat(A as string, B as string)
+function <T> concat(A as T, B as T)
     concat = A+B;
 end function
 

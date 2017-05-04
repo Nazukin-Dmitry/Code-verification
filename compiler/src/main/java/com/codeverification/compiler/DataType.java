@@ -4,7 +4,7 @@ package com.codeverification.compiler;
  * @author Dmitrii Nazukin
  */
 public enum DataType {
-    UNDEFINED("indefined"),
+    UNDEFINED("undefined"),
     BOOL("bool"),
     BYTE("byte"),
     INT("int"),

@@ -11,7 +11,7 @@ sourceItem
 ;
 
 funcSignature
-:identifier '(' listArgDef ')' ('as' typeRef)?
+:('<' param=identifier '>')? funcName=identifier '(' listArgDef ')' ('as' typeRef)?
 ;
 
 argDef

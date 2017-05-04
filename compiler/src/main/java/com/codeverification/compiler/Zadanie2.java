@@ -27,7 +27,7 @@ public class Zadanie2 {
                 sources.add(sourceContext);
                 for (SourceItemContext itemContext : sourceContext.sourceItem()) {
                     GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
-                    parserFacade.printCFG(graph, outputPath + "\\" + ((FuncDefContext) itemContext).funcSignature().identifier().getText() + ".txt");
+                    parserFacade.printCFG(graph, outputPath + "\\" + ((FuncDefContext) itemContext).funcSignature().funcName.getText() + ".txt");
                 }
             }
 

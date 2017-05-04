@@ -8,7 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.codeverification.compiler.CodeGenerationVisitor.Const;
 import com.codeverification.compiler.DataType;
@@ -110,6 +114,7 @@ public class Interpretator {
         MethodSignature methodSignature = new MethodSignature(funcName, argType.size());
         methodSignature.getArgsType().addAll(argType);
         if (!functions.containsKey(methodSignature)) {
+            //try to find native method by funcName and args count
             Optional<MethodDefinition> any = functions.entrySet().stream().filter(entry -> {
                 return entry.getKey().getFuncName().equals(funcName) && entry.getKey().getArgCount() == argType.size()
                         && entry.getValue().isNative();
@@ -117,11 +122,35 @@ public class Interpretator {
             if (any.isPresent()) {
                 return any.get();
             } else {
-                throw new RuntimeException("Method doesn't exist. " + methodSignature);
+                //maybe generic method?
+                Set<MethodSignature> methodSignatures = functions.keySet().stream()
+                        .filter(sign -> sign.getFuncName().equals(funcName) && sign.getArgCount() == argType.size())
+                        .collect(Collectors.toSet());
+                if (CollectionUtils.isNotEmpty(methodSignatures)) {
+                    for (MethodSignature signature : methodSignatures) {
+                        if (compareArgTypes(signature.getArgsType(), argType)) {
+                            return functions.get(signature);
+                        }
+                    }
+                    throw new RuntimeException("Method doesn't exist. " + methodSignature);
+                } else {
+                    throw new RuntimeException("Method doesn't exist. " + methodSignature);
+                }
             }
         } else {
             return functions.get(methodSignature);
         }
+    }
+
+    private boolean compareArgTypes(List<DataType> funTypes1, List<DataType> argTypes2) {
+        boolean result = true;
+        for (int i = 0; i < funTypes1.size(); i++) {
+            if (!funTypes1.get(i).equals(argTypes2.get(i)) && !funTypes1.get(i).equals(DataType.UNDEFINED)) {
+                result = false;
+                break;
+            }
+        }
+        return result;
     }
 
     public AbstractValue executeMethodArg(String func, List<AbstractValue> args) {

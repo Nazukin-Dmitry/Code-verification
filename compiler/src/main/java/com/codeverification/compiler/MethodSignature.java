@@ -1,11 +1,11 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.FuncSignatureContext;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.FuncSignatureContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -19,8 +19,10 @@ public class MethodSignature implements Serializable {
     private List<DataType> argsType;
     private DataType returnType = DataType.UNDEFINED;
 
+    private boolean isGeneric;
+
     public MethodSignature(FuncSignatureContext funcSignatureContext) {
-        this(funcSignatureContext.identifier().IDENTIFIER().getText(),
+        this(funcSignatureContext.funcName.IDENTIFIER().getText(),
                 funcSignatureContext.listArgDef().argDef().size());
         for (ArgDefContext arg : funcSignatureContext.listArgDef().argDef()) {
             argsType.add(DataType.getDataType(arg.typeRef().getText()));
@@ -66,6 +68,13 @@ public class MethodSignature implements Serializable {
         return argsType;
     }
 
+    public boolean isGeneric() {
+        return isGeneric;
+    }
+
+    public void setGeneric(boolean generic) {
+        isGeneric = generic;
+    }
 
     @Override
     public boolean equals(Object o) {

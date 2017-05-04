@@ -29,7 +29,7 @@ public class Zadanie3 {
                     GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
                     CodeGenerationVisitor codeGenerationVisitor = new CodeGenerationVisitor();
                     codeGenerationVisitor.visit(itemContext);
-                    parserFacade.printCFG(graph,codeGenerationVisitor, outputPath + "\\" + ((FuncDefContext) itemContext).funcSignature().identifier().getText() + ".txt");
+                    parserFacade.printCFG(graph,codeGenerationVisitor, outputPath + "\\" + ((FuncDefContext) itemContext).funcSignature().funcName.getText() + ".txt");
 
                 }
             }

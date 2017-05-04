@@ -67,16 +67,26 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
 
     @Override
     public Void visitFuncSignature(com.codeverification.Var3Parser.FuncSignatureContext ctx) {
-        methodSignature = new MethodSignature(ctx.identifier().IDENTIFIER().getText(), ctx.listArgDef().argDef().size());
+        methodSignature = new MethodSignature(ctx.funcName.IDENTIFIER().getText(), ctx.listArgDef().argDef().size());
         if (ctx.typeRef() != null) {
             methodSignature.setReturnType(DataType.getDataType(ctx.typeRef().getText()));
         } else {
             methodSignature.setReturnType(DataType.UNDEFINED);
         }
-        vars.put(ctx.identifier().IDENTIFIER().getText(), ++lastVarNum);
-        for (ArgDefContext arg : ctx.listArgDef().argDef()) {
-            vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
-            methodSignature.getArgsType().add(DataType.getDataType(arg.typeRef().getText()));
+        vars.put(ctx.funcName.IDENTIFIER().getText(), ++lastVarNum);
+        if (ctx.param == null) {
+            for (ArgDefContext arg : ctx.listArgDef().argDef()) {
+                vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
+                methodSignature.getArgsType().add(DataType.getDataType(arg.typeRef().getText()));
+            }
+        } else {
+            String paramType = ctx.param.getText();
+            methodSignature.setGeneric(true);
+            for (ArgDefContext arg : ctx.listArgDef().argDef()) {
+                vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
+                methodSignature.getArgsType().add(DataType.getDataType(
+                        arg.typeRef().getText().equals(paramType) ? "undefined" : arg.typeRef().getText()));
+            }
         }
         return null;
     }

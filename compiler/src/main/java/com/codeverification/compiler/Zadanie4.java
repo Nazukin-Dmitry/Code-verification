@@ -1,10 +1,5 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.SourceItemContext;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,6 +7,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.FuncDefContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.SourceItemContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -53,7 +53,7 @@ public class Zadanie4 {
         List<GraphNode<ExprContext>> graphs = new ArrayList<>();
         Map<MethodSignature,  Set<MethodSignature>> funcCFG = new HashMap<>();
         List<CodeGenerationVisitor> mnemFuncs = new ArrayList<>();
-        Map<String, MethodDefinition> binFuncs = new LinkedHashMap<>();
+        Map<MethodSignature, MethodDefinition> binFuncs = new LinkedHashMap<>();
 
         try {
             ParserFacade parserFacade = new ParserFacade();
@@ -70,7 +70,11 @@ public class Zadanie4 {
                     codeGenerationVisitor.visit(itemContext);
                     mnemFuncs.add(codeGenerationVisitor);
                     MethodDefinition methodDefinition = codeGenerationVisitor.map2MethodDefinition();
-                    binFuncs.put(methodDefinition.getMethodSignature().getFuncName(), methodDefinition);
+                    if (!binFuncs.containsKey(methodDefinition.getMethodSignature())) {
+                        binFuncs.put(methodDefinition.getMethodSignature(), methodDefinition);
+                    } else {
+                        throw new RuntimeException("Several methods with signature" + methodDefinition.getMethodSignature());
+                    }
                 }
             }
             funcCFG = parserFacade.getFuncCFG(sources);

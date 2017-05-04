@@ -305,7 +305,7 @@ public class ParserFacade {
     public void checkFuncCGF(Map<MethodSignature, Set<MethodSignature>> cfg)
             throws Exception {
         Map<String, Integer> funcs = cfg.keySet().stream().collect(
-                Collectors.toMap(MethodSignature::getFuncName, func -> func.getArgCount()));
+                Collectors.toMap(MethodSignature::getFuncName, func -> func.getArgCount(), (e1, e2) -> e1));
         for (MethodSignature ctx : cfg.keySet()) {
             for (MethodSignature funcSign : cfg.get(ctx)) {
                 if (!funcs.containsKey(funcSign.getFuncName())) {
@@ -360,7 +360,7 @@ public class ParserFacade {
         }
     }
 
-    public void printBinCodes(Map<String, MethodDefinition> binFuncs, String outputPath) throws IOException {
+    public void printBinCodes(Map<MethodSignature, MethodDefinition> binFuncs, String outputPath) throws IOException {
         File file = new File(outputPath);
         file.getParentFile().mkdirs();
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
@@ -371,10 +371,9 @@ public class ParserFacade {
         }
     }
 
-    public Map<String, MethodDefinition> readBinCodes(String path) throws IOException, ClassNotFoundException {
+    public Map<MethodSignature, MethodDefinition> readBinCodes(String path) throws IOException, ClassNotFoundException {
         try (ObjectInputStream oin = new ObjectInputStream(new FileInputStream(path))) {
-            Map<String, MethodDefinition> methods = (Map<String, MethodDefinition>) oin.readObject();
-            return methods;
+            return (Map<MethodSignature, MethodDefinition>) oin.readObject();
         } catch (Exception e) {
             throw e;
         }

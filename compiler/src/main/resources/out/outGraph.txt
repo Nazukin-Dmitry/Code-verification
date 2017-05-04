@@ -17,6 +17,11 @@ start -> 0
 0:sum=A+B
 ---------------------------------------
 start -> 0
+0 -> end
+
+0:sum=A+B
+---------------------------------------
+start -> 0
 0 -> 1
 1 -> 2
 2 -> 3
@@ -39,31 +44,35 @@ start -> 0
 19 -> 20
 20 -> 21
 21 -> 22
-22 -> end
+22 -> 23
+23 -> 24
+24 -> end
 
 0:f=CreateFile("out.txt",0x40000000,0,0,2,0,0)
-1:calc=Evkl(55,44)
-2:WriteFile(f,"Evkl(55,44) = "+calc+"\n",0,0,0)
+1:calc=Evkl(64,44)
+2:WriteFile(f,"Evkl(64,44) = "+calc+"\n",0,0,0)
 3:andResult=and(true,false)
 4:WriteFile(f,"and(true,false) = "+andResult+"\n",0,0,0)
 5:calcResult=calc(55,44,'+')
 6:WriteFile(f,"calc(55,44, '+') = "+calcResult+"\n",0,0,0)
-7:concatResult=concat("55","44")
-8:WriteFile(f,"concat(55,44) = "+concatResult+"\n",0,0,0)
-9:dummyResult=dummy()
-10:WriteFile(f,"dummy() = "+dummyResult+"\n",0,0,0)
-11:facResult=Factorial(5)
-12:WriteFile(f,"Factorial(5) = "+facResult+"\n",0,0,0)
-13:fibResult=Fib(4)
-14:WriteFile(f,"Fib(4) = "+fibResult+"\n",0,0,0)
-15:fun1Result=fun1(10,100)
-16:WriteFile(f,"fun1(10, 100) = "+fun1Result+"\n",0,0,0)
-17:helloResult=hello("World")
-18:WriteFile(f,"hello(World) = "+helloResult+"\n",0,0,0)
-19:stoResult=sto()
-20:WriteFile(f,"sto() = "+stoResult+"\n",0,0,0)
-21:CloseHandle(f)
-22:main=0
+7:concatResult=sum("55","44")
+8:WriteFile(f,"string sum(55,44) = "+concatResult+"\n",0,0,0)
+9:sumResult=sum(55,44)
+10:WriteFile(f,"number sum(55,44) = "+sumResult+"\n",0,0,0)
+11:dummyResult=dummy()
+12:WriteFile(f,"dummy() = "+dummyResult+"\n",0,0,0)
+13:facResult=Factorial(5)
+14:WriteFile(f,"Factorial(5) = "+facResult+"\n",0,0,0)
+15:fibResult=Fib(4)
+16:WriteFile(f,"Fib(4) = "+fibResult+"\n",0,0,0)
+17:fun1Result=fun1(10,100)
+18:WriteFile(f,"fun1(10, 100) = "+fun1Result+"\n",0,0,0)
+19:helloResult=hello("World")
+20:WriteFile(f,"hello(World) = "+helloResult+"\n",0,0,0)
+21:stoResult=sto()
+22:WriteFile(f,"sto() = "+stoResult+"\n",0,0,0)
+23:CloseHandle(f)
+24:main=0
 ---------------------------------------
 start -> 0
 0 -> 1
@@ -160,14 +169,12 @@ start -> 0
 ---------------------------------------
 Functions CFG
 Fib->Fib
-calc->sum
-calc->minus
 main->dummy
 main->fun1
+main->sum
 main->sto
 main->Factorial
 main->calc
-main->concat
 main->Fib
 main->hello
 main->CreateFile
@@ -175,3 +182,5 @@ main->and
 main->CloseHandle
 main->Evkl
 main->WriteFile
+calc->sum
+calc->minus

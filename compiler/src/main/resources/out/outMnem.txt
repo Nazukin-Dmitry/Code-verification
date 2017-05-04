@@ -48,15 +48,30 @@ MethodSignature{funcName='sum', argCount=2, argsType=[long, long], returnType=in
 4: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='CreateFile', argCount=7, argsType=[string, int, int, int, int, int, int], returnType=int}
+MethodSignature{funcName='sum', argCount=2, argsType=[string, string], returnType=indefined}
+.funcs
+.vars
+0:sum
+1:A
+2:B
+.consts
+.programm
+0: PUSHVAR 1 0 
+1: PUSHVAR 2 1 
+2: ADD 0 1 0 
+3: LOADVAR 0 0 
+4: END 
+--------------------
+.methodSignature
+MethodSignature{funcName='CreateFile', argCount=7, argsType=[string, int, int, int, int, int, int], returnType=indefined}
 from kernel32.dll
 --------------------
 .methodSignature
-MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, int, int], returnType=int}
+MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, int, int], returnType=indefined}
 from kernel32.dll
 --------------------
 .methodSignature
-MethodSignature{funcName='CloseHandle', argCount=1, argsType=[int], returnType=int}
+MethodSignature{funcName='CloseHandle', argCount=1, argsType=[int], returnType=indefined}
 from kernel32.dll
 --------------------
 .methodSignature
@@ -67,7 +82,7 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 2:WriteFile
 3:and
 4:calc
-5:concat
+5:sum
 6:dummy
 7:Factorial
 8:Fib
@@ -82,12 +97,13 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 3:andResult
 4:calcResult
 5:concatResult
-6:dummyResult
-7:facResult
-8:fibResult
-9:fun1Result
-10:helloResult
-11:stoResult
+6:sumResult
+7:dummyResult
+8:facResult
+9:fibResult
+10:fun1Result
+11:helloResult
+12:stoResult
 .consts
 0:Const{constName='"out.txt"', type=string}
 1:Const{constName='0x40000000', type=long}
@@ -96,9 +112,9 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 4:Const{constName='2', type=long}
 5:Const{constName='0', type=long}
 6:Const{constName='0', type=long}
-7:Const{constName='55', type=long}
+7:Const{constName='64', type=long}
 8:Const{constName='44', type=long}
-9:Const{constName='"Evkl(55,44) = "', type=string}
+9:Const{constName='"Evkl(64,44) = "', type=string}
 10:Const{constName='"\n"', type=string}
 11:Const{constName='0', type=long}
 12:Const{constName='0', type=long}
@@ -120,47 +136,54 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 28:Const{constName='0', type=long}
 29:Const{constName='"55"', type=string}
 30:Const{constName='"44"', type=string}
-31:Const{constName='"concat(55,44) = "', type=string}
+31:Const{constName='"string sum(55,44) = "', type=string}
 32:Const{constName='"\n"', type=string}
 33:Const{constName='0', type=long}
 34:Const{constName='0', type=long}
 35:Const{constName='0', type=long}
-36:Const{constName='"dummy() = "', type=string}
-37:Const{constName='"\n"', type=string}
-38:Const{constName='0', type=long}
-39:Const{constName='0', type=long}
+36:Const{constName='55', type=long}
+37:Const{constName='44', type=long}
+38:Const{constName='"number sum(55,44) = "', type=string}
+39:Const{constName='"\n"', type=string}
 40:Const{constName='0', type=long}
-41:Const{constName='5', type=long}
-42:Const{constName='"Factorial(5) = "', type=string}
-43:Const{constName='"\n"', type=string}
-44:Const{constName='0', type=long}
+41:Const{constName='0', type=long}
+42:Const{constName='0', type=long}
+43:Const{constName='"dummy() = "', type=string}
+44:Const{constName='"\n"', type=string}
 45:Const{constName='0', type=long}
 46:Const{constName='0', type=long}
-47:Const{constName='4', type=long}
-48:Const{constName='"Fib(4) = "', type=string}
-49:Const{constName='"\n"', type=string}
-50:Const{constName='0', type=long}
+47:Const{constName='0', type=long}
+48:Const{constName='5', type=long}
+49:Const{constName='"Factorial(5) = "', type=string}
+50:Const{constName='"\n"', type=string}
 51:Const{constName='0', type=long}
 52:Const{constName='0', type=long}
-53:Const{constName='10', type=long}
-54:Const{constName='100', type=long}
-55:Const{constName='"fun1(10, 100) = "', type=string}
+53:Const{constName='0', type=long}
+54:Const{constName='4', type=long}
+55:Const{constName='"Fib(4) = "', type=string}
 56:Const{constName='"\n"', type=string}
 57:Const{constName='0', type=long}
 58:Const{constName='0', type=long}
 59:Const{constName='0', type=long}
-60:Const{constName='"World"', type=string}
-61:Const{constName='"hello(World) = "', type=string}
-62:Const{constName='"\n"', type=string}
-63:Const{constName='0', type=long}
+60:Const{constName='10', type=long}
+61:Const{constName='100', type=long}
+62:Const{constName='"fun1(10, 100) = "', type=string}
+63:Const{constName='"\n"', type=string}
 64:Const{constName='0', type=long}
 65:Const{constName='0', type=long}
-66:Const{constName='"sto() = "', type=string}
-67:Const{constName='"\n"', type=string}
-68:Const{constName='0', type=long}
-69:Const{constName='0', type=long}
+66:Const{constName='0', type=long}
+67:Const{constName='"World"', type=string}
+68:Const{constName='"hello(World) = "', type=string}
+69:Const{constName='"\n"', type=string}
 70:Const{constName='0', type=long}
 71:Const{constName='0', type=long}
+72:Const{constName='0', type=long}
+73:Const{constName='"sto() = "', type=string}
+74:Const{constName='"\n"', type=string}
+75:Const{constName='0', type=long}
+76:Const{constName='0', type=long}
+77:Const{constName='0', type=long}
+78:Const{constName='0', type=long}
 .programm
 0: PUSHCONST 0 0 
 1: PUSHCONST 1 1 
@@ -228,47 +251,47 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 63: PUSHCONST 34 11 
 64: PUSHCONST 35 12 
 65: CALL 8 2 8 9 10 11 12 
-66: CALL 9 6 
-67: LOADVAR 9 6 
-68: PUSHVAR 1 10 
-69: PUSHCONST 36 11 
-70: PUSHVAR 6 12 
-71: ADD 11 12 11 
-72: PUSHCONST 37 12 
+66: PUSHCONST 36 9 
+67: PUSHCONST 37 10 
+68: CALL 9 5 9 10 
+69: LOADVAR 9 6 
+70: PUSHVAR 1 10 
+71: PUSHCONST 38 11 
+72: PUSHVAR 6 12 
 73: ADD 11 12 11 
-74: PUSHCONST 38 12 
-75: PUSHCONST 39 13 
-76: PUSHCONST 40 14 
-77: CALL 10 2 10 11 12 13 14 
-78: PUSHCONST 41 11 
-79: CALL 11 7 11 
-80: LOADVAR 11 7 
-81: PUSHVAR 1 12 
-82: PUSHCONST 42 13 
-83: PUSHVAR 7 14 
-84: ADD 13 14 13 
-85: PUSHCONST 43 14 
-86: ADD 13 14 13 
-87: PUSHCONST 44 14 
-88: PUSHCONST 45 15 
-89: PUSHCONST 46 16 
-90: CALL 12 2 12 13 14 15 16 
-91: PUSHCONST 47 13 
-92: CALL 13 8 13 
-93: LOADVAR 13 8 
-94: PUSHVAR 1 14 
-95: PUSHCONST 48 15 
-96: PUSHVAR 8 16 
-97: ADD 15 16 15 
-98: PUSHCONST 49 16 
-99: ADD 15 16 15 
-100: PUSHCONST 50 16 
-101: PUSHCONST 51 17 
-102: PUSHCONST 52 18 
-103: CALL 14 2 14 15 16 17 18 
-104: PUSHCONST 53 15 
-105: PUSHCONST 54 16 
-106: CALL 15 9 15 16 
+74: PUSHCONST 39 12 
+75: ADD 11 12 11 
+76: PUSHCONST 40 12 
+77: PUSHCONST 41 13 
+78: PUSHCONST 42 14 
+79: CALL 10 2 10 11 12 13 14 
+80: CALL 11 6 
+81: LOADVAR 11 7 
+82: PUSHVAR 1 12 
+83: PUSHCONST 43 13 
+84: PUSHVAR 7 14 
+85: ADD 13 14 13 
+86: PUSHCONST 44 14 
+87: ADD 13 14 13 
+88: PUSHCONST 45 14 
+89: PUSHCONST 46 15 
+90: PUSHCONST 47 16 
+91: CALL 12 2 12 13 14 15 16 
+92: PUSHCONST 48 13 
+93: CALL 13 7 13 
+94: LOADVAR 13 8 
+95: PUSHVAR 1 14 
+96: PUSHCONST 49 15 
+97: PUSHVAR 8 16 
+98: ADD 15 16 15 
+99: PUSHCONST 50 16 
+100: ADD 15 16 15 
+101: PUSHCONST 51 16 
+102: PUSHCONST 52 17 
+103: PUSHCONST 53 18 
+104: CALL 14 2 14 15 16 17 18 
+105: PUSHCONST 54 15 
+106: CALL 15 8 15 
 107: LOADVAR 15 9 
 108: PUSHVAR 1 16 
 109: PUSHCONST 55 17 
@@ -281,38 +304,52 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=indefined}
 116: PUSHCONST 59 20 
 117: CALL 16 2 16 17 18 19 20 
 118: PUSHCONST 60 17 
-119: CALL 17 10 17 
-120: LOADVAR 17 10 
-121: PUSHVAR 1 18 
-122: PUSHCONST 61 19 
-123: PUSHVAR 10 20 
-124: ADD 19 20 19 
-125: PUSHCONST 62 20 
-126: ADD 19 20 19 
-127: PUSHCONST 63 20 
-128: PUSHCONST 64 21 
-129: PUSHCONST 65 22 
-130: CALL 18 2 18 19 20 21 22 
-131: CALL 19 11 
-132: LOADVAR 19 11 
-133: PUSHVAR 1 20 
-134: PUSHCONST 66 21 
-135: PUSHVAR 11 22 
-136: ADD 21 22 21 
-137: PUSHCONST 67 22 
+119: PUSHCONST 61 18 
+120: CALL 17 9 17 18 
+121: LOADVAR 17 10 
+122: PUSHVAR 1 18 
+123: PUSHCONST 62 19 
+124: PUSHVAR 10 20 
+125: ADD 19 20 19 
+126: PUSHCONST 63 20 
+127: ADD 19 20 19 
+128: PUSHCONST 64 20 
+129: PUSHCONST 65 21 
+130: PUSHCONST 66 22 
+131: CALL 18 2 18 19 20 21 22 
+132: PUSHCONST 67 19 
+133: CALL 19 10 19 
+134: LOADVAR 19 11 
+135: PUSHVAR 1 20 
+136: PUSHCONST 68 21 
+137: PUSHVAR 11 22 
 138: ADD 21 22 21 
-139: PUSHCONST 68 22 
-140: PUSHCONST 69 23 
-141: PUSHCONST 70 24 
-142: CALL 20 2 20 21 22 23 24 
-143: PUSHVAR 1 21 
-144: CALL 21 12 21 
-145: PUSHCONST 71 22 
-146: LOADVAR 22 0 
-147: END 
+139: PUSHCONST 69 22 
+140: ADD 21 22 21 
+141: PUSHCONST 70 22 
+142: PUSHCONST 71 23 
+143: PUSHCONST 72 24 
+144: CALL 20 2 20 21 22 23 24 
+145: CALL 21 11 
+146: LOADVAR 21 12 
+147: PUSHVAR 1 22 
+148: PUSHCONST 73 23 
+149: PUSHVAR 12 24 
+150: ADD 23 24 23 
+151: PUSHCONST 74 24 
+152: ADD 23 24 23 
+153: PUSHCONST 75 24 
+154: PUSHCONST 76 25 
+155: PUSHCONST 77 26 
+156: CALL 22 2 22 23 24 25 26 
+157: PUSHVAR 1 23 
+158: CALL 23 12 23 
+159: PUSHCONST 78 24 
+160: LOADVAR 24 0 
+161: END 
 --------------------
 .methodSignature
-MethodSignature{funcName='hello', argCount=1, argsType=[long], returnType=indefined}
+MethodSignature{funcName='hello', argCount=1, argsType=[string], returnType=indefined}
 .funcs
 .vars
 0:hello

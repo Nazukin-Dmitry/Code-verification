@@ -11,29 +11,33 @@ function sum(A as long, B as long)
     sum = A+B;
 end function
 
+function sum(A as string, B as string)
+    sum = A+B;
+end function
+
 function CreateFile(lpFileName as string,
                     dwDesiredAccess as int,
                     dwShareMode as int,
                     lpSecurityAttributes as int,
                     dwCreationDisposition as int,
                     dwFlagsAndAttributes as int,
-                    hTemplateFile as int) as int
+                    hTemplateFile as int)
                     from "kernel32.dll"
 
 function WriteFile(hFile as int,
                    lpBuffer as string,
                    nNumberOfBytesToWrite as int,
                    lpNumberOfBytesWritten as int,
-                   lpOverlapped as int) as int
+                   lpOverlapped as int)
                    from "kernel32.dll"
 
-function CloseHandle(hFile as int) as int from "kernel32.dll"
+function CloseHandle(hFile as int) from "kernel32.dll"
 
 function main()
     f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
 
-    calc = Evkl(55,44);
-    WriteFile(f, "Evkl(55,44) = " + calc + "\n", 0, 0, 0);
+    calc = Evkl(64,44);
+    WriteFile(f, "Evkl(64,44) = " + calc + "\n", 0, 0, 0);
 
     andResult = and(true,false);
     WriteFile(f, "and(true,false) = " + andResult + "\n", 0, 0, 0);
@@ -41,8 +45,11 @@ function main()
     calcResult = calc(55,44, '+');
     WriteFile(f, "calc(55,44, '+') = " +calcResult + "\n", 0, 0, 0);
 
-    concatResult = concat("55","44");
-    WriteFile(f, "concat(55,44) = " + concatResult + "\n", 0, 0, 0);
+    concatResult = sum("55","44");
+    WriteFile(f, "string sum(55,44) = " + concatResult + "\n", 0, 0, 0);
+
+    sumResult = sum(55,44);
+    WriteFile(f, "number sum(55,44) = " + sumResult + "\n", 0, 0, 0);
 
     dummyResult = dummy();
     WriteFile(f, "dummy() = " + dummyResult + "\n", 0, 0, 0);
@@ -66,7 +73,7 @@ function main()
     main=0;
 end function
 
-function hello(B as long)
+function hello(B as string)
     hello = "hello ";
     dot = "!!!" ;
     hello = hello+B+dot;

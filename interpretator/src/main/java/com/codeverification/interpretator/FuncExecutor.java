@@ -221,11 +221,10 @@ public class FuncExecutor {
                 for (int i = 2; i < command.getArgs().size(); i++) {
                     args.add(registers.get(command.getArgs().get(i)));
                 }
-                checkCall(args, interpretator.functions.get(funcs.get(command.getArgs().get(1))),
-                        funcs.get(command.getArgs().get(1)));
-                FuncExecutor funcExecutor = FuncExecutor.getInstance(args,
-                        interpretator.functions.get(funcs.get(command.getArgs().get(1))),
-                        interpretator);
+                List<DataType> argTypes = args.stream().map(Value::getType).collect(Collectors.toList());
+                MethodDefinition methodDefinition = interpretator.findMethod(funcs.get(command.getArgs().get(1)), argTypes);
+//                checkCall(args, methodDefinition, funcs.get(command.getArgs().get(1)));
+                FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition, interpretator);
                 AbstractValue v3 = funcExecutor.executeMethod();
                 registers.put(command.getArgs().get(0), v3);
                 currentCommand++;

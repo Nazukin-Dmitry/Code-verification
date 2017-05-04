@@ -7,11 +7,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.codeverification.compiler.CodeGenerationVisitor.Const;
 import com.codeverification.compiler.DataType;
 import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.MethodSignature;
 import com.codeverification.compiler.ParserFacade;
 import com.sun.jna.platform.win32.Kernel32;
 
@@ -34,7 +36,7 @@ public class Interpretator {
 
     String s = "\"[^\"\\]*(?:\\.[^\"\\]*)*\"";
 
-    Map<String, MethodDefinition> functions;
+    Map<MethodSignature, MethodDefinition> functions;
 
     public static final Map<String, Object> nativeLibs = new HashMap<>();
 
@@ -42,7 +44,7 @@ public class Interpretator {
         nativeLibs.put("kernel32.dll", Kernel32.INSTANCE);
     }
 
-    public Interpretator(Map<String, MethodDefinition> functions) {
+    public Interpretator(Map<MethodSignature, MethodDefinition> functions) {
         this.functions = functions;
     }
 
@@ -67,7 +69,7 @@ public class Interpretator {
     public static void main(String[] args) {
         try {
             ParserFacade parserFacade = new ParserFacade();
-            Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(args[0]);
+            Map<MethodSignature, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(args[0]);
             Interpretator interpretator = new Interpretator(methodDefinitions);
             interpretator.executeMainMethod();
             
@@ -99,12 +101,27 @@ public class Interpretator {
     }
     
     private void executeMainMethod() {
-        MethodDefinition mainMethod = functions.get("main");
-        if (mainMethod == null) {
-            throw new RuntimeException("Can't find main method");
-        }
+        MethodDefinition mainMethod = findMethod("main", Collections.emptyList());
         FuncExecutor funcExecutor = FuncExecutor.getInstance(Collections.emptyList(), mainMethod, this);
         funcExecutor.executeMethod();
+    }
+
+    public MethodDefinition findMethod(String funcName, List<DataType> argType){
+        MethodSignature methodSignature = new MethodSignature(funcName, argType.size());
+        methodSignature.getArgsType().addAll(argType);
+        if (!functions.containsKey(methodSignature)) {
+            Optional<MethodDefinition> any = functions.entrySet().stream().filter(entry -> {
+                return entry.getKey().getFuncName().equals(funcName) && entry.getKey().getArgCount() == argType.size()
+                        && entry.getValue().isNative();
+            }).map(entry -> entry.getValue()).findAny();
+            if (any.isPresent()) {
+                return any.get();
+            } else {
+                throw new RuntimeException("Method doesn't exist. " + methodSignature);
+            }
+        } else {
+            return functions.get(methodSignature);
+        }
     }
 
     public AbstractValue executeMethodArg(String func, List<AbstractValue> args) {

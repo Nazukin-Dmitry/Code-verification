@@ -33,10 +33,11 @@ statement
 ;
 
 expr
- : expr binOp expr #binaryExpr
- | unOp expr #unaryExpr
- | '(' expr ')' #bracesExpr
+:'(' expr ')' #bracesExpr
  | expr '(' listExpr ')' #callExpr
+ |  expr binOp expr #binaryExpr
+ | unOp expr #unaryExpr
+ | expr '=' expr #assignExpr
  | identifier #placeExpr
  | value = (BOOL|STR|CHAR|HEX|BITS|DEC) #literalExpr
 ;
@@ -52,7 +53,7 @@ listExpr
 identifier: IDENTIFIER;
 
 binOp
-    : '+' | '-' | '*' | '/' | '%' | '=' | '>' | '<' | '==' | '&&' | '||'
+    : '+' | '-' | '*' | '/' | '%' | '>' | '<' | '==' | '&&' | '||'
     ;
 unOp
     : '-'| '+'

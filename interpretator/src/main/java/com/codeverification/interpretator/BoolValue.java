@@ -30,6 +30,11 @@ public class BoolValue extends AbstractValue {
         return value;
     }
 
+    @Override
+    public String asString() {
+        return value.toString();
+    }
+
     public Boolean getValue() {
         return value;
     }

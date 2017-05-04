@@ -1,21 +1,19 @@
 package com.codeverification.interpretator;
 
+import static com.codeverification.interpretator.FuncExecutor.checkCall;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import com.codeverification.compiler.CodeGenerationVisitor.Const;
 import com.codeverification.compiler.DataType;
 import com.codeverification.compiler.MethodDefinition;
 import com.codeverification.compiler.ParserFacade;
 import com.sun.jna.platform.win32.Kernel32;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.regex.Pattern;
-
-import static com.codeverification.interpretator.FuncExecutor.checkCall;
 
 /**
  * @author Dmitrii Nazukin
@@ -48,21 +46,33 @@ public class Interpretator {
         this.functions = functions;
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        ParserFacade parserFacade = new ParserFacade();
-        Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(args[0]);
-        Interpretator interpretator = new Interpretator(methodDefinitions);
-        Scanner sc = new Scanner(System.in);
-        while(sc.hasNextLine()) {
-            try {
-                String line = sc.nextLine();
-                String[] lines = line.split("[,()]");
-                List<String> tr = new ArrayList<>(Arrays.asList(lines));
-                tr.remove(0);
-                System.out.println(interpretator.executeMethod(lines[0], tr));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//    public static void main(String[] args) throws IOException, ClassNotFoundException {
+//        ParserFacade parserFacade = new ParserFacade();
+//        Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(args[0]);
+//        Interpretator interpretator = new Interpretator(methodDefinitions);
+//        Scanner sc = new Scanner(System.in);
+//        while(sc.hasNextLine()) {
+//            try {
+//                String line = sc.nextLine();
+//                String[] lines = line.split("[,()]");
+//                List<String> tr = new ArrayList<>(Arrays.asList(lines));
+//                tr.remove(0);
+//                System.out.println(interpretator.executeMethod(lines[0], tr));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
+    public static void main(String[] args) {
+        try {
+            ParserFacade parserFacade = new ParserFacade();
+            Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(args[0]);
+            Interpretator interpretator = new Interpretator(methodDefinitions);
+            interpretator.executeMainMethod();
+            
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
@@ -86,6 +96,15 @@ public class Interpretator {
         FuncExecutor funcExecutor = FuncExecutor.getInstance(argsVO, functions.get(func), this);
         return funcExecutor.executeMethod();
 
+    }
+    
+    private void executeMainMethod() {
+        MethodDefinition mainMethod = functions.get("main");
+        if (mainMethod == null) {
+            throw new RuntimeException("Can't find main method");
+        }
+        FuncExecutor funcExecutor = FuncExecutor.getInstance(Collections.emptyList(), mainMethod, this);
+        funcExecutor.executeMethod();
     }
 
     public AbstractValue executeMethodArg(String func, List<AbstractValue> args) {

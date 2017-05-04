@@ -1,12 +1,5 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser;
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.StatementContext;
-
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,6 +7,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser;
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.AssignExprContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.PlaceExprContext;
+import com.codeverification.Var3Parser.StatementContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -60,7 +61,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     public Void visitNativeFunc(Var3Parser.NativeFuncContext ctx) {
         visit(ctx.funcSignature());
         isNative = true;
-        library = ctx.library.getText();
+        library = ctx.library.getText().substring(1, ctx.library.getText().length()-1);
         return null;
     }
 
@@ -212,25 +213,28 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     }
 
     @Override
+    public Void visitAssignExpr(AssignExprContext ctx) {
+        if (!(ctx.expr(0) instanceof com.codeverification.Var3Parser.PlaceExprContext)) {
+            throw new RuntimeException("=. Left operand should be identifier");
+        } else {
+            String var = ((com.codeverification.Var3Parser.PlaceExprContext)ctx.expr(0)).identifier().getText();
+            visit(ctx.expr(1));
+            if (vars.containsKey(var)) {
+                gen("LOADVAR", lastRegistrNum, vars.get(var));
+            } else {
+                vars.put(var, ++lastVarNum);
+                gen("LOADVAR", lastRegistrNum, vars.get(var));
+            }
+        }
+        return null;
+    }
+
+    @Override
     // TODO don't store redundant values
     public Void visitBinaryExpr(com.codeverification.Var3Parser.BinaryExprContext ctx) {
         String binOp = ctx.binOp().getText();
         int firstReg;
         switch (binOp) {
-            case "=":
-                if (!(ctx.expr(0) instanceof com.codeverification.Var3Parser.PlaceExprContext)) {
-                    throw new RuntimeException("=. Left operand should be identifier");
-                } else {
-                    String var = ((com.codeverification.Var3Parser.PlaceExprContext)ctx.expr(0)).identifier().getText();
-                    visit(ctx.expr(1));
-                    if (vars.containsKey(var)) {
-                        gen("LOADVAR", lastRegistrNum, vars.get(var));
-                    } else {
-                        vars.put(var, ++lastVarNum);
-                        gen("LOADVAR", lastRegistrNum, vars.get(var));
-                    }
-                }
-                break;
             case "+":
                 visit(ctx.expr(0));
                 firstReg = lastRegistrNum;
@@ -315,9 +319,14 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
             args.add(lastRegistrNum);
         }
         if (ctx.expr() instanceof PlaceExprContext) {
-            gen("CALL", args.get(0), getFunNum(ctx.expr().getText()));
-            programm.get(lastComNum).addArg(args.toArray(new Integer[args.size()]));
-            lastRegistrNum = args.get(0);
+            if (args.isEmpty()) {
+                lastRegistrNum ++;
+                gen("CALL", lastRegistrNum, getFunNum(ctx.expr().getText()));
+            } else {
+                gen("CALL", args.get(0), getFunNum(ctx.expr().getText()));
+                programm.get(lastComNum).addArg(args.toArray(new Integer[args.size()]));
+                lastRegistrNum = args.get(0);
+            }
         } else {
             throw new RuntimeException("Wrong func name:" + ctx.expr().getText());
         }

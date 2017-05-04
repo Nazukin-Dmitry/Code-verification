@@ -1,14 +1,14 @@
-function calc(A as int, B as int, Op as char) as int
+function calc(A as long, B as long, Op as char)
      if (Op == '+') then
-        calc = (sum(A, B));
+        calc = sum(A, B);
      end if
      if (Op == '-') then
-        calc = (minus(A,B));
+        calc = minus(A,B);
      end if
 end function
 
-function sum(A as int, B as int) as int
-    sum = (A+B);
+function sum(A as long, B as long)
+    sum = A+B;
 end function
 
 function CreateFile(lpFileName as string,
@@ -30,33 +30,61 @@ function WriteFile(hFile as int,
 function CloseHandle(hFile as int) as int from "kernel32.dll"
 
 function main()
-    n = 0;
-    f = (CreateFile("c:\\out", 0, 0, 0, 0, 0, 0));
-    WriteFile(f, "test string", 11, n, 0);
+    f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
+
+    calc = Evkl(55,44);
+    WriteFile(f, "Evkl(55,44) = " + calc + "\n", 0, 0, 0);
+
+    andResult = and(true,false);
+    WriteFile(f, "and(true,false) = " + andResult + "\n", 0, 0, 0);
+
+    calcResult = calc(55,44, '+');
+    WriteFile(f, "calc(55,44, '+') = " +calcResult + "\n", 0, 0, 0);
+
+    concatResult = concat("55","44");
+    WriteFile(f, "concat(55,44) = " + concatResult + "\n", 0, 0, 0);
+
+    dummyResult = dummy();
+    WriteFile(f, "dummy() = " + dummyResult + "\n", 0, 0, 0);
+
+    facResult = Factorial(5);
+    WriteFile(f, "Factorial(5) = " + facResult + "\n", 0, 0, 0);
+
+    fibResult = Fib(4);
+    WriteFile(f, "Fib(4) = " + fibResult + "\n", 0, 0, 0);
+
+    fun1Result = fun1(10, 100);
+    WriteFile(f, "fun1(10, 100) = " + fun1Result + "\n", 0, 0, 0);
+
+    helloResult = hello("World");
+    WriteFile(f, "hello(World) = " + helloResult + "\n", 0, 0, 0);
+
+    stoResult = sto();
+    WriteFile(f, "sto() = " + stoResult + "\n", 0, 0, 0);
+
     CloseHandle(f);
+    main=0;
 end function
 
-function hello(B as string) as string
+function hello(B as long)
     hello = "hello ";
     dot = "!!!" ;
-    hello = (hello+B+dot);
+    hello = hello+B+dot;
 end function
 
-
-
-function fun1(A as int, B as int)
+function fun1(A as long, B as long)
     fun1 = (((A+B-100)*20)/50);
 end function
 
 function sto()
     sto = 0;
     do
-        sto = (sto+1);
+        sto = sto+1;
     loop while (sto < 100)
 end function
 
 function concat(A as string, B as string)
-    concat = (A+B);
+    concat = A+B;
 end function
 
 function Evkl(A as long, B as long)
@@ -65,52 +93,40 @@ function Evkl(A as long, B as long)
             break
         end if
         if (A>B) then
-            A = (A % B);
+            A = A % B;
         else
-            B = (B % A);
+            B = B % A;
         end if
     wend
-    Evkl = (A+B);
+    Evkl = A+B;
 end function
 
-function Fib(A as int) as int
+function Fib(A as long)
                 if (A == 1) then
                     Fib = 1;
                  else
                     if (A == 0) then
                         Fib = 0;
                      else
-                        Fib = ((Fib(A-1)) + (Fib(A-2)));
+                        Fib = (Fib(A-1)) + (Fib(A-2));
                     end if
                  end if
             end function
 
 function and(A as bool, B as bool)
-    and = (A&&B);
+    and = A&&B;
 end function
 
 function dummy()
-    dummy = (0b01010 + 0xFA22);
+    dummy = 0b01010 + 0xFA22;
 end function
 
-function Factorial(A as int) as int
+function Factorial(A as long)
     result = 1;
     count = 0;
     do
-        count = (count + 1);
-        result = (result*count);
+        count = count + 1;
+        result = result*count;
    loop until ((count == A) || (count > A))
    Factorial = result;
-end function
-
-function FibByte(A as byte)
-    if (A == 1) then
-        FibByte = A;
-     else
-        if (A == 0) then
-            FibByte = A;
-         else
-            FibByte = ((FibByte(A-1)) + (FibByte(A-2)));
-        end if
-     end if
 end function

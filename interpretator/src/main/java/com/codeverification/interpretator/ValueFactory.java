@@ -16,7 +16,8 @@ public class ValueFactory {
                 result.setConst(true);
                 break;
             case STRING:
-                String str = value.getConstName().substring(1, value.getConstName().length()-1);
+                String str = value.getConstName().substring(1, value.getConstName().length() - 1);
+                str = str.replaceAll("\\\\n", "\n");
                 result = new StringValue(str);
                 result.setConst(true);
                 break;

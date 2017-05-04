@@ -1,5 +1,12 @@
 package com.codeverification.interpretator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.codeverification.compiler.Command;
 import com.codeverification.compiler.DataType;
 import com.codeverification.compiler.MethodDefinition;
@@ -7,13 +14,6 @@ import com.codeverification.compiler.MethodSignature;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.ptr.IntByReference;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Dmitrii Nazukin
@@ -50,13 +50,14 @@ public class FuncExecutor {
 
             consts.addAll(
                     methodDefinition.getConsts().stream().map(con -> ValueFactory.get(con)).collect(Collectors.toList()));
-            methodSignature = methodDefinition.getMethodSignature();
+
             commands = methodDefinition.getCommands();
             funcs = methodDefinition.getFuncs();
         } else {
             isNative = true;
             libraryName = methodDefinition.getLibraryName();
         }
+        methodSignature = methodDefinition.getMethodSignature();
 
     }
 
@@ -118,7 +119,7 @@ public class FuncExecutor {
         if (vars.get(0) == null) {
             throw new RuntimeException("Return value - " + methodSignature.getFuncName() + " - hasn't been initialized!!!");
         }
-            return vars.get(0);
+        return vars.get(0);
 //        if (methodSignature.getReturnType() == DataType.UNDEFINED) {
 //            return vars.get(0);
 //        } else if (methodSignature.getReturnType() == vars.get(0).getType()) {
@@ -625,8 +626,10 @@ public class FuncExecutor {
                         throw new RuntimeException("Function name " + methodSignature.getFuncName() + " doesnt' exist in kernel32.dll");
                 }
             } else {
-                throw new RuntimeException("Library name " + methodSignature.getFuncName() + " doesn't exist in interpreter");
+                throw new RuntimeException("Library name " + libraryName + " doesn't exist in interpreter");
             }
+        } else {
+            throw new RuntimeException("Library name " + libraryName + " doesn't exist in interpreter");
         }
         vars.put(0, result);
     }

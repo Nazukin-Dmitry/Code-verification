@@ -1,5 +1,10 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.MemberContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.SourceItemContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -7,11 +12,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.SourceItemContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -54,6 +54,7 @@ public class Zadanie4 {
         Map<MethodSignature,  Set<MethodSignature>> funcCFG = new HashMap<>();
         List<CodeGenerationVisitor> mnemFuncs = new ArrayList<>();
         Map<MethodSignature, MethodDefinition> binFuncs = new LinkedHashMap<>();
+        Map<String, ClassDefinition> binClasses = new LinkedHashMap<>();
 
         try {
             ParserFacade parserFacade = new ParserFacade();
@@ -62,18 +63,32 @@ public class Zadanie4 {
                 SourceContext sourceContext = parserFacade.parse(inDoc);
                 sources.add(sourceContext);
                 for (SourceItemContext itemContext : sourceContext.sourceItem()) {
-                    if (itemContext instanceof FuncDefContext) {
-                        GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
+                    if (itemContext.funcDef() != null) {
+                        GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph(itemContext.funcDef());
                         graphs.add(graph);
+                    }
+                    if (itemContext.classDef() != null) {
+                        for (MemberContext memberContext : itemContext.classDef().member()) {
+                            if (memberContext.funcDef() != null) {
+                                GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph(memberContext.funcDef());
+                                graphs.add(graph);
+                            }
+                        }
                     }
                     CodeGenerationVisitor codeGenerationVisitor = new CodeGenerationVisitor();
                     codeGenerationVisitor.visit(itemContext);
                     mnemFuncs.add(codeGenerationVisitor);
-                    MethodDefinition methodDefinition = codeGenerationVisitor.map2MethodDefinition();
-                    if (!binFuncs.containsKey(methodDefinition.getMethodSignature())) {
+                    if (codeGenerationVisitor.classDefinition == null) {
+                        MethodDefinition methodDefinition = codeGenerationVisitor.map2MethodDefinition();
                         binFuncs.put(methodDefinition.getMethodSignature(), methodDefinition);
                     } else {
-                        throw new RuntimeException("Several methods with signature" + methodDefinition.getMethodSignature());
+                        ClassDefinition classDefinition = codeGenerationVisitor.classDefinition;
+                        if (binClasses.containsKey(classDefinition)) {
+                            throw new RuntimeException("Several classes");
+                        } else {
+                            binClasses.put(codeGenerationVisitor.classDefinition.getClassName(),
+                                    codeGenerationVisitor.classDefinition);
+                        }
                     }
                 }
             }

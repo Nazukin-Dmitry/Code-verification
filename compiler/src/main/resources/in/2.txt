@@ -1,3 +1,21 @@
-function minus(A as int, B as int) as int
+function minus(A as long, B as long)
     minus = (A-B);
 end function
+
+class Dummy
+    private id
+    public name
+
+    private function concat()
+        concat = id + name;
+    end function
+
+    public function getName()
+        getName = name;
+        minus(2,3);
+    end function
+
+    public function New()
+
+    end function
+end class

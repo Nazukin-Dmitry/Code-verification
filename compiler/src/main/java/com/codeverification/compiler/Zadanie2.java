@@ -1,12 +1,11 @@
 package com.codeverification.compiler;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
 import com.codeverification.Var3Parser.SourceContext;
 import com.codeverification.Var3Parser.SourceItemContext;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by 1 on 11.04.2017.
@@ -26,8 +25,8 @@ public class Zadanie2 {
                 SourceContext sourceContext = parserFacade.parse(args[i]);
                 sources.add(sourceContext);
                 for (SourceItemContext itemContext : sourceContext.sourceItem()) {
-                    GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
-                    parserFacade.printCFG(graph, outputPath + "\\" + ((FuncDefContext) itemContext).funcSignature().funcName.getText() + ".txt");
+                    GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph(itemContext.funcDef());
+                    parserFacade.printCFG(graph, outputPath + "\\" + itemContext.funcDef().funcSignature().funcName.getText() + ".txt");
                 }
             }
 

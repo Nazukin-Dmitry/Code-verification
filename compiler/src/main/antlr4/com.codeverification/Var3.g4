@@ -6,8 +6,31 @@ sourceItem* EOF
 ;
 
 sourceItem
-:'function' funcSignature statement* 'end' 'function' #funcDef
-|'function' funcSignature 'from' library=STR #nativeFunc
+:funcDef|nativeFunc|classDef
+;
+
+funcDef
+:'function' funcSignature statement* 'end' 'function'
+;
+
+nativeFunc
+:'function' funcSignature 'from' library=STR
+;
+
+classDef
+:'class' identifier member* 'end' 'class'
+;
+
+member
+:modifier (funcDef|field|nativeFunc)
+;
+
+field
+:listIdentifier ('as' typeRef)?
+;
+
+modifier
+: PUBLIC|PRIVATE
 ;
 
 funcSignature
@@ -17,7 +40,6 @@ funcSignature
 argDef
 :identifier ('as' typeRef)?
 ;
-
 
 typeRef
 :('bool'|'byte'|'int'|'uint'|'long'|'ulong'|'char'|'string') #builtin
@@ -35,9 +57,11 @@ statement
 expr
 :'(' expr ')' #bracesExpr
  | expr '(' listExpr ')' #callExpr
- |  expr binOp expr #binaryExpr
+ | expr '.' expr #memberExpr
+ | expr binOp expr #binaryExpr
  | unOp expr #unaryExpr
  | expr '=' expr #assignExpr
+ | 'new' identifier '(' listExpr ')' #initExpr
  | identifier #placeExpr
  | value = (BOOL|STR|CHAR|HEX|BITS|DEC) #literalExpr
 ;
@@ -50,6 +74,11 @@ listExpr
 :(expr (',' expr)*)?
 ;
 
+listIdentifier
+:(identifier (',' identifier)*)?
+;
+
+
 identifier: IDENTIFIER;
 
 binOp
@@ -61,6 +90,9 @@ unOp
 
 WHILE: 'while';
 UNTIL: 'until';
+
+PUBLIC: 'public';
+PRIVATE: 'private';
 
 BOOL: 'true'|'false';
 IDENTIFIER

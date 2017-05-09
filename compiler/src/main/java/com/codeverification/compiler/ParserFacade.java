@@ -1,5 +1,11 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Parser.*;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,24 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import com.codeverification.Var3Parser.BinOpContext;
-import com.codeverification.Var3Parser.BuiltinContext;
-import com.codeverification.Var3Parser.DoStatementContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.IdentifierContext;
-import com.codeverification.Var3Parser.IfStatementContext;
-import com.codeverification.Var3Parser.LiteralExprContext;
-import com.codeverification.Var3Parser.NativeFuncContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.StatementContext;
-import com.codeverification.Var3Parser.UnOpContext;
 
 /**
  * Created by 1 on 08.04.2017.
@@ -328,11 +316,23 @@ public class ParserFacade {
         Map<MethodSignature, Set<MethodSignature>> funcCFG = new HashMap<>();
         for (SourceContext ctx : sources) {
             for (com.codeverification.Var3Parser.SourceItemContext item : ctx.sourceItem()) {
-                MethodSignature methodSignature;
-                if (item instanceof FuncDefContext) {
-                    methodSignature = new MethodSignature(((FuncDefContext)item).funcSignature());
+                MethodSignature methodSignature = null;
+                if (item.funcDef() != null) {
+                    methodSignature = new MethodSignature(item.funcDef().funcSignature());
+                } else if (item.nativeFunc() != null) {
+                    methodSignature = new MethodSignature(item.nativeFunc().funcSignature());
                 } else {
-                    methodSignature = new MethodSignature(((NativeFuncContext)item).funcSignature());
+                    for (MemberContext memberContext : item.classDef().member()) {
+                        if (memberContext.funcDef() != null) {
+                            methodSignature = new MethodSignature(memberContext.funcDef().funcSignature());
+                            methodSignature.setFuncName(item.classDef().identifier() + "." + methodSignature.getFuncName());
+                        } else if (memberContext.nativeFunc() != null) {
+                            methodSignature = new MethodSignature(memberContext.nativeFunc().funcSignature());
+                            methodSignature.setFuncName(item.classDef().identifier() + "." + methodSignature.getFuncName());
+                        } else {
+                            continue;
+                        }
+                    }
                 }
                 CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
                 cfgVisitor.visit(item);

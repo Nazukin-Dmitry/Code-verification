@@ -25,9 +25,12 @@ public class ControlFlowGraphVisitor extends com.codeverification.Var3BaseVisito
 
     @Override
     public GraphNode<ExprContext> visitFuncDef(com.codeverification.Var3Parser.FuncDefContext ctx) {
-        GraphNode<ExprContext> startNode = visit(ctx.statement(0));
-        for (int i = 1; i < ctx.statement().size(); i++) {
-            lastNode.setNextNode(visit(ctx.statement(i)));
+        GraphNode<ExprContext> startNode = new OrdinaryGraphNode<>();
+        if (CollectionUtils.isNotEmpty(ctx.statement())) {
+            startNode = visit(ctx.statement(0));
+            for (int i = 1; i < ctx.statement().size(); i++) {
+                lastNode.setNextNode(visit(ctx.statement(i)));
+            }
         }
         return startNode;
     }

@@ -1,5 +1,9 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser;
+import com.codeverification.Var3Parser.*;
+
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,18 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser;
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.AssignExprContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.StatementContext;
-
 /**
  * @author Dmitrii Nazukin
  */
 public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<Void> {
+
+    ClassDefinition classDefinition;
 
     MethodSignature methodSignature;
 
@@ -46,6 +44,17 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     private boolean isNative;
     private String library;
 
+    @Override
+    public Void visitSourceItem(SourceItemContext ctx) {
+        if (ctx.funcDef() != null) {
+            visit(ctx.funcDef());
+        } else if (ctx.classDef() != null) {
+            visit(ctx.classDef());
+        } else if (ctx.nativeFunc() != null) {
+            visit(ctx.nativeFunc());
+        }
+        return null;
+    }
 
     @Override
     public Void visitFuncDef(com.codeverification.Var3Parser.FuncDefContext ctx) {
@@ -62,6 +71,47 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         visit(ctx.funcSignature());
         isNative = true;
         library = ctx.library.getText().substring(1, ctx.library.getText().length()-1);
+        return null;
+    }
+
+    @Override
+    public Void visitClassDef(ClassDefContext ctx) {
+        classDefinition = new ClassDefinition();
+        classDefinition.setClassName(ctx.identifier().getText());
+        // visit all fields
+        int counter = 0;
+        for (MemberContext memberContext : ctx.member()) {
+            if (memberContext.field() != null) {
+                if (memberContext.modifier().getText().equals("public")) {
+                    for (IdentifierContext name : memberContext.field().listIdentifier().identifier()) {
+                        classDefinition.getPublicFields().put(name.getText(), counter++);
+                    }
+                } else if (memberContext.modifier().getText().equals("private")) {
+                    for (IdentifierContext name : memberContext.field().listIdentifier().identifier()) {
+                        classDefinition.getPrivateFields().put(name.getText(), counter++);
+                    }
+                }
+            }
+        }
+        // visit all functions
+        for (MemberContext memberContext : ctx.member()) {
+            if (memberContext.field() == null) {
+                CodeGenerationVisitor codeGenerationVisitor = new CodeGenerationVisitor();
+                codeGenerationVisitor.classDefinition = classDefinition;
+                if (memberContext.nativeFunc() != null) {
+                    codeGenerationVisitor.visit(memberContext.nativeFunc());
+                } else if (memberContext.funcDef() != null) {
+                    codeGenerationVisitor.visit(memberContext.funcDef());
+                }
+                if (memberContext.modifier().getText().equals("public")) {
+                    classDefinition.getPublicFunctions().put(codeGenerationVisitor.methodSignature,
+                            codeGenerationVisitor.map2MethodDefinition());
+                } else if (memberContext.modifier().getText().equals("private")) {
+                    classDefinition.getPrivateFunctions().put(codeGenerationVisitor.methodSignature,
+                            codeGenerationVisitor.map2MethodDefinition());
+                }
+            }
+        }
         return null;
     }
 
@@ -224,17 +274,50 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
 
     @Override
     public Void visitAssignExpr(AssignExprContext ctx) {
-        if (!(ctx.expr(0) instanceof com.codeverification.Var3Parser.PlaceExprContext)) {
-            throw new RuntimeException("=. Left operand should be identifier");
-        } else {
-            String var = ((com.codeverification.Var3Parser.PlaceExprContext)ctx.expr(0)).identifier().getText();
-            visit(ctx.expr(1));
+        visit(ctx.expr(1));
+        int valueRegistrNum = lastRegistrNum;
+        if (ctx.expr(0) instanceof PlaceExprContext) {
+            String var = ((PlaceExprContext) ctx.expr(0)).identifier().getText();
             if (vars.containsKey(var)) {
                 gen("LOADVAR", lastRegistrNum, vars.get(var));
             } else {
-                vars.put(var, ++lastVarNum);
-                gen("LOADVAR", lastRegistrNum, vars.get(var));
+                // check that class
+                if (classDefinition != null && classDefinition.getField(var) != null) {
+                    gen("LOADCLASSVAR", lastRegistrNum, classDefinition.getField(var));
+                } else {
+                    vars.put(var, ++lastVarNum);
+                    gen("LOADVAR", lastRegistrNum, vars.get(var));
+                }
             }
+        } else if (ctx.expr(0) instanceof MemberExprContext) {
+            MemberExprContext memberExprContext = (MemberExprContext) ctx.expr(0);
+            visit(memberExprContext.expr(0));
+            String fieldName = memberExprContext.expr(1).getText();
+            Const constant = new Const(fieldName, DataType.STRING);
+            consts.put(constant, ++lastConstNum);
+            gen("LOADOBJECTFIELD", valueRegistrNum, lastRegistrNum, lastConstNum);
+        } else {
+            throw new RuntimeException("=. Left operand should be identifier");
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitMemberExpr(MemberExprContext ctx) {
+        visit(ctx.expr(0));
+        int objectRegNum = lastRegistrNum;
+        if (ctx.expr(1) instanceof CallExprContext) {
+            visit(ctx.expr(1));
+            Command callCommand = programm.get(lastComNum);
+            callCommand.setName("CALLOBJECTFUN");
+            callCommand.args.set(1, objectRegNum);
+        } else if (ctx.expr(1) instanceof PlaceExprContext) {
+            String varName = ctx.expr(1).getText();
+            Const constant = new Const(varName, DataType.STRING);
+            consts.put(constant, ++lastConstNum);
+            gen("PUSHOBJECTFIELD", objectRegNum, lastConstNum, ++lastRegistrNum);
+        } else {
+            throw new RuntimeException();
         }
         return null;
     }
@@ -348,9 +431,27 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         String varName = ctx.IDENTIFIER().getText();
         if (vars.containsKey(varName)) {
             gen("PUSHVAR", vars.get(varName), ++lastRegistrNum);
+        } else if (classDefinition != null && classDefinition.getField(varName) != null) {
+            gen("PUSHCLASSVAR", classDefinition.getField(varName), ++lastRegistrNum);
         } else {
             throw new RuntimeException("Variable is not defined:" + varName);
         }
+        return null;
+    }
+
+    @Override
+    public Void visitInitExpr(InitExprContext ctx) {
+        String className = ctx.identifier().getText();
+        Const constant = new Const(className, DataType.STRING);
+        consts.put(constant, ++lastConstNum);
+        int classNameConstNum = lastConstNum;
+        List<Integer> args = new ArrayList<>();
+        for (ExprContext arg : ctx.listExpr().expr()) {
+            visit(arg);
+            args.add(lastRegistrNum);
+        }
+        gen("INITIALIZE", lastRegistrNum, classNameConstNum);
+        programm.get(lastComNum).addArg(args.toArray(new Integer[args.size()]));
         return null;
     }
 
@@ -371,22 +472,36 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     }
 
     public void print(PrintStream printStream) {
-        printStream.println(".methodSignature");
-        printStream.println(methodSignature);
-        if (isNative) {
-            printStream.println("from " + library);
+        if (classDefinition == null) {
+            printStream.println(".methodSignature");
+            printStream.println(methodSignature);
+            if (isNative) {
+                printStream.println("from " + library);
+            } else {
+                printStream.println(".funcs");
+                funcs.entrySet()
+                        .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
+                printStream.println(".vars");
+                vars.entrySet()
+                        .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
+                printStream.println(".consts");
+                consts.entrySet()
+                        .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
+                printStream.println(".programm");
+                IntStream.range(0, programm.size()).forEach(idx -> printStream.println(idx + ": " + programm.get(idx)));
+            }
         } else {
-            printStream.println(".funcs");
-            funcs.entrySet()
-                    .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
-            printStream.println(".vars");
-            vars.entrySet()
-                    .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
-            printStream.println(".consts");
-            consts.entrySet()
-                    .forEach(e -> printStream.println(e.getValue() + ":" + e.getKey()));
-            printStream.println(".programm");
-            IntStream.range(0, programm.size()).forEach(idx -> printStream.println(idx + ": " + programm.get(idx)));
+            printStream.println(".Class");
+            printStream.println(classDefinition.getClassName());
+            printStream.println(".public fields");
+            printStream.println(classDefinition.getPublicFields());
+            printStream.println(".private fields");
+            printStream.println(classDefinition.getPrivateFields());
+            printStream.println(".public functions");
+            printStream.println(classDefinition.getPublicFunctions());
+            printStream.println(".private functions");
+            printStream.println(classDefinition.getPrivateFunctions());
+
         }
     }
 
@@ -413,10 +528,16 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         private DataType type;
 
         public Const(String constName) {
+            if (constName.startsWith("\"")) {
+                constName = constName.substring(1, constName.length() - 1);
+            }
             this.constName = constName;
         }
 
         public Const(String constName, DataType type) {
+            if (constName.startsWith("\"")) {
+                constName = constName.substring(1, constName.length() - 1);
+            }
             this.constName = constName;
             this.type = type;
         }

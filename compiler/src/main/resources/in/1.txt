@@ -1,27 +1,10 @@
-function calc(A as long, B as long, Op as char)
-     if (Op == '+') then
-        calc = sum(A, B);
-     end if
-     if (Op == '-') then
-        calc = minus(A,B);
-     end if
-end function
-
-function sum(A as long, B as long)
-    sum = A+B;
-end function
-
-function sum(A as string, B as string)
-    sum = A+B;
-end function
-
 function CreateFile(lpFileName as string,
                     dwDesiredAccess as int,
                     dwShareMode as int,
                     lpSecurityAttributes as int,
                     dwCreationDisposition as int,
                     dwFlagsAndAttributes as int,
-                    hTemplateFile as int)
+                    hTemplateFile as int) as int
                     from "kernel32.dll"
 
 function WriteFile(hFile as int,
@@ -36,20 +19,14 @@ function CloseHandle(hFile as int) from "kernel32.dll"
 function main()
     f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
 
-    calc = Evkl(64,44);
-    WriteFile(f, "Evkl(64,44) = " + calc + "\n", 0, 0, 0);
+    calc = Evkl(52,44);
+    WriteFile(f, "Evkl(52,44) = " + calc + "\n", 0, 0, 0);
 
-    andResult = and(true,false);
+    andResult = and(false,true);
     WriteFile(f, "and(true,false) = " + andResult + "\n", 0, 0, 0);
 
-    calcResult = calc(55,44, '+');
-    WriteFile(f, "calc(55,44, '+') = " +calcResult + "\n", 0, 0, 0);
-
-    concatResult = sum("55","44");
-    WriteFile(f, "string sum(55,44) = " + concatResult + "\n", 0, 0, 0);
-
-    sumResult = sum(55,44);
-    WriteFile(f, "number sum(55,44) = " + sumResult + "\n", 0, 0, 0);
+    calcResult = calc(10,44, '-');
+    WriteFile(f, "calc(10,44, '-') = " +calcResult + "\n", 0, 0, 0);
 
     dummyResult = dummy();
     WriteFile(f, "dummy() = " + dummyResult + "\n", 0, 0, 0);
@@ -57,8 +34,8 @@ function main()
     facResult = Factorial(5);
     WriteFile(f, "Factorial(5) = " + facResult + "\n", 0, 0, 0);
 
-    fibResult = Fib(4);
-    WriteFile(f, "Fib(4) = " + fibResult + "\n", 0, 0, 0);
+    fibResult = Fib(5);
+    WriteFile(f, "Fib(5) = " + fibResult + "\n", 0, 0, 0);
 
     fun1Result = fun1(10, 100);
     WriteFile(f, "fun1(10, 100) = " + fun1Result + "\n", 0, 0, 0);
@@ -69,11 +46,39 @@ function main()
     stoResult = sto();
     WriteFile(f, "sto() = " + stoResult + "\n", 0, 0, 0);
 
-    concatResult = concat(3, 3);
-    WriteFile(f, "concat(3, 3) = " + concatResult + "\n", 0, 0, 0);
+    WriteFile(f, "------------- " + "\n", 0, 0, 0);
+
+    sumResult = sum("55","44");
+    WriteFile(f, "string sum(55,44) = " + sumResult + "\n", 0, 0, 0);
+
+    sumResult = sum(55,44);
+    WriteFile(f, "number sum(55,44) = " + sumResult + "\n", 0, 0, 0);
+
+    sumResult = sum(true,false);
+    WriteFile(f, "boolean sum(true,false) = " + sumResult + "\n", 0, 0, 0);
+
+    WriteFile(f, "------------- " + "\n", 0, 0, 0);
+
+    sumResult = less("55","44");
+    WriteFile(f, "string less(55,44) = " + sumResult + "\n", 0, 0, 0);
+
+    sumResult = less(44, 55);
+    WriteFile(f, "number less(44, 55) = " + sumResult + "\n", 0, 0, 0);
+
+    sumResult = less(true,false);
+    WriteFile(f, "boolean less(true,false) = " + sumResult + "\n", 0, 0, 0);
 
     CloseHandle(f);
     main=0;
+end function
+
+function calc(A as long, B as long, Op as char)
+     if (Op == '+') then
+        calc = sum(A, B);
+     end if
+     if (Op == '-') then
+        calc = minus(A,B);
+     end if
 end function
 
 function hello(B as string)
@@ -93,10 +98,6 @@ function sto()
     loop while (sto < 100)
 end function
 
-function <T> concat(A as T, B as T)
-    concat = A+B;
-end function
-
 function Evkl(A as long, B as long)
     while (true)
         if ((A==0) || (B==0)) then
@@ -112,16 +113,16 @@ function Evkl(A as long, B as long)
 end function
 
 function Fib(A as long)
-                if (A == 1) then
-                    Fib = 1;
-                 else
-                    if (A == 0) then
-                        Fib = 0;
-                     else
-                        Fib = (Fib(A-1)) + (Fib(A-2));
-                    end if
-                 end if
-            end function
+    if (A == 1) then
+        Fib = 1;
+     else
+        if (A == 0) then
+            Fib = 0;
+         else
+            Fib = (Fib(A-1)) + (Fib(A-2));
+        end if
+     end if
+end function
 
 function and(A as bool, B as bool)
     and = A&&B;
@@ -139,4 +140,20 @@ function Factorial(A as long)
         result = result*count;
    loop until ((count == A) || (count > A))
    Factorial = result;
+end function
+
+function sum(A as long, B as long)
+    sum = A+B;
+end function
+
+function sum(A as string, B as string)
+    sum = A+B;
+end function
+
+function sum(A as bool, B as bool)
+    sum = A||B;
+end function
+
+function <T> less(A as T, B as T)
+    less = A<B;
 end function

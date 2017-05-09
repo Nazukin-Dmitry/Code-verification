@@ -1,12 +1,10 @@
 package com.codeverification.compiler;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
 import com.codeverification.Var3Parser.SourceContext;
 import com.codeverification.Var3Parser.SourceItemContext;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Dmitrii Nazukin
@@ -26,10 +24,10 @@ public class Zadanie3 {
                 SourceContext sourceContext = parserFacade.parse(args[i]);
                 sources.add(sourceContext);
                 for (SourceItemContext itemContext : sourceContext.sourceItem()) {
-                    GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
+//                    GraphNode<ExprContext> graph = parserFacade.createControlFlowGraph((FuncDefContext) itemContext);
                     CodeGenerationVisitor codeGenerationVisitor = new CodeGenerationVisitor();
                     codeGenerationVisitor.visit(itemContext);
-                    parserFacade.printCFG(graph,codeGenerationVisitor, outputPath + "\\" + ((FuncDefContext) itemContext).funcSignature().funcName.getText() + ".txt");
+//                    parserFacade.printCFG(graph,codeGenerationVisitor, outputPath + "\\" + ((FuncDefContext) itemContext).funcSignature().funcName.getText() + ".txt");
 
                 }
             }

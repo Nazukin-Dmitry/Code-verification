@@ -1,10 +1,5 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.MemberContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.SourceItemContext;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,6 +7,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.MemberContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.SourceItemContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -100,7 +100,7 @@ public class Zadanie4 {
                 parserFacade.printMnemCodes(mnemFuncs, outputMnemPath);
             }
             if (outputBinPath != null) {
-                parserFacade.printBinCodes(binFuncs, outputBinPath);
+                parserFacade.printBinCodes(binFuncs, binClasses, outputBinPath);
             }
 //
 //            Map<String, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(outputBinPath);

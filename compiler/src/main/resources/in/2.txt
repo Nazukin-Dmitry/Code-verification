@@ -1,5 +1,7 @@
 function minus(A as long, B as long)
     minus = (A-B);
+    a = new Dummy();
+    a.getName();
 end function
 
 class Dummy

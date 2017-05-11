@@ -6,10 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
 import com.codeverification.compiler.ParserFacade;
 
 /**
@@ -26,8 +23,9 @@ public class LibraryProxy implements InvocationHandler{
     @SuppressWarnings("unchecked")
     public static Object newInstance(String lib, Class<?>... interf) throws IOException, ClassNotFoundException {
         ParserFacade parserFacade = new ParserFacade();
-        Map<MethodSignature, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(lib);
-        Interpretator interpretator1 = new Interpretator(methodDefinitions);
+        List<Object> methodDefinitions = parserFacade.readBinCodes(lib);
+        Interpretator interpretator1 = null;
+//        new Interpretator(methodDefinitions);
         return Proxy.newProxyInstance(
                 interf[0].getClassLoader(),
                 interf,

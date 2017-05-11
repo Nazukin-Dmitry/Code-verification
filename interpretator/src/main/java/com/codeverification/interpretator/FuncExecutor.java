@@ -1,5 +1,12 @@
 package com.codeverification.interpretator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.codeverification.compiler.Command;
 import com.codeverification.compiler.DataType;
 import com.codeverification.compiler.MethodDefinition;
@@ -8,17 +15,12 @@ import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.ptr.IntByReference;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 /**
  * @author Dmitrii Nazukin
  */
 public class FuncExecutor {
+
+    private ObjectInstanceValue objectContext;
 
     private Interpretator interpretator;
 

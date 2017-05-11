@@ -1,11 +1,5 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Parser.*;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +16,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import com.codeverification.Var3Parser.BinOpContext;
+import com.codeverification.Var3Parser.BuiltinContext;
+import com.codeverification.Var3Parser.DoStatementContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.FuncDefContext;
+import com.codeverification.Var3Parser.IdentifierContext;
+import com.codeverification.Var3Parser.IfStatementContext;
+import com.codeverification.Var3Parser.LiteralExprContext;
+import com.codeverification.Var3Parser.MemberContext;
+import com.codeverification.Var3Parser.SourceContext;
+import com.codeverification.Var3Parser.StatementContext;
+import com.codeverification.Var3Parser.UnOpContext;
 
 /**
  * Created by 1 on 08.04.2017.
@@ -387,20 +400,23 @@ public class ParserFacade {
         }
     }
 
-    public void printBinCodes(Map<MethodSignature, MethodDefinition> binFuncs, String outputPath) throws IOException {
+    public void printBinCodes(Map<MethodSignature, MethodDefinition> binFuncs, Map<String, ClassDefinition> binClasses, String outputPath) throws IOException {
         File file = new File(outputPath);
         file.getParentFile().mkdirs();
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(binFuncs);
+            List<Object> list = new ArrayList<>();
+            list.add(binFuncs);
+            list.add(binClasses);
+            oos.writeObject(list);
             oos.flush();
         } catch (Exception e) {
             throw e;
         }
     }
 
-    public Map<MethodSignature, MethodDefinition> readBinCodes(String path) throws IOException, ClassNotFoundException {
+    public List<Object> readBinCodes(String path) throws IOException, ClassNotFoundException {
         try (ObjectInputStream oin = new ObjectInputStream(new FileInputStream(path))) {
-            return (Map<MethodSignature, MethodDefinition>) oin.readObject();
+            return (List<Object>) oin.readObject();
         } catch (Exception e) {
             throw e;
         }

@@ -13,6 +13,7 @@ public enum DataType {
     ULONG("ulong"),
     CHAR("char"),
     STRING("string"),
+    OBJECT_INSTANCE("object_instnce"),
     OBJECT("Object");
 
     private String rawText;

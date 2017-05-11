@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.codeverification.compiler.ClassDefinition;
 import com.codeverification.compiler.CodeGenerationVisitor.Const;
 import com.codeverification.compiler.DataType;
 import com.codeverification.compiler.MethodDefinition;
@@ -41,6 +42,7 @@ public class Interpretator {
     String s = "\"[^\"\\]*(?:\\.[^\"\\]*)*\"";
 
     Map<MethodSignature, MethodDefinition> functions;
+    Map<String, ClassDefinition> classDefinitions;
 
     public static final Map<String, Object> nativeLibs = new HashMap<>();
 
@@ -48,8 +50,9 @@ public class Interpretator {
         nativeLibs.put("kernel32.dll", Kernel32.INSTANCE);
     }
 
-    public Interpretator(Map<MethodSignature, MethodDefinition> functions) {
+    public Interpretator(Map<MethodSignature, MethodDefinition> functions, Map<String, ClassDefinition> classDefinitions) {
         this.functions = functions;
+        this.classDefinitions = classDefinitions;
     }
 
 //    public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -73,8 +76,10 @@ public class Interpretator {
     public static void main(String[] args) {
         try {
             ParserFacade parserFacade = new ParserFacade();
-            Map<MethodSignature, MethodDefinition> methodDefinitions = parserFacade.readBinCodes(args[0]);
-            Interpretator interpretator = new Interpretator(methodDefinitions);
+            List<Object> list = parserFacade.readBinCodes(args[0]);
+            Map<MethodSignature, MethodDefinition> methodDefinitions = (Map<MethodSignature, MethodDefinition>) list.get(0);
+            Map<String, ClassDefinition> classDefinitions = (Map<String, ClassDefinition>) list.get(1);
+            Interpretator interpretator = new Interpretator(methodDefinitions, classDefinitions);
             interpretator.executeMainMethod();
             
         } catch (Throwable t) {

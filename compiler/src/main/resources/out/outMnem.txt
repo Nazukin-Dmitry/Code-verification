@@ -716,13 +716,17 @@ MethodSignature{funcName='minus', argCount=2, argsType=[long, long], returnType=
 0:minus
 1:A
 2:B
+3:a
 .consts
+0:Const{constName='Dummy', type=string}
 .programm
 0: PUSHVAR 1 0 
 1: PUSHVAR 2 1 
 2: MINUS 0 1 0 
 3: LOADVAR 0 0 
-4: END 
+4: INITIALIZE 0 0 
+5: LOADVAR 0 3 
+6: END 
 --------------------
 ---Class---
 Dummy

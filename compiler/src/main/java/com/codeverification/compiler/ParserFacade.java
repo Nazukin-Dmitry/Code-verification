@@ -165,6 +165,10 @@ public class ParserFacade {
         file.getParentFile().mkdirs();
         try (PrintStream printStream = new PrintStream(new FileOutputStream(file))) {
             for (GraphNode<ExprContext> graph : graphs) {
+                if (graph.getNodeValue() == null) {
+                    printStream.println("start" + " -> " + "end");
+                    continue;
+                }
                 map = new HashMap<>();
                 count = 0;
 
@@ -319,28 +323,51 @@ public class ParserFacade {
                 MethodSignature methodSignature = null;
                 if (item.funcDef() != null) {
                     methodSignature = new MethodSignature(item.funcDef().funcSignature());
+                    CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
+                    cfgVisitor.visit(item);
+                    if (funcCFG.containsKey(methodSignature)) {
+                        throw new Exception("Several functions with signature "
+                                + methodSignature);
+                    }
+                    funcCFG.put(methodSignature, cfgVisitor.getSet());
                 } else if (item.nativeFunc() != null) {
                     methodSignature = new MethodSignature(item.nativeFunc().funcSignature());
+                    CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
+                    cfgVisitor.visit(item);
+                    if (funcCFG.containsKey(methodSignature)) {
+                        throw new Exception("Several functions with signature "
+                                + methodSignature);
+                    }
+                    funcCFG.put(methodSignature, cfgVisitor.getSet());
                 } else {
                     for (MemberContext memberContext : item.classDef().member()) {
                         if (memberContext.funcDef() != null) {
                             methodSignature = new MethodSignature(memberContext.funcDef().funcSignature());
-                            methodSignature.setFuncName(item.classDef().identifier() + "." + methodSignature.getFuncName());
+                            methodSignature.setFuncName(item.classDef().identifier().getText() + "." + methodSignature.getFuncName());
+
+                            CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
+                            cfgVisitor.visit(memberContext.funcDef());
+                            if (funcCFG.containsKey(methodSignature)) {
+                                throw new Exception("Several functions with signature "
+                                        + methodSignature);
+                            }
+                            funcCFG.put(methodSignature, cfgVisitor.getSet());
                         } else if (memberContext.nativeFunc() != null) {
                             methodSignature = new MethodSignature(memberContext.nativeFunc().funcSignature());
-                            methodSignature.setFuncName(item.classDef().identifier() + "." + methodSignature.getFuncName());
+                            methodSignature.setFuncName(item.classDef().identifier().getText() + "." + methodSignature.getFuncName());
+
+                            CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
+                            cfgVisitor.visit(memberContext.funcDef());
+                            if (funcCFG.containsKey(methodSignature)) {
+                                throw new Exception("Several functions with signature "
+                                        + methodSignature);
+                            }
+                            funcCFG.put(methodSignature, cfgVisitor.getSet());
                         } else {
                             continue;
                         }
                     }
                 }
-                CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
-                cfgVisitor.visit(item);
-                if (funcCFG.containsKey(methodSignature)) {
-                    throw new Exception("Several functions with signature "
-                            + methodSignature);
-                }
-                funcCFG.put(methodSignature, cfgVisitor.getSet());
             }
         }
         checkFuncCGF(funcCFG);

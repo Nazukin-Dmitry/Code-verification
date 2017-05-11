@@ -1,10 +1,11 @@
 package com.codeverification.compiler;
 
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.codeverification.compiler.CodeGenerationVisitor.Const;
+import java.util.stream.IntStream;
 
 /**
  * @author Dmitrii Nazukin
@@ -64,5 +65,33 @@ public class MethodDefinition implements Serializable {
 
     public void setLibraryName(String libraryName) {
         this.libraryName = libraryName;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(".methodSignature").append("\n");
+        stringBuilder.append(methodSignature).append("\n");
+        if (isNative) {
+            stringBuilder.append("from " + libraryName).append("\n");
+        } else {
+            stringBuilder.append(".funcs").append("\n");
+            int i = 0;
+            for (String func : funcs) {
+                stringBuilder.append(i++).append(":").append(func).append("\n");
+            }
+            stringBuilder.append(".vars_count").append("\n");
+            stringBuilder.append(varsCount).append("\n");
+            stringBuilder.append(".consts").append("\n");
+            i = 0;
+            for (Const e : consts) {
+                stringBuilder.append(i).append(":").append(e).append("\n");
+                i++;
+            }
+            stringBuilder.append(".programm").append("\n");
+            IntStream.range(0, commands.size()).forEach(idx ->
+                    stringBuilder.append(idx + ": " + commands.get(idx)).append("\n"));
+        }
+        return stringBuilder.toString();
     }
 }

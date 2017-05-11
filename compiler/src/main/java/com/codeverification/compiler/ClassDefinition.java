@@ -65,4 +65,11 @@ public class ClassDefinition implements Serializable {
     public int hashCode() {
         return className != null ? className.hashCode() : 0;
     }
+
+    class A{
+        public void a(){
+            getField("ds");
+        }
+
+    }
 }

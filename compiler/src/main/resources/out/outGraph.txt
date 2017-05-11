@@ -1,17 +1,4 @@
 start -> 0
-0 t-> 1
-1 -> 2
-2 t-> 3
-3 -> end
-2 f-> end
-0 f-> 2
-
-0:(Op=='+')
-1:calc=sum(A,B)
-2:(Op=='-')
-3:calc=minus(A,B)
----------------------------------------
-start -> 0
 0 -> 1
 1 -> 2
 2 -> 3
@@ -54,13 +41,13 @@ start -> 0
 3:andResult=and(false,true)
 4:WriteFile(f,"and(true,false) = "+andResult+"\n",0,0,0)
 5:calcResult=calc(10,44,'-')
-6:WriteFile(f,"calc(55,44, '+') = "+calcResult+"\n",0,0,0)
+6:WriteFile(f,"calc(10,44, '-') = "+calcResult+"\n",0,0,0)
 7:dummyResult=dummy()
 8:WriteFile(f,"dummy() = "+dummyResult+"\n",0,0,0)
 9:facResult=Factorial(5)
 10:WriteFile(f,"Factorial(5) = "+facResult+"\n",0,0,0)
 11:fibResult=Fib(5)
-12:WriteFile(f,"Fib(4) = "+fibResult+"\n",0,0,0)
+12:WriteFile(f,"Fib(5) = "+fibResult+"\n",0,0,0)
 13:fun1Result=fun1(10,100)
 14:WriteFile(f,"fun1(10, 100) = "+fun1Result+"\n",0,0,0)
 15:helloResult=hello("World")
@@ -83,6 +70,19 @@ start -> 0
 32:WriteFile(f,"boolean less(true,false) = "+sumResult+"\n",0,0,0)
 33:CloseHandle(f)
 34:main=0
+---------------------------------------
+start -> 0
+0 t-> 1
+1 -> 2
+2 t-> 3
+3 -> end
+2 f-> end
+0 f-> 2
+
+0:(Op=='+')
+1:calc=sum(A,B)
+2:(Op=='-')
+3:calc=minus(A,B)
 ---------------------------------------
 start -> 0
 0 -> 1
@@ -192,9 +192,23 @@ start -> 0
 
 0:minus=(A-B)
 ---------------------------------------
+start -> 0
+0 -> end
+
+0:concat=id+name
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> end
+
+0:getName=name
+1:minus(2,3)
+---------------------------------------
+start -> end
 Functions CFG
 calc->sum
 calc->minus
+Dummy.getName->minus
 main->dummy
 main->fun1
 main->sum

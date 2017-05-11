@@ -491,16 +491,16 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
                 IntStream.range(0, programm.size()).forEach(idx -> printStream.println(idx + ": " + programm.get(idx)));
             }
         } else {
-            printStream.println(".Class");
+            printStream.println("---Class---");
             printStream.println(classDefinition.getClassName());
-            printStream.println(".public fields");
+            printStream.println("---public fields---");
             printStream.println(classDefinition.getPublicFields());
-            printStream.println(".private fields");
+            printStream.println("---private fields---");
             printStream.println(classDefinition.getPrivateFields());
-            printStream.println(".public functions");
-            printStream.println(classDefinition.getPublicFunctions());
-            printStream.println(".private functions");
-            printStream.println(classDefinition.getPrivateFunctions());
+            printStream.println("---public functions---");
+            printStream.println(classDefinition.getPublicFunctions().values());
+            printStream.println("---private functions---");
+            printStream.println(classDefinition.getPrivateFunctions().values());
 
         }
     }

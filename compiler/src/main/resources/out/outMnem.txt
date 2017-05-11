@@ -724,14 +724,50 @@ MethodSignature{funcName='minus', argCount=2, argsType=[long, long], returnType=
 3: LOADVAR 0 0 
 4: END 
 --------------------
-.Class
+---Class---
 Dummy
-.public fields
+---public fields---
 {name=1}
-.private fields
+---private fields---
 {id=0}
-.public functions
-{null=com.codeverification.compiler.MethodDefinition@60f82f98, MethodSignature{funcName='getName', argCount=0, argsType=[], returnType=undefined}=com.codeverification.compiler.MethodDefinition@35f983a6, MethodSignature{funcName='New', argCount=0, argsType=[], returnType=undefined}=com.codeverification.compiler.MethodDefinition@7f690630}
-.private functions
-{null=com.codeverification.compiler.MethodDefinition@edf4efb, MethodSignature{funcName='concat', argCount=0, argsType=[], returnType=undefined}=com.codeverification.compiler.MethodDefinition@2f7a2457}
+---public functions---
+[.methodSignature
+MethodSignature{funcName='getName', argCount=0, argsType=[], returnType=undefined}
+.funcs
+0:minus
+.vars_count
+1
+.consts
+0:Const{constName='2', type=long}
+1:Const{constName='3', type=long}
+.programm
+0: PUSHCLASSVAR 1 0 
+1: LOADVAR 0 0 
+2: PUSHCONST 0 1 
+3: PUSHCONST 1 2 
+4: CALL 1 0 1 2 
+5: END 
+, .methodSignature
+MethodSignature{funcName='New', argCount=0, argsType=[], returnType=undefined}
+.funcs
+.vars_count
+1
+.consts
+.programm
+0: END 
+]
+---private functions---
+[.methodSignature
+MethodSignature{funcName='concat', argCount=0, argsType=[], returnType=undefined}
+.funcs
+.vars_count
+1
+.consts
+.programm
+0: PUSHCLASSVAR 0 0 
+1: PUSHCLASSVAR 1 1 
+2: ADD 0 1 0 
+3: LOADVAR 0 0 
+4: END 
+]
 --------------------

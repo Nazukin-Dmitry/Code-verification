@@ -1,12 +1,47 @@
-function minus(A as long, B as long)
-    minus = (A-B);
-    a = new Dummy();
-    a.getName();
+function CreateFile(lpFileName as string,
+                    dwDesiredAccess as int,
+                    dwShareMode as int,
+                    lpSecurityAttributes as int,
+                    dwCreationDisposition as int,
+                    dwFlagsAndAttributes as int,
+                    hTemplateFile as int) as int
+                    from "kernel32.dll"
+
+function WriteFile(hFile as int,
+                   lpBuffer as string,
+                   nNumberOfBytesToWrite as int,
+                   lpNumberOfBytesWritten as int,
+                   lpOverlapped as int)
+                   from "kernel32.dll"
+
+function CloseHandle(hFile as int) from "kernel32.dll"
+
+function main()
+    f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
+
+    a = minus(5,2);
+    WriteFile(f, "a= " + a + "\n", 0, 0, 0);
+
+    a = new User();
+    increaseId(a);
+    WriteFile(f, "User= " + a.getName()+ " " + a.getId() +  "\n", 0, 0, 0);
+
+    main = 0;
 end function
 
-class Dummy
+function minus(A as long, B as long)
+    minus = (A-B);
+end function
+
+function increaseId(user as User)
+    id = user.getId();
+    id = id + 1;
+    user.setId(id);
+end function
+
+class User
     private id
-    public name
+    private name
 
     private function concat()
         concat = id + name;
@@ -14,10 +49,18 @@ class Dummy
 
     public function getName()
         getName = name;
-        minus(2,3);
+    end function
+
+    public function getId()
+        getId = id;
+    end function
+
+    public function setId(newId as long)
+        id = newId;
     end function
 
     public function New()
-
+        id = 5;
+        name = "Dmitrii";
     end function
 end class

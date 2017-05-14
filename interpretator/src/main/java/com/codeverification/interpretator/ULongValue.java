@@ -2,6 +2,8 @@ package com.codeverification.interpretator;
 
 import com.codeverification.compiler.DataType;
 
+import static com.codeverification.compiler.DataType.ULONG;
+
 /**
  * Created by 1 on 18.04.2017.
  */
@@ -18,7 +20,7 @@ public class ULongValue extends AbstractValue {
 
     @Override
     public DataType getType() {
-        return DataType.ULONG;
+        return DataType.getDataType(ULONG);
     }
 
     @Override

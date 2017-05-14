@@ -1,5 +1,11 @@
 package com.codeverification.compiler;
 
+import com.codeverification.Var3Parser.*;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,24 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import com.codeverification.Var3Parser.BinOpContext;
-import com.codeverification.Var3Parser.BuiltinContext;
-import com.codeverification.Var3Parser.DoStatementContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.FuncDefContext;
-import com.codeverification.Var3Parser.IdentifierContext;
-import com.codeverification.Var3Parser.IfStatementContext;
-import com.codeverification.Var3Parser.LiteralExprContext;
-import com.codeverification.Var3Parser.MemberContext;
-import com.codeverification.Var3Parser.SourceContext;
-import com.codeverification.Var3Parser.StatementContext;
-import com.codeverification.Var3Parser.UnOpContext;
 
 /**
  * Created by 1 on 08.04.2017.
@@ -194,6 +182,7 @@ public class ParserFacade {
                         .forEach(s -> printStream.println(s.getValue() + ":" + s.getKey().getNodeValue().getText()));
                 printStream.println("---------------------------------------");
             }
+            printStream.println();
             printStream.println("Functions CFG");
             printFuncCFG4(funcCFG, printStream);
         } catch (Exception e) {
@@ -301,7 +290,7 @@ public class ParserFacade {
             String funcName = ctx.getFuncName();
 
             for (MethodSignature func : cfg.get(ctx)) {
-                printStream.println(funcName + "->" + func.getFuncName());
+                printStream.println(ctx + "->" + func);
             }
 
         }
@@ -383,7 +372,7 @@ public class ParserFacade {
                 }
             }
         }
-        checkFuncCGF(funcCFG);
+//        checkFuncCGF(funcCFG);
         return funcCFG;
     }
 

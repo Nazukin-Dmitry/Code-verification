@@ -3,6 +3,11 @@ package com.codeverification.interpretator;
 import com.codeverification.compiler.CodeGenerationVisitor.Const;
 import com.codeverification.compiler.DataType;
 
+import static com.codeverification.compiler.DataType.BOOL;
+import static com.codeverification.compiler.DataType.CHAR;
+import static com.codeverification.compiler.DataType.LONG;
+import static com.codeverification.compiler.DataType.STRING;
+
 /**
  * @author Dmitrii Nazukin
  */
@@ -10,13 +15,13 @@ public class ValueFactory {
 
     public static AbstractValue get(Const value){
         AbstractValue result;
-        switch(value.getType()) {
+        switch(value.getType().getRawText()) {
             case BOOL:
                 result = new BoolValue(Boolean.parseBoolean(value.getConstName()));
                 result.setConst(true);
                 break;
             case STRING:
-                String str = value.getConstName().substring(1, value.getConstName().length() - 1);
+                String str = value.getConstName();
                 str = str.replaceAll("\\\\n", "\n");
                 result = new StringValue(str);
                 result.setConst(true);
@@ -40,7 +45,7 @@ public class ValueFactory {
 
     public static AbstractValue getEmpty(DataType dataType) {
         AbstractValue result;
-        switch (dataType){
+        switch (dataType.getRawText()){
 //            case INT:
 //                result = new IntValue();
 //                break;
@@ -73,7 +78,7 @@ public class ValueFactory {
 
     public static AbstractValue getValue(DataType dataType, String raw) {
         AbstractValue result;
-        switch (dataType){
+        switch (dataType.getRawText()){
 //            case INT:
 //                result = new IntValue();
 //                break;
@@ -107,7 +112,7 @@ public class ValueFactory {
 
     public static AbstractValue getValue(DataType dataType, AbstractValue value) {
         AbstractValue result;
-        switch (dataType){
+        switch (dataType.getRawText()){
 //            case INT:
 //                result = new IntValue(value.asInt());
 //                break;

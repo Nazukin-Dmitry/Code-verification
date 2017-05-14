@@ -1,11 +1,11 @@
 package com.codeverification.compiler;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.codeverification.Var3Parser.CallExprContext;
 import com.codeverification.Var3Parser.MemberExprContext;
 import com.codeverification.Var3Parser.NativeFuncContext;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Dmitrii Nazukin
@@ -29,7 +29,7 @@ public class CFGBetweenFuncsVisitor extends com.codeverification.Var3BaseVisitor
     @Override
     public Void visitMemberExpr(MemberExprContext ctx) {
         if (ctx.expr(1) instanceof CallExprContext) {
-            String name = ctx.expr(0) + "." + ctx.expr(1);
+            String name = ctx.expr(0).getText() + "." + ctx.expr(1).getText();
             set.add(new MethodSignature(name, ((CallExprContext)ctx.expr(1)).listExpr().expr().size()));
         }
         return null;

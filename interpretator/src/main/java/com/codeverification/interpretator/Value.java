@@ -44,5 +44,9 @@ public interface Value extends Comparable<Value> {
         throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'Object'");
     }
 
+    default ObjectInstanceValue asObjectInstanceValue() {
+        throw new RuntimeException("Converting exception");
+    }
+
     void parse(String value);
 }

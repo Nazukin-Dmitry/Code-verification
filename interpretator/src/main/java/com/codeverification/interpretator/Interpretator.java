@@ -1,6 +1,13 @@
 package com.codeverification.interpretator;
 
-import static com.codeverification.interpretator.FuncExecutor.checkCall;
+import com.codeverification.compiler.ClassDefinition;
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.MethodSignature;
+import com.codeverification.compiler.ParserFacade;
+import com.sun.jna.platform.win32.Kernel32;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,15 +19,11 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-
-import com.codeverification.compiler.ClassDefinition;
-import com.codeverification.compiler.CodeGenerationVisitor.Const;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
-import com.codeverification.compiler.ParserFacade;
-import com.sun.jna.platform.win32.Kernel32;
+import static com.codeverification.compiler.DataType.BOOL;
+import static com.codeverification.compiler.DataType.CHAR;
+import static com.codeverification.compiler.DataType.INT;
+import static com.codeverification.compiler.DataType.STRING;
+import static com.codeverification.interpretator.FuncExecutor.checkCall;
 
 /**
  * @author Dmitrii Nazukin
@@ -94,28 +97,28 @@ public class Interpretator {
                     || patternDec.matcher(args.get(i)).matches()
                     || patternBits.matcher(args.get(i)).matches()
                     || patternHex.matcher(args.get(i)).matches()) {
-                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.INT)));
+                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.getDataType(INT))));
             } else if (patternBool.matcher(args.get(i)).matches()) {
-                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.BOOL)));
+                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.getDataType(BOOL))));
             } else if (patternChar.matcher(args.get(i)).matches()) {
-                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.CHAR)));
+                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.getDataType(CHAR))));
             } else {
-                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.STRING)));
+                argsVO.add(ValueFactory.get(new Const(args.get(i), DataType.getDataType(STRING))));
             }
         }
         checkCall(argsVO, functions.get(func), func);
-        FuncExecutor funcExecutor = FuncExecutor.getInstance(argsVO, functions.get(func), this);
+        FuncExecutor funcExecutor = FuncExecutor.getInstance(argsVO, functions.get(func), this, null);
         return funcExecutor.executeMethod();
 
     }
     
     private void executeMainMethod() {
-        MethodDefinition mainMethod = findMethod("main", Collections.emptyList());
-        FuncExecutor funcExecutor = FuncExecutor.getInstance(Collections.emptyList(), mainMethod, this);
+        MethodDefinition mainMethod = findMethod("main", Collections.emptyList(), functions);
+        FuncExecutor funcExecutor = FuncExecutor.getInstance(Collections.emptyList(), mainMethod, this,null);
         funcExecutor.executeMethod();
     }
 
-    public MethodDefinition findMethod(String funcName, List<DataType> argType){
+    public static MethodDefinition findMethod(String funcName, List<DataType> argType, Map<MethodSignature, MethodDefinition> functions){
         MethodSignature methodSignature = new MethodSignature(funcName, argType.size());
         methodSignature.getArgsType().addAll(argType);
         if (!functions.containsKey(methodSignature)) {
@@ -137,20 +140,18 @@ public class Interpretator {
                             return functions.get(signature);
                         }
                     }
-                    throw new RuntimeException("Method doesn't exist. " + methodSignature);
-                } else {
-                    throw new RuntimeException("Method doesn't exist. " + methodSignature);
                 }
             }
         } else {
             return functions.get(methodSignature);
         }
+        return null;
     }
 
-    private boolean compareArgTypes(List<DataType> funTypes1, List<DataType> argTypes2) {
+    private static boolean compareArgTypes(List<DataType> funTypes1, List<DataType> argTypes2) {
         boolean result = true;
         for (int i = 0; i < funTypes1.size(); i++) {
-            if (!funTypes1.get(i).equals(argTypes2.get(i)) && !funTypes1.get(i).equals(DataType.UNDEFINED)) {
+            if (!funTypes1.get(i).equals(argTypes2.get(i)) && !funTypes1.get(i).getRawText().equals(DataType.UNDEFINED)) {
                 result = false;
                 break;
             }
@@ -160,7 +161,7 @@ public class Interpretator {
 
     public AbstractValue executeMethodArg(String func, List<AbstractValue> args) {
         checkCall(args, functions.get(func), func);
-        FuncExecutor funcExecutor = FuncExecutor.getInstance(args, functions.get(func), this);
+        FuncExecutor funcExecutor = FuncExecutor.getInstance(args, functions.get(func), this, null);
         return funcExecutor.executeMethod();
 
     }

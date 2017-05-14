@@ -11,11 +11,11 @@ import java.util.Map;
 public class ClassDefinition implements Serializable {
     private String className;
 
-    private Map<String, Integer> publicFields = new LinkedHashMap<>();
-    private Map<String, Integer> privateFields = new LinkedHashMap<>();
+    private Map<String, Integer> fields = new LinkedHashMap<>();
+    private Map<String, Modificator> fieldsModificator = new LinkedHashMap<>();
 
-    private Map<MethodSignature, MethodDefinition> privateFunctions = new HashMap<>();
-    private Map<MethodSignature, MethodDefinition> publicFunctions = new HashMap<>();
+    private Map<MethodSignature, MethodDefinition> functions = new HashMap<>();
+    private Map<MethodSignature, Modificator> functionsModificator = new HashMap<>();
 
     public String getClassName() {
         return className;
@@ -25,28 +25,25 @@ public class ClassDefinition implements Serializable {
         this.className = className;
     }
 
-    public Map<String, Integer> getPublicFields() {
-        return publicFields;
+    public Map<String, Integer> getFields() {
+        return fields;
     }
 
-    public Map<String, Integer> getPrivateFields() {
-        return privateFields;
+    public Map<String, Modificator> getFieldsModificator() {
+        return fieldsModificator;
     }
 
-    public Map<MethodSignature, MethodDefinition> getPrivateFunctions() {
-        return privateFunctions;
+    public Map<MethodSignature, MethodDefinition> getFunctions() {
+        return functions;
     }
 
-    public Map<MethodSignature, MethodDefinition> getPublicFunctions() {
-        return publicFunctions;
+    public Map<MethodSignature, Modificator> getFunctionsModificator() {
+        return functionsModificator;
     }
 
     public Integer getField(String name) {
-        if (publicFields.containsKey(name)) {
-            return publicFields.get(name);
-        }
-        if (privateFields.containsKey(name)) {
-            return privateFields.get(name);
+        if (fields.containsKey(name)) {
+            return fields.get(name);
         }
         return null;
     }
@@ -64,12 +61,5 @@ public class ClassDefinition implements Serializable {
     @Override
     public int hashCode() {
         return className != null ? className.hashCode() : 0;
-    }
-
-    class A{
-        public void a(){
-            getField("ds");
-        }
-
     }
 }

@@ -2,6 +2,8 @@ package com.codeverification.interpretator;
 
 import com.codeverification.compiler.DataType;
 
+import static com.codeverification.compiler.DataType.BOOL;
+
 /**
  * @author Dmitrii Nazukin
  */
@@ -17,7 +19,7 @@ public class BoolValue extends AbstractValue {
 
     @Override
     public DataType getType() {
-        return DataType.BOOL;
+        return DataType.getDataType(BOOL);
     }
 
     @Override

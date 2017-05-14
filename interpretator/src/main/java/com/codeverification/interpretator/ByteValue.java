@@ -2,6 +2,8 @@ package com.codeverification.interpretator;
 
 import com.codeverification.compiler.DataType;
 
+import static com.codeverification.compiler.DataType.BYTE;
+
 /**
  * @author Dmitrii Nazukin
  */
@@ -11,7 +13,7 @@ public class ByteValue extends AbstractValue {
 
     @Override
     public DataType getType() {
-        return DataType.BYTE;
+        return DataType.getDataType(BYTE);
     }
 
     @Override

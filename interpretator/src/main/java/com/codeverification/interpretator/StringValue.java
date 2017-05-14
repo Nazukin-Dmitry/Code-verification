@@ -2,6 +2,8 @@ package com.codeverification.interpretator;
 
 import com.codeverification.compiler.DataType;
 
+import static com.codeverification.compiler.DataType.STRING;
+
 /**
  * @author Dmitrii Nazukin
  */
@@ -18,7 +20,7 @@ public class StringValue extends AbstractValue {
 
     @Override
     public DataType getType() {
-        return DataType.STRING;
+        return DataType.getDataType(STRING);
     }
 
     @Override

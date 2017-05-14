@@ -1,12 +1,6 @@
 package com.codeverification.interpretator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.codeverification.compiler.ClassDefinition;
 import com.codeverification.compiler.Command;
 import com.codeverification.compiler.DataType;
 import com.codeverification.compiler.MethodDefinition;
@@ -14,6 +8,20 @@ import com.codeverification.compiler.MethodSignature;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.ptr.IntByReference;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.codeverification.compiler.DataType.BOOL;
+import static com.codeverification.compiler.DataType.CHAR;
+import static com.codeverification.compiler.DataType.LONG;
+import static com.codeverification.compiler.DataType.STRING;
+import static com.codeverification.compiler.Modificator.ANY;
+import static com.codeverification.compiler.Modificator.PUBLIC;
 
 /**
  * @author Dmitrii Nazukin
@@ -65,9 +73,11 @@ public class FuncExecutor {
 
     public static FuncExecutor getInstance(List<AbstractValue> args,
                                            MethodDefinition methodDefinition,
-                                           Interpretator interpretator) {
+                                           Interpretator interpretator,
+                                           ObjectInstanceValue objectInstanceValue) {
 //        checkCall(args, methodDefinition);
         FuncExecutor funcExecutor = new FuncExecutor(args, methodDefinition, interpretator);
+        funcExecutor.objectContext = objectInstanceValue;
         return funcExecutor;
     }
 
@@ -88,19 +98,6 @@ public class FuncExecutor {
         }
         for (int i = 0; i < argsTypes.size(); i++) {
             AbstractValue arg = args.get(i);
-//            DataType argType = argsTypes.get(i);
-//            if (!arg.isConst()) {
-//                if (argType != arg.getType()) {
-//                    throw new RuntimeException("Wrong function args!!!"
-//                            + "Function name:"
-//                            + methodDefinition.getMethodSignature().getFuncName()
-//                            + " Args"
-//                            + args.toString());
-//                }
-//            } else {
-//                arg = ValueFactory.getValue(argType, arg);
-//            }
-
             vars.put(i + 1, arg);
         }
     }
@@ -118,22 +115,11 @@ public class FuncExecutor {
                 }
             }
         }
-        if (vars.get(0) == null) {
-            throw new RuntimeException("Return value - " + methodSignature.getFuncName() + " - hasn't been initialized!!!");
+        if (methodSignature.getFuncName().equals("New")) {
+            return objectContext;
+        } else {
+            return vars.get(0);
         }
-        return vars.get(0);
-//        if (methodSignature.getReturnType() == DataType.UNDEFINED) {
-//            return vars.get(0);
-//        } else if (methodSignature.getReturnType() == vars.get(0).getType()) {
-//            return vars.get(0);
-//        } else {
-//            throw new RuntimeException("Method "
-//                    + methodSignature.getFuncName()
-//                    + " return type should be "
-//                    + methodSignature.getReturnType()
-//                    + ". Current "
-//                    + vars.get(0).getType());
-//        }
     }
 
     private void executeCommand(Command command) {
@@ -224,13 +210,48 @@ public class FuncExecutor {
                     args.add(registers.get(command.getArgs().get(i)));
                 }
                 List<DataType> argTypes = args.stream().map(Value::getType).collect(Collectors.toList());
-                MethodDefinition methodDefinition = interpretator.findMethod(funcs.get(command.getArgs().get(1)), argTypes);
-//                checkCall(args, methodDefinition, funcs.get(command.getArgs().get(1)));
-                FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition, interpretator);
+                MethodDefinition methodDefinition = null;
+                // 1. try to find method inside class
+                if (objectContext != null) {
+                    methodDefinition = objectContext.getFunction(funcs.get(command.getArgs().get(1)), argTypes, ANY);
+                }
+                // 2. else find outside
+                if (methodDefinition == null) {
+                    methodDefinition = interpretator.findMethod(funcs.get(command.getArgs().get(1)), argTypes, interpretator.functions);
+                }
+                if (methodDefinition == null) {
+                    throw new RuntimeException("Method doesn't exist. " + methodSignature);
+                }
+                FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition, interpretator, null);
                 AbstractValue v3 = funcExecutor.executeMethod();
                 registers.put(command.getArgs().get(0), v3);
                 currentCommand++;
-
+                break;
+            case PUSHCLASSVAR:
+                registers.put(command.getArgs().get(1), objectContext.getProperty
+                        (objectContext.getPropertyName(command.getArgs().get(0)), ANY));
+                currentCommand++;
+                break;
+            case LOADCLASSVAR:
+                AbstractValue v12 = registers.get(command.getArgs().get(0));
+                String propName = objectContext.getPropertyName(command.getArgs().get(1));
+                objectContext.setProperty(propName, v12, ANY);
+                currentCommand++;
+                break;
+            case CALLOBJECTFUN:
+                callObjectFun(command.getArgs());
+                break;
+            case INITIALIZE:
+                initialize(command.getArgs());
+                break;
+            case LOADOBJECTFIELD:
+                loadObjectField(command.getArgs()) ;
+                break;
+            case PUSHOBJECTFIELD:
+                pushObjectField(command.getArgs());
+                break;
+            default:
+                throw new RuntimeException();
         }
     }
 
@@ -247,8 +268,8 @@ public class FuncExecutor {
 //            res = first.getType();
 //        }
 
-        switch (res) {
-            case STRING:
+        switch (res.getRawText()) {
+            case DataType.STRING:
                 String strValue = first.asString() + second.asString();
                 registers.put(args.get(2), new StringValue(strValue));
                 break;
@@ -286,7 +307,7 @@ public class FuncExecutor {
 //        } else {
 //            res = first.getType();
 //        }
-        switch (res) {
+        switch (res.getRawText()) {
 //            case INT:
 //                Integer intValue = first.asInt() - second.asInt();
 //                registers.put(args.get(2), new IntValue(intValue));
@@ -319,7 +340,7 @@ public class FuncExecutor {
 //        } else {
 //            res = first.getType();
 //        }
-        switch (res) {
+        switch (res.getRawText()) {
 //            case INT:
 //                Integer intValue = first.asInt() * second.asInt();
 //                registers.put(args.get(2), new IntValue(intValue));
@@ -353,7 +374,7 @@ public class FuncExecutor {
 //        } else {
 //            res = first.getType();
 //        }
-        switch (res) {
+        switch (res.getRawText()) {
 //            case INT:
 //                Integer intValue = first.asInt() / second.asInt();
 //                registers.put(args.get(2), new IntValue(intValue));
@@ -387,7 +408,7 @@ public class FuncExecutor {
 //            res = first.getType();
 //        }
 
-        switch (res) {
+        switch (res.getRawText()) {
 //            case INT:
 //                Integer intValue = first.asInt() % second.asInt();
 //                registers.put(args.get(2), new IntValue(intValue));
@@ -421,7 +442,7 @@ public class FuncExecutor {
 //            res = first.getType();
 //        }
 
-        switch (res) {
+        switch (res.getRawText()) {
 //            case INT:
 //                boolean intValue = first.asInt() < second.asInt();
 //                registers.put(args.get(2), new BoolValue(intValue));
@@ -464,7 +485,7 @@ public class FuncExecutor {
 //        } else {
 //            res = first.getType();
 //        }
-        switch (res) {
+        switch (res.getRawText()) {
 //            case INT:
 //                boolean intValue = first.asInt() > second.asInt();
 //                registers.put(args.get(2), new BoolValue(intValue));
@@ -507,7 +528,7 @@ public class FuncExecutor {
 //            res = first.getType();
 //        }
 
-        switch (res) {
+        switch (res.getRawText()) {
 //            case INT:
 //                boolean intValue = first.asInt().equals(second.asInt());
 //                registers.put(args.get(2), new BoolValue(intValue));
@@ -540,7 +561,7 @@ public class FuncExecutor {
     private void unAddCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
 
-        switch (first.getType()) {
+        switch (first.getType().getRawText()) {
 //            case INT:
 //                Integer intValue = first.asInt();
 //                registers.put(args.get(2), new IntValue(intValue));
@@ -561,7 +582,7 @@ public class FuncExecutor {
     private void unMinusCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
 
-        switch (first.getType()) {
+        switch (first.getType().getRawText()) {
 //            case INT:
 //                Integer intValue = first.asInt() * (-1);
 //                registers.put(args.get(2), new IntValue(intValue));
@@ -582,7 +603,7 @@ public class FuncExecutor {
     private void andCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != DataType.BOOL || second.getType() != DataType.BOOL) {
+        if (!first.getType().getRawText().equals(BOOL) || !second.getType().getRawText().equals(BOOL)) {
             throw new RuntimeException("Operator '&&' only available for bool arguments!!!");
         }
 
@@ -593,7 +614,7 @@ public class FuncExecutor {
     private void orCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-        if (first.getType() != DataType.BOOL || second.getType() != DataType.BOOL) {
+        if (!first.getType().getRawText().equals(BOOL) || !second.getType().getRawText().equals(BOOL)) {
             throw new RuntimeException("Operator '||' only available for bool arguments!!!");
         }
 
@@ -635,4 +656,62 @@ public class FuncExecutor {
         vars.put(0, result);
     }
 
+    private void callObjectFun(List<Integer> comArgs) {
+        List<AbstractValue> args = new ArrayList<>();
+        for (int i = 3; i < comArgs.size(); i++) {
+            args.add(registers.get(comArgs.get(i)));
+        }
+        List<DataType> argTypes = args.stream().map(Value::getType).collect(Collectors.toList());
+        ObjectInstanceValue objectInstance = registers.get(comArgs.get(1)).asObjectInstanceValue();
+        MethodDefinition methodDefinition = objectInstance.getFunction(funcs.get(comArgs.get(2)), argTypes, PUBLIC);
+        if (methodDefinition == null) {
+            throw new RuntimeException("Method doesn't exist. " + methodSignature);
+        }
+        FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition,
+                interpretator, objectInstance);
+        AbstractValue v3 = funcExecutor.executeMethod();
+        registers.put(comArgs.get(0), v3);
+        currentCommand++;
+    }
+
+    private void initialize(List<Integer> comArgs) {
+        Integer targetRegistr = comArgs.get(0);
+        Integer classNameNum = comArgs.get(1);
+        List<AbstractValue> args = new ArrayList<>();
+        for (int i = 2; i < comArgs.size(); i++) {
+            args.add(registers.get(comArgs.get(i)));
+        }
+        String className = consts.get(classNameNum).asString();
+        ClassDefinition classDefinition = interpretator.classDefinitions.get(className);
+        if (classDefinition != null) {
+            MethodDefinition aNew = Interpretator.findMethod("New", args.stream().map(arg -> arg.getType()).collect(Collectors.toList()),
+                    classDefinition.getFunctions());
+            if (aNew != null) {
+                FuncExecutor funcExecutor = FuncExecutor.getInstance(args, aNew, interpretator, new ObjectInstanceValue(classDefinition));
+                AbstractValue result = funcExecutor.executeMethod();
+                registers.put(targetRegistr, result);
+            } else {
+                throw new RuntimeException();
+            }
+        } else {
+            throw new RuntimeException();
+        }
+        currentCommand++;
+    }
+
+    private void loadObjectField(List<Integer> comArgs) {
+        String propNeame = consts.get(comArgs.get(2)).asString();
+        AbstractValue v = registers.get(comArgs.get(0));
+        ObjectInstanceValue object = registers.get(comArgs.get(1)).asObjectInstanceValue();
+        object.setProperty(propNeame, v, PUBLIC);
+        currentCommand++;
+    }
+
+    private void pushObjectField(List<Integer> comArgs) {
+        String propName = consts.get(comArgs.get(1)).asString();
+        Integer targetRegistr = comArgs.get(2);
+        ObjectInstanceValue object = registers.get(comArgs.get(0)).asObjectInstanceValue();
+        registers.put(targetRegistr, object.getProperty(propName, PUBLIC));
+        currentCommand++;
+    }
 }

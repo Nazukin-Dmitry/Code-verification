@@ -5,194 +5,29 @@ start -> 0
 3 -> 4
 4 -> 5
 5 -> 6
-6 -> 7
-7 -> 8
-8 -> 9
-9 -> 10
-10 -> 11
-11 -> 12
-12 -> 13
-13 -> 14
-14 -> 15
-15 -> 16
-16 -> 17
-17 -> 18
-18 -> 19
-19 -> 20
-20 -> 21
-21 -> 22
-22 -> 23
-23 -> 24
-24 -> 25
-25 -> 26
-26 -> 27
-27 -> 28
-28 -> 29
-29 -> 30
-30 -> 31
-31 -> 32
-32 -> 33
-33 -> 34
-34 -> end
+6 -> end
 
 0:f=CreateFile("out.txt",0x40000000,0,0,2,0,0)
-1:calc=Evkl(52,44)
-2:WriteFile(f,"Evkl(52,44) = "+calc+"\n",0,0,0)
-3:andResult=and(false,true)
-4:WriteFile(f,"and(true,false) = "+andResult+"\n",0,0,0)
-5:calcResult=calc(10,44,'-')
-6:WriteFile(f,"calc(10,44, '-') = "+calcResult+"\n",0,0,0)
-7:dummyResult=dummy()
-8:WriteFile(f,"dummy() = "+dummyResult+"\n",0,0,0)
-9:facResult=Factorial(5)
-10:WriteFile(f,"Factorial(5) = "+facResult+"\n",0,0,0)
-11:fibResult=Fib(5)
-12:WriteFile(f,"Fib(5) = "+fibResult+"\n",0,0,0)
-13:fun1Result=fun1(10,100)
-14:WriteFile(f,"fun1(10, 100) = "+fun1Result+"\n",0,0,0)
-15:helloResult=hello("World")
-16:WriteFile(f,"hello(World) = "+helloResult+"\n",0,0,0)
-17:stoResult=sto()
-18:WriteFile(f,"sto() = "+stoResult+"\n",0,0,0)
-19:WriteFile(f,"------------- "+"\n",0,0,0)
-20:sumResult=sum("55","44")
-21:WriteFile(f,"string sum(55,44) = "+sumResult+"\n",0,0,0)
-22:sumResult=sum(55,44)
-23:WriteFile(f,"number sum(55,44) = "+sumResult+"\n",0,0,0)
-24:sumResult=sum(true,false)
-25:WriteFile(f,"boolean sum(true,false) = "+sumResult+"\n",0,0,0)
-26:WriteFile(f,"------------- "+"\n",0,0,0)
-27:sumResult=less("55","44")
-28:WriteFile(f,"string less(55,44) = "+sumResult+"\n",0,0,0)
-29:sumResult=less(44,55)
-30:WriteFile(f,"number less(44, 55) = "+sumResult+"\n",0,0,0)
-31:sumResult=less(true,false)
-32:WriteFile(f,"boolean less(true,false) = "+sumResult+"\n",0,0,0)
-33:CloseHandle(f)
-34:main=0
----------------------------------------
-start -> 0
-0 t-> 1
-1 -> 2
-2 t-> 3
-3 -> end
-2 f-> end
-0 f-> 2
-
-0:(Op=='+')
-1:calc=sum(A,B)
-2:(Op=='-')
-3:calc=minus(A,B)
----------------------------------------
-start -> 0
-0 -> 1
-1 -> 2
-2 -> end
-
-0:hello="hello "
-1:dot="!!!"
-2:hello=hello+B+dot
+1:a=minus(5,2)
+2:WriteFile(f,"a= "+a+"\n",0,0,0)
+3:a=newUser()
+4:increaseId(a)
+5:WriteFile(f,"User= "+a.getName()+" "+a.getId()+"\n",0,0,0)
+6:main=0
 ---------------------------------------
 start -> 0
 0 -> end
-
-0:fun1=(((A+B-100)*20)/50)
----------------------------------------
-start -> 0
-0 -> 1
-1 -> 2
-2 t-> 1
-2 f-> end
-
-0:sto=0
-1:sto=sto+1
-2:(sto<100)
----------------------------------------
-start -> 0
-0 t-> 1
-1 t-> 2
-2 -> end
-1 f-> 3
-3 t-> 4
-4 -> 0
-3 f-> 5
-5 -> 0
-0 f-> 2
-
-0:(true)
-1:((A==0)||(B==0))
-2:Evkl=A+B
-3:(A>B)
-4:A=A%B
-5:B=B%A
----------------------------------------
-start -> 0
-0 t-> 1
-1 -> end
-0 f-> 2
-2 t-> 3
-3 -> end
-2 f-> 4
-4 -> end
-
-0:(A==1)
-1:Fib=1
-2:(A==0)
-3:Fib=0
-4:Fib=(Fib(A-1))+(Fib(A-2))
----------------------------------------
-start -> 0
-0 -> end
-
-0:and=A&&B
----------------------------------------
-start -> 0
-0 -> end
-
-0:dummy=0b01010+0xFA22
----------------------------------------
-start -> 0
-0 -> 1
-1 -> 2
-2 -> 3
-3 -> 4
-4 t-> 5
-5 -> end
-4 f-> 2
-
-0:result=1
-1:count=0
-2:count=count+1
-3:result=result*count
-4:((count==A)||(count>A))
-5:Factorial=result
----------------------------------------
-start -> 0
-0 -> end
-
-0:sum=A+B
----------------------------------------
-start -> 0
-0 -> end
-
-0:sum=A+B
----------------------------------------
-start -> 0
-0 -> end
-
-0:sum=A||B
----------------------------------------
-start -> 0
-0 -> end
-
-0:less=A<B
----------------------------------------
-start -> 0
-0 -> 1
-1 -> end
 
 0:minus=(A-B)
-1:a=newDummy()
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> 2
+2 -> end
+
+0:id=user.getId()
+1:id=id+1
+2:user.setId(id)
 ---------------------------------------
 start -> 0
 0 -> end
@@ -200,29 +35,32 @@ start -> 0
 0:concat=id+name
 ---------------------------------------
 start -> 0
+0 -> end
+
+0:getName=name
+---------------------------------------
+start -> 0
+0 -> end
+
+0:getId=id
+---------------------------------------
+start -> 0
+0 -> end
+
+0:id=newId
+---------------------------------------
+start -> 0
 0 -> 1
 1 -> end
 
-0:getName=name
-1:minus(2,3)
+0:id=5
+1:name="Dmitrii"
 ---------------------------------------
-start -> end
+
 Functions CFG
-calc->sum
-calc->minus
-Dummy.getName->minus
-main->dummy
-main->fun1
-main->sum
-main->sto
-main->Factorial
-main->less
-main->calc
-main->Fib
-main->hello
-main->CreateFile
-main->and
-main->CloseHandle
-main->Evkl
-main->WriteFile
-Fib->Fib
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='minus', argCount=2, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='increaseId', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='CreateFile', argCount=7, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='WriteFile', argCount=5, argsType=[], returnType=undefined}
+MethodSignature{funcName='increaseId', argCount=1, argsType=[User], returnType=undefined}->MethodSignature{funcName='user.getId()', argCount=0, argsType=[], returnType=undefined}
+MethodSignature{funcName='increaseId', argCount=1, argsType=[User], returnType=undefined}->MethodSignature{funcName='user.setId(id)', argCount=1, argsType=[], returnType=undefined}

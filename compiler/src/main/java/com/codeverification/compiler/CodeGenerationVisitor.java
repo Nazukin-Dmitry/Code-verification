@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static com.codeverification.compiler.DataType.BOOL;
+import static com.codeverification.compiler.DataType.CHAR;
+import static com.codeverification.compiler.DataType.LONG;
+import static com.codeverification.compiler.DataType.STRING;
+import static com.codeverification.compiler.DataType.UNDEFINED;
+
 /**
  * @author Dmitrii Nazukin
  */
@@ -84,11 +90,21 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
             if (memberContext.field() != null) {
                 if (memberContext.modifier().getText().equals("public")) {
                     for (IdentifierContext name : memberContext.field().listIdentifier().identifier()) {
-                        classDefinition.getPublicFields().put(name.getText(), counter++);
+                        if (!classDefinition.getFields().containsKey(name.getText())) {
+                            classDefinition.getFields().put(name.getText(), counter++);
+                            classDefinition.getFieldsModificator().put(name.getText(), Modificator.PUBLIC);
+                        } else {
+                            throw new RuntimeException();
+                        }
                     }
                 } else if (memberContext.modifier().getText().equals("private")) {
                     for (IdentifierContext name : memberContext.field().listIdentifier().identifier()) {
-                        classDefinition.getPrivateFields().put(name.getText(), counter++);
+                        if (!classDefinition.getFields().containsKey(name.getText())) {
+                            classDefinition.getFields().put(name.getText(), counter++);
+                            classDefinition.getFieldsModificator().put(name.getText(), Modificator.PRIVATE);
+                        } else {
+                            throw new RuntimeException();
+                        }
                     }
                 }
             }
@@ -103,12 +119,19 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
                 } else if (memberContext.funcDef() != null) {
                     codeGenerationVisitor.visit(memberContext.funcDef());
                 }
-                if (memberContext.modifier().getText().equals("public")) {
-                    classDefinition.getPublicFunctions().put(codeGenerationVisitor.methodSignature,
+                if (classDefinition.getFunctions().containsKey(codeGenerationVisitor.methodSignature)) {
+                    throw new RuntimeException();
+                } else {
+                    classDefinition.getFunctions().put(codeGenerationVisitor.methodSignature,
                             codeGenerationVisitor.map2MethodDefinition());
-                } else if (memberContext.modifier().getText().equals("private")) {
-                    classDefinition.getPrivateFunctions().put(codeGenerationVisitor.methodSignature,
-                            codeGenerationVisitor.map2MethodDefinition());
+                    if (memberContext.modifier().getText().equals("public")) {
+                        classDefinition.getFunctionsModificator()
+                                .put(codeGenerationVisitor.methodSignature, Modificator.PUBLIC);
+                    } else if (memberContext.modifier().getText().equals("private")) {
+                        classDefinition.getFunctionsModificator()
+                                .put(codeGenerationVisitor.methodSignature, Modificator.PRIVATE);
+
+                    }
                 }
             }
         }
@@ -121,7 +144,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         if (ctx.typeRef() != null) {
             methodSignature.setReturnType(DataType.getDataType(ctx.typeRef().getText()));
         } else {
-            methodSignature.setReturnType(DataType.UNDEFINED);
+            methodSignature.setReturnType(DataType.getDataType(UNDEFINED));
         }
         vars.put(ctx.funcName.IDENTIFIER().getText(), ++lastVarNum);
         if (ctx.param == null) {
@@ -247,22 +270,22 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         Const constt = new Const(ctx.getText());
         switch (ctx.value.getType()) {
             case Var3Lexer.BOOL:
-                constt.setType(DataType.BOOL);
+                constt.setType(DataType.getDataType(BOOL));
                 break;
             case Var3Lexer.STR:
-                constt.setType(DataType.STRING);
+                constt.setType(DataType.getDataType(STRING));
                 break;
             case Var3Lexer.CHAR:
-                constt.setType(DataType.CHAR);
+                constt.setType(DataType.getDataType(CHAR));
                 break;
             case Var3Lexer.HEX:
-                constt.setType(DataType.LONG);
+                constt.setType(DataType.getDataType(LONG));
                 break;
             case Var3Lexer.BITS:
-                constt.setType(DataType.LONG);
+                constt.setType(DataType.getDataType(LONG));
                 break;
             case Var3Lexer.DEC:
-                constt.setType(DataType.LONG);
+                constt.setType(DataType.getDataType(LONG));
                 break;
             default:
                 throw new RuntimeException();
@@ -293,7 +316,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
             MemberExprContext memberExprContext = (MemberExprContext) ctx.expr(0);
             visit(memberExprContext.expr(0));
             String fieldName = memberExprContext.expr(1).getText();
-            Const constant = new Const(fieldName, DataType.STRING);
+            Const constant = new Const(fieldName, DataType.getDataType(STRING));
             consts.put(constant, ++lastConstNum);
             gen("LOADOBJECTFIELD", valueRegistrNum, lastRegistrNum, lastConstNum);
         } else {
@@ -310,10 +333,10 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
             visit(ctx.expr(1));
             Command callCommand = programm.get(lastComNum);
             callCommand.setName("CALLOBJECTFUN");
-            callCommand.args.set(1, objectRegNum);
+            callCommand.args.add(1, objectRegNum);
         } else if (ctx.expr(1) instanceof PlaceExprContext) {
             String varName = ctx.expr(1).getText();
-            Const constant = new Const(varName, DataType.STRING);
+            Const constant = new Const(varName, DataType.getDataType(STRING));
             consts.put(constant, ++lastConstNum);
             gen("PUSHOBJECTFIELD", objectRegNum, lastConstNum, ++lastRegistrNum);
         } else {
@@ -442,7 +465,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     @Override
     public Void visitInitExpr(InitExprContext ctx) {
         String className = ctx.identifier().getText();
-        Const constant = new Const(className, DataType.STRING);
+        Const constant = new Const(className, DataType.getDataType(STRING));
         consts.put(constant, ++lastConstNum);
         int classNameConstNum = lastConstNum;
         List<Integer> args = new ArrayList<>();
@@ -493,15 +516,16 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         } else {
             printStream.println("---Class---");
             printStream.println(classDefinition.getClassName());
-            printStream.println("---public fields---");
-            printStream.println(classDefinition.getPublicFields());
-            printStream.println("---private fields---");
-            printStream.println(classDefinition.getPrivateFields());
-            printStream.println("---public functions---");
-            printStream.println(classDefinition.getPublicFunctions().values());
-            printStream.println("---private functions---");
-            printStream.println(classDefinition.getPrivateFunctions().values());
-
+            printStream.println("---fields---");
+            for (String var : classDefinition.getFields().keySet()) {
+                printStream.println(classDefinition.getFields().get(var) + " : " +var + " - "
+                        + classDefinition.getFieldsModificator().get(var));
+            }
+            printStream.println("---functions---");
+            for (MethodSignature methodSignature : classDefinition.getFunctions().keySet()) {
+                printStream.println(classDefinition.getFunctionsModificator().get(methodSignature) +
+                        " : "+ methodSignature + " \n " + classDefinition.getFunctions().get(methodSignature));
+            }
         }
     }
 

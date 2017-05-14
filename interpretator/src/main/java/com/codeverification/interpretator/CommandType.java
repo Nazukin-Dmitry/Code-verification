@@ -21,12 +21,20 @@ public enum CommandType {
     UNMINUS,
 
     PUSHVAR,
+    PUSHCLASSVAR,
     LOADVAR,
+    LOADCLASSVAR,
     PUSHCONST,
 
     JMPFALSE,
     JMPTRUE,
     JMP,
 
-    CALL;
+    CALL,
+    CALLOBJECTFUN,
+
+    INITIALIZE,
+    LOADOBJECTFIELD,
+    PUSHOBJECTFIELD
+    ;
 }

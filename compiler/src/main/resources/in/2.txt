@@ -22,9 +22,9 @@ function main()
     a = minus(5,2);
     WriteFile(f, "a= " + a + "\n", 0, 0, 0);
 
-    a = new User();
+    a = new User(3, "Dmitrii");
     increaseId(a);
-    WriteFile(f, "User= " + a.getName()+ " " + a.getId() +  "\n", 0, 0, 0);
+    WriteFile(f, "User= " + a.concat() +  "\n", 0, 0, 0);
 
     main = 0;
 end function
@@ -43,8 +43,9 @@ class User
     private id
     private name
 
-    private function concat()
-        concat = id + name;
+    public function concat()
+        concat = "" + id + " " + name;
+        minus(3,5);
     end function
 
     public function getName()
@@ -59,8 +60,8 @@ class User
         id = newId;
     end function
 
-    public function New()
-        id = 5;
-        name = "Dmitrii";
+    public function New(_id, _name)
+        id = _id;
+        name = _name;
     end function
 end class

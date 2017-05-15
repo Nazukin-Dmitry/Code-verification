@@ -34,7 +34,7 @@ modifier
 ;
 
 funcSignature
-:('<' param=identifier '>')? funcName=identifier '(' listArgDef ')' ('as' typeRef)?
+: funcName=identifier '(' listArgDef ')' ('as' typeRef)?
 ;
 
 argDef

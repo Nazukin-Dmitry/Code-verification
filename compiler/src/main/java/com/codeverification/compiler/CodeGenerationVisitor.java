@@ -1,8 +1,10 @@
 package com.codeverification.compiler;
 
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser;
-import com.codeverification.Var3Parser.*;
+import static com.codeverification.compiler.DataType.BOOL;
+import static com.codeverification.compiler.DataType.CHAR;
+import static com.codeverification.compiler.DataType.LONG;
+import static com.codeverification.compiler.DataType.STRING;
+import static com.codeverification.compiler.DataType.UNDEFINED;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -12,11 +14,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static com.codeverification.compiler.DataType.BOOL;
-import static com.codeverification.compiler.DataType.CHAR;
-import static com.codeverification.compiler.DataType.LONG;
-import static com.codeverification.compiler.DataType.STRING;
-import static com.codeverification.compiler.DataType.UNDEFINED;
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser;
+import com.codeverification.Var3Parser.ArgDefContext;
+import com.codeverification.Var3Parser.AssignExprContext;
+import com.codeverification.Var3Parser.CallExprContext;
+import com.codeverification.Var3Parser.ClassDefContext;
+import com.codeverification.Var3Parser.ExprContext;
+import com.codeverification.Var3Parser.IdentifierContext;
+import com.codeverification.Var3Parser.InitExprContext;
+import com.codeverification.Var3Parser.MemberContext;
+import com.codeverification.Var3Parser.MemberExprContext;
+import com.codeverification.Var3Parser.PlaceExprContext;
+import com.codeverification.Var3Parser.SourceItemContext;
+import com.codeverification.Var3Parser.StatementContext;
 
 /**
  * @author Dmitrii Nazukin
@@ -147,20 +158,27 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
             methodSignature.setReturnType(DataType.getDataType(UNDEFINED));
         }
         vars.put(ctx.funcName.IDENTIFIER().getText(), ++lastVarNum);
-        if (ctx.param == null) {
-            for (ArgDefContext arg : ctx.listArgDef().argDef()) {
-                vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
-                methodSignature.getArgsType().add(DataType.getDataType(arg.typeRef().getText()));
-            }
-        } else {
-            String paramType = ctx.param.getText();
-            methodSignature.setGeneric(true);
-            for (ArgDefContext arg : ctx.listArgDef().argDef()) {
-                vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
-                methodSignature.getArgsType().add(DataType.getDataType(
-                        arg.typeRef().getText().equals(paramType) ? "undefined" : arg.typeRef().getText()));
-            }
+
+        for (ArgDefContext arg : ctx.listArgDef().argDef()) {
+            vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
+            methodSignature.getArgsType().add(DataType.getDataType(arg.typeRef() != null ? arg.typeRef().getText() : "undefined"));
         }
+
+        // For <T>
+//        if (ctx.param == null) {
+//            for (ArgDefContext arg : ctx.listArgDef().argDef()) {
+//                vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
+//                methodSignature.getArgsType().add(DataType.getDataType(arg.typeRef().getText()));
+//            }
+//        } else {
+//            String paramType = ctx.param.getText();
+//            methodSignature.setGeneric(true);
+//            for (ArgDefContext arg : ctx.listArgDef().argDef()) {
+//                vars.put(arg.identifier().IDENTIFIER().getText(), ++lastVarNum);
+//                methodSignature.getArgsType().add(DataType.getDataType(
+//                        arg.typeRef().getText().equals(paramType) ? "undefined" : arg.typeRef().getText()));
+//            }
+//        }
         return null;
     }
 

@@ -154,6 +154,10 @@ function sum(A as bool, B as bool)
     sum = A||B;
 end function
 
-function <T> less(A as T, B as T)
+function less(A, B)
     less = A<B;
+end function
+
+function minus(A as long, B as long)
+    minus = (A-B);
 end function

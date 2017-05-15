@@ -25,6 +25,7 @@ function main()
     a = new User(3, "Dmitrii");
     increaseId(a);
     WriteFile(f, "User= " + a.concat() +  "\n", 0, 0, 0);
+    WriteFile(f, "User.minus " + a.minus(5,2) +  "\n", 0, 0, 0);
 
     main = 0;
 end function
@@ -45,7 +46,10 @@ class User
 
     public function concat()
         concat = "" + id + " " + name;
-        minus(3,5);
+    end function
+
+    public function minus(a, b)
+        minus = minus(a,b);
     end function
 
     public function getName()

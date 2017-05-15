@@ -1,13 +1,10 @@
 package com.codeverification.interpretator;
 
-import com.codeverification.compiler.ClassDefinition;
-import com.codeverification.compiler.CodeGenerationVisitor.Const;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
-import com.codeverification.compiler.ParserFacade;
-import com.sun.jna.platform.win32.Kernel32;
-import org.apache.commons.collections.CollectionUtils;
+import static com.codeverification.compiler.DataType.BOOL;
+import static com.codeverification.compiler.DataType.CHAR;
+import static com.codeverification.compiler.DataType.INT;
+import static com.codeverification.compiler.DataType.STRING;
+import static com.codeverification.interpretator.FuncExecutor.checkCall;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,11 +16,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.codeverification.compiler.DataType.BOOL;
-import static com.codeverification.compiler.DataType.CHAR;
-import static com.codeverification.compiler.DataType.INT;
-import static com.codeverification.compiler.DataType.STRING;
-import static com.codeverification.interpretator.FuncExecutor.checkCall;
+import org.apache.commons.collections.CollectionUtils;
+
+import com.codeverification.compiler.ClassDefinition;
+import com.codeverification.compiler.CodeGenerationVisitor.Const;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.MethodSignature;
+import com.codeverification.compiler.ParserFacade;
+import com.sun.jna.platform.win32.Kernel32;
 
 /**
  * @author Dmitrii Nazukin
@@ -114,6 +115,9 @@ public class Interpretator {
     
     private void executeMainMethod() {
         MethodDefinition mainMethod = findMethod("main", Collections.emptyList(), functions);
+        if (mainMethod == null) {
+            throw new RuntimeException("main method isn't found.");
+        }
         FuncExecutor funcExecutor = FuncExecutor.getInstance(Collections.emptyList(), mainMethod, this,null);
         funcExecutor.executeMethod();
     }

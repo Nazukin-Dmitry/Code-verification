@@ -1,16 +1,15 @@
 package com.codeverification.interpretator;
 
-import com.codeverification.compiler.ClassDefinition;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.MethodSignature;
-import com.codeverification.compiler.Modificator;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+
+import com.codeverification.compiler.ClassDefinition;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.Modificator;
 
 /**
  * @author Dmitrii Nazukin
@@ -90,15 +89,13 @@ public class ObjectInstanceValue extends AbstractValue {
     }
 
     public MethodDefinition getFunction(String funcName, List<DataType> argType, Modificator modificator) {
-        MethodSignature methodSignature = new MethodSignature(funcName, argType.size());
-        methodSignature.getArgsType().addAll(argType);
         MethodDefinition method = null;
-        try {
             method = Interpretator.findMethod(funcName, argType, classDefinition.getFunctions());
-        } catch (Exception e) {
-            throw new RuntimeException("Class "+ classDefinition.getClassName() +". Method doesn't exist. " + funcName);
-        }
-        Modificator m = classDefinition.getFunctionsModificator().get(methodSignature);
+            if (method == null) {
+                throw new RuntimeException("Class " + classDefinition.getClassName() + ". Method doesn't exist. " + funcName);
+            }
+
+        Modificator m = classDefinition.getFunctionsModificator().get(method.getMethodSignature());
         if (modificator != null) {
             switch (modificator) {
                 case ANY:

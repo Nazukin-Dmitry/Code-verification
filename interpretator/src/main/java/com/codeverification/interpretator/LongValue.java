@@ -18,6 +18,11 @@ public class LongValue extends AbstractValue {
         this.value = value;
     }
 
+    public LongValue(long value) {
+        this.value = value;
+    }
+
+
     @Override
     public DataType getType() {
         return DataType.getDataType(LONG);
@@ -29,7 +34,7 @@ public class LongValue extends AbstractValue {
     }
 
     @Override
-    public Long asLong() {
+    public long asLong() {
         return value;
     }
 

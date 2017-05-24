@@ -64,7 +64,7 @@ public class IntValue extends AbstractValue {
 //    }
 
     @Override
-    public Long asLong() {
+    public long asLong() {
         if (isConst()) {
             return value.longValue();
         } else {

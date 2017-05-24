@@ -1,72 +1,72 @@
-function CreateFile(lpFileName as string,
+declare function CreateFile(lpFileName as string,
                     dwDesiredAccess as int,
                     dwShareMode as int,
                     lpSecurityAttributes as int,
                     dwCreationDisposition as int,
                     dwFlagsAndAttributes as int,
                     hTemplateFile as int) as int
-                    from "kernel32.dll"
+                    lib "kernel32.dll" alias "CreateFileA"
 
-function WriteFile(hFile as int,
+declare function WriteFile(hFile as int,
                    lpBuffer as string,
                    nNumberOfBytesToWrite as int,
                    lpNumberOfBytesWritten as int,
-                   lpOverlapped as int)
-                   from "kernel32.dll"
+                   lpOverlapped as int) as int
+                   lib "kernel32.dll"
 
-function CloseHandle(hFile as int) from "kernel32.dll"
+declare function CloseHandle(hFile as int) as int lib "kernel32.dll"
 
 function main()
     f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
 
     calc = Evkl(52,44);
-    WriteFile(f, "Evkl(52,44) = " + calc + "\n", 0, 0, 0);
+    WriteFile(f, "Evkl(52,44) = " + calc + "\n", 16, 0, 0);
 
     andResult = and(false,true);
-    WriteFile(f, "and(true,false) = " + andResult + "\n", 0, 0, 0);
+    WriteFile(f, "and(true,false) = " + andResult + "\n", 23, 0, 0);
 
     calcResult = calc(10,44, '-');
-    WriteFile(f, "calc(10,44, '-') = " +calcResult + "\n", 0, 0, 0);
+    WriteFile(f, "calc(10,44, '-') = " +calcResult + "\n", 25, 0, 0);
 
     dummyResult = dummy();
-    WriteFile(f, "dummy() = " + dummyResult + "\n", 0, 0, 0);
+    WriteFile(f, "dummy() = " + dummyResult + "\n", 15, 0, 0);
 
     facResult = Factorial(5);
-    WriteFile(f, "Factorial(5) = " + facResult + "\n", 0, 0, 0);
+    WriteFile(f, "Factorial(5) = " + facResult + "\n", 20, 0, 0);
 
     fibResult = Fib(5);
-    WriteFile(f, "Fib(5) = " + fibResult + "\n", 0, 0, 0);
+    WriteFile(f, "Fib(5) = " + fibResult + "\n", 20, 0, 0);
 
     fun1Result = fun1(10, 100);
-    WriteFile(f, "fun1(10, 100) = " + fun1Result + "\n", 0, 0, 0);
+    WriteFile(f, "fun1(10, 100) = " + fun1Result + "\n", 20, 0, 0);
 
     helloResult = hello("World");
-    WriteFile(f, "hello(World) = " + helloResult + "\n", 0, 0, 0);
+    WriteFile(f, "hello(World) = " + helloResult + "\n", 20, 0, 0);
 
     stoResult = sto();
-    WriteFile(f, "sto() = " + stoResult + "\n", 0, 0, 0);
+    WriteFile(f, "sto() = " + stoResult + "\n", 20, 0, 0);
 
-    WriteFile(f, "------------- " + "\n", 0, 0, 0);
+    WriteFile(f, "------------- " + "\n", 20, 0, 0);
 
     sumResult = sum("55","44");
-    WriteFile(f, "string sum(55,44) = " + sumResult + "\n", 0, 0, 0);
+    WriteFile(f, "string sum(55,44) = " + sumResult + "\n", 30, 0, 0);
 
     sumResult = sum(55,44);
-    WriteFile(f, "number sum(55,44) = " + sumResult + "\n", 0, 0, 0);
+    WriteFile(f, "number sum(55,44) = " + sumResult + "\n", 30, 0, 0);
 
     sumResult = sum(true,false);
-    WriteFile(f, "boolean sum(true,false) = " + sumResult + "\n", 0, 0, 0);
+    WriteFile(f, "boolean sum(true,false) = " + sumResult + "\n", 30, 0, 0);
 
     WriteFile(f, "------------- " + "\n", 0, 0, 0);
 
     sumResult = less("55","44");
-    WriteFile(f, "string less(55,44) = " + sumResult + "\n", 0, 0, 0);
+    WriteFile(f, "string less(55,44) = " + sumResult + "\n", 30, 0, 0);
 
     sumResult = less(44, 55);
-    WriteFile(f, "number less(44, 55) = " + sumResult + "\n", 0, 0, 0);
+    WriteFile(f, "number less(44, 55) = " + sumResult + "\n", 30, 0, 0);
 
     sumResult = less(true,false);
-    WriteFile(f, "boolean less(true,false) = " + sumResult + "\n", 0, 0, 0);
+    WriteFile(f, "boolean less(true,false) = " + sumResult + "\n", 30, 0, 0);
 
     CloseHandle(f);
     main=0;

@@ -5,9 +5,6 @@ import com.codeverification.compiler.Command;
 import com.codeverification.compiler.DataType;
 import com.codeverification.compiler.MethodDefinition;
 import com.codeverification.compiler.MethodSignature;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinNT.HANDLE;
-import com.sun.jna.ptr.IntByReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +45,7 @@ public class FuncExecutor {
 
     private boolean isNative;
     private String libraryName;
+    private String nativeFunc;
 
     private FuncExecutor(List<AbstractValue> args, MethodDefinition methodDefinition, Interpretator interpretator) {
         this.interpretator = interpretator;
@@ -66,6 +64,7 @@ public class FuncExecutor {
         } else {
             isNative = true;
             libraryName = methodDefinition.getLibraryName();
+            nativeFunc = methodDefinition.getNativeFunc();
         }
         methodSignature = methodDefinition.getMethodSignature();
 
@@ -534,7 +533,7 @@ public class FuncExecutor {
 //                registers.put(args.get(2), new BoolValue(intValue));
 //                break;
             case LONG:
-                boolean longValue = first.asLong().equals(second.asLong());
+                boolean longValue = first.asLong() == (second.asLong());
                 registers.put(args.get(2), new BoolValue(longValue));
                 break;
 //            case BYTE:
@@ -546,11 +545,11 @@ public class FuncExecutor {
                 registers.put(args.get(2), new BoolValue(stringValue));
                 break;
             case CHAR:
-                boolean charValue = first.asChar().equals(second.asChar());
+                boolean charValue = first.asChar() == (second.asChar());
                 registers.put(args.get(2), new BoolValue(charValue));
                 break;
             case BOOL:
-                boolean boolValue = first.asBool().equals(second.asBool());
+                boolean boolValue = first.asBool() == (second.asBool());
                 registers.put(args.get(2), new BoolValue(boolValue));
                 break;
             default:
@@ -623,36 +622,46 @@ public class FuncExecutor {
     }
 
     private void invokeNativeMethod() {
-        AbstractValue result = new ObjectValue(null);
-        if (Interpretator.nativeLibs.containsKey(libraryName)) {
-            Object nativeLib = interpretator.nativeLibs.get(libraryName);
-            if (libraryName.equals("kernel32.dll")) {
-                Kernel32 kernel32 = (Kernel32) nativeLib;
-                switch (methodSignature.getFuncName()) {
-                    case "CreateFile":
-                        Object result1 = kernel32.CreateFile(vars.get(1).asString(), vars.get(2).asLong().intValue(),
-                                vars.get(3).asLong().intValue(), null, vars.get(5).asLong().intValue(),
-                                vars.get(6).asLong().intValue(), null);
-                        result = new ObjectValue(result1);
-                        break;
-                    case "WriteFile":
-                        boolean result2 = kernel32.WriteFile((HANDLE) vars.get(1).asObject(), vars.get(2).asString().getBytes(),
-                                vars.get(2).asString().getBytes().length, new IntByReference(), null);
-                        result = new BoolValue(result2);
-                        break;
-                    case "CloseHandle":
-                        boolean result3 = kernel32.CloseHandle((HANDLE) vars.get(1).asObject());
-                        result = new BoolValue(result3);
-                        break;
-                    default:
-                        throw new RuntimeException("Function name " + methodSignature.getFuncName() + " doesnt' exist in kernel32.dll");
-                }
-            } else {
-                throw new RuntimeException("Library name " + libraryName + " doesn't exist in interpreter");
-            }
-        } else {
-            throw new RuntimeException("Library name " + libraryName + " doesn't exist in interpreter");
+//        AbstractValue result = new ObjectValue(null);
+//        if (Interpretator.nativeLibs.containsKey(libraryName)) {
+//            Object nativeLib = interpretator.nativeLibs.get(libraryName);
+//            if (libraryName.equals("kernel32.dll")) {
+//                Kernel32 kernel32 = (Kernel32) nativeLib;
+//                switch (methodSignature.getFuncName()) {
+//                    case "CreateFile":
+//                        Object result1 = kernel32.CreateFile(vars.get(1).asString(), (int)vars.get(2).asLong(),
+//                                (int)vars.get(3).asLong(), null, (int)vars.get(5).asLong(),
+//                                (int)vars.get(6).asLong(), null);
+//                        result = new ObjectValue(result1);
+//                        break;
+//                    case "WriteFile":
+//                        boolean result2 = kernel32.WriteFile((HANDLE) vars.get(1).asObject(), vars.get(2).asString().getBytes(),
+//                                vars.get(2).asString().getBytes().length, new IntByReference(), null);
+//                        result = new BoolValue(result2);
+//                        break;
+//                    case "CloseHandle":
+//                        boolean result3 = kernel32.CloseHandle((HANDLE) vars.get(1).asObject());
+//                        result = new BoolValue(result3);
+//                        break;
+//                    default:
+//                        throw new RuntimeException("Function name " + methodSignature.getFuncName() + " doesnt' exist in kernel32.dll");
+//                }
+//            } else {
+//                throw new RuntimeException("Library name " + libraryName + " doesn't exist in interpreter");
+//            }
+//        } else {
+//            throw new RuntimeException("Library name " + libraryName + " doesn't exist in interpreter");
+//        }
+        AbstractValue[] args = new AbstractValue[methodSignature.getArgCount()];
+        String[] argTypes = new String[methodSignature.getArgCount()];
+        argTypes = methodSignature.getArgsType().stream().map(DataType::getRawText).toArray(String[]::new);
+        String retType = methodSignature.getReturnType().getRawText();
+
+        for (int i = 1; i < methodSignature.getArgCount()+1; i++) {
+            args[i-1] = vars.get(i);
         }
+        AbstractValue result = NativeCaller.instance.
+                callNativeFunc(libraryName, nativeFunc, args, argTypes, retType);
         vars.put(0, result);
     }
 
@@ -684,14 +693,15 @@ public class FuncExecutor {
         String className = consts.get(classNameNum).asString();
         ClassDefinition classDefinition = interpretator.classDefinitions.get(className);
         if (classDefinition != null) {
-            MethodDefinition aNew = Interpretator.findMethod("New", args.stream().map(arg -> arg.getType()).collect(Collectors.toList()),
-                    classDefinition.getFunctions());
+            ObjectInstanceValue objectInstanceValue = new ObjectInstanceValue(classDefinition);
+            MethodDefinition aNew = objectInstanceValue.getFunction("New", args.stream().map(arg -> arg.getType()).collect(Collectors.toList()),
+                    PUBLIC);
             if (aNew != null) {
                 FuncExecutor funcExecutor = FuncExecutor.getInstance(args, aNew, interpretator, new ObjectInstanceValue(classDefinition));
                 AbstractValue result = funcExecutor.executeMethod();
                 registers.put(targetRegistr, result);
             } else {
-                throw new RuntimeException();
+                throw new RuntimeException("Class " + classDefinition.getClassName() + ". Public constructor didn't found for args " + args);
             }
         } else {
             throw new RuntimeException();

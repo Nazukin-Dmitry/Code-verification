@@ -17,6 +17,10 @@ public class CharValue extends AbstractValue {
     public CharValue(Character value) {
         this.value = value;
     }
+    public CharValue(char value) {
+        this.value = value;
+    }
+
 
     @Override
     public DataType getType() {
@@ -24,7 +28,7 @@ public class CharValue extends AbstractValue {
     }
 
     @Override
-    public Character asChar() {
+    public char asChar() {
         return value;
     }
 

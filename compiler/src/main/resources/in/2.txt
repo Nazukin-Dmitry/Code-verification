@@ -1,31 +1,41 @@
-function CreateFile(lpFileName as string,
-                    dwDesiredAccess as int,
-                    dwShareMode as int,
-                    lpSecurityAttributes as int,
-                    dwCreationDisposition as int,
-                    dwFlagsAndAttributes as int,
-                    hTemplateFile as int) as int
-                    from "kernel32.dll"
+declare function CreateFile(lpFileName as string,
+                    dwDesiredAccess as long,
+                    dwShareMode as long,
+                    lpSecurityAttributes as long,
+                    dwCreationDisposition as long,
+                    dwFlagsAndAttributes as long,
+                    hTemplateFile as long) as long
+                    lib "kernel32.dll" alias "CreateFileA"
 
-function WriteFile(hFile as int,
+declare function WriteFile(hFile as long,
                    lpBuffer as string,
-                   nNumberOfBytesToWrite as int,
-                   lpNumberOfBytesWritten as int,
-                   lpOverlapped as int)
-                   from "kernel32.dll"
+                   nNumberOfBytesToWrite as long,
+                   lpNumberOfBytesWritten as long,
+                   lpOverlapped as long) as long
+                   lib "kernel32.dll"
 
-function CloseHandle(hFile as int) from "kernel32.dll"
+declare function CloseHandle(hFile as long) as long lib "kernel32.dll"
 
 function main()
     f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
 
     a = minus(5,2);
-    WriteFile(f, "a= " + a + "\n", 0, 0, 0);
+    WriteFile(f, "a= " + a + "\n", 5, 0, 0);
 
-    a = new User(3, "Dmitrii");
+    a = new User(3);
+    a.setName("Ivan");
     increaseId(a);
-    WriteFile(f, "User= " + a.concat() +  "\n", 0, 0, 0);
-    WriteFile(f, "User.minus " + a.minus(5,2) +  "\n", 0, 0, 0);
+    WriteFile(f, "User= " + a.toString() +  "\n", 23, 0, 0);
+    a.setId("fdfd112");
+    WriteFile(f, "User= " + a.toString() +  "\n", 30, 0, 0);
+
+    a.sum("55","44",f);
+
+    a.sum(55,44,f);
+
+    a.sum(true,false,f);
+
+    CloseHandle(f);
 
     main = 0;
 end function
@@ -35,37 +45,58 @@ function minus(A as long, B as long)
 end function
 
 function increaseId(user as User)
-    id = user.getId();
-    id = id + 1;
-    user.setId(id);
+    user.setId(user.getId() + 1);
 end function
 
 class User
-    private id
-    private name
+    private id, name
 
-    public function concat()
-        concat = "" + id + " " + name;
-    end function
-
-    public function minus(a, b)
-        minus = minus(a,b);
+    public function toString()
+        toString = "id: " + id + " name: " + name;
     end function
 
     public function getName()
         getName = name;
     end function
 
+    public function setName(_name as string)
+        name = _name;
+    end function
+
     public function getId()
         getId = id;
     end function
 
-    public function setId(newId as long)
+    public function setId(newId)
         id = newId;
     end function
 
-    public function New(_id, _name)
+    public function New(_id as long, _name as string)
         id = _id;
         name = _name;
+    end function
+
+    public function New(_id as long)
+        id = _id;
+        name = "";
+    end function
+
+    public function sum(A as long, B as long, f)
+        sum = A+B;
+        WriteFile(f, "long sum= " + sum + "\n", 13, 0, 0);
+    end function
+
+    public function sum(A as string, B as string, f)
+        sum = A+B;
+        WriteFile(f, "string sum= " + sum + "\n", 17, 0, 0);
+    end function
+
+    public function sum(A as bool, B as bool, f)
+        sum = A||B;
+        WriteFile(f, "bool sum= " + sum + "\n", 15, 0, 0);
+    end function
+
+    public function less(A, B)
+        less = A<B;
     end function
 end class

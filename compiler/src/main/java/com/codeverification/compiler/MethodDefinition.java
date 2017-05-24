@@ -22,6 +22,7 @@ public class MethodDefinition implements Serializable {
 
     private boolean isNative;
     private String libraryName;
+    private String nativeFunc;
 
     public List<String> getFuncs() {
         return funcs;
@@ -67,13 +68,21 @@ public class MethodDefinition implements Serializable {
         this.libraryName = libraryName;
     }
 
+    public String getNativeFunc() {
+        return nativeFunc;
+    }
+
+    public void setNativeFunc(String nativeFunc) {
+        this.nativeFunc = nativeFunc;
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(".methodSignature").append("\n");
         stringBuilder.append(methodSignature).append("\n");
         if (isNative) {
-            stringBuilder.append("from " + libraryName).append("\n");
+            stringBuilder.append("from " + libraryName + " dllEntryName " + nativeFunc).append("\n");
         } else {
             stringBuilder.append(".funcs").append("\n");
             int i = 0;

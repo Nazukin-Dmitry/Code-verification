@@ -14,6 +14,10 @@ public class BoolValue extends AbstractValue {
         this.value = value;
     }
 
+    public BoolValue(boolean value) {
+        this.value = value;
+    }
+
     public BoolValue() {
     }
 
@@ -28,7 +32,7 @@ public class BoolValue extends AbstractValue {
     }
 
     @Override
-    public Boolean asBool() {
+    public boolean asBool() {
         return value;
     }
 

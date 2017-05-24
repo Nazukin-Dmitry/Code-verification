@@ -8,7 +8,7 @@ import com.codeverification.compiler.DataType;
 public interface Value extends Comparable<Value> {
     DataType getType();
 
-    default Boolean asBool() {
+    default boolean asBool() {
         throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'bool'");
     }
 
@@ -24,7 +24,7 @@ public interface Value extends Comparable<Value> {
 //        throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'uint'");
 //    }
 
-    default Long asLong() {
+    default long asLong() {
         throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'long'");
     }
 
@@ -32,7 +32,7 @@ public interface Value extends Comparable<Value> {
 //        throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'ulong'");
 //    }
 
-    default Character asChar() {
+    default char asChar() {
         throw new RuntimeException("Converting exception from " + getType().getRawText() + " to 'char'");
     }
 

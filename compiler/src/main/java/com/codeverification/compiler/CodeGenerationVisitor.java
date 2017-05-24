@@ -1,10 +1,8 @@
 package com.codeverification.compiler;
 
-import static com.codeverification.compiler.DataType.BOOL;
-import static com.codeverification.compiler.DataType.CHAR;
-import static com.codeverification.compiler.DataType.LONG;
-import static com.codeverification.compiler.DataType.STRING;
-import static com.codeverification.compiler.DataType.UNDEFINED;
+import com.codeverification.Var3Lexer;
+import com.codeverification.Var3Parser;
+import com.codeverification.Var3Parser.*;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -14,20 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import com.codeverification.Var3Lexer;
-import com.codeverification.Var3Parser;
-import com.codeverification.Var3Parser.ArgDefContext;
-import com.codeverification.Var3Parser.AssignExprContext;
-import com.codeverification.Var3Parser.CallExprContext;
-import com.codeverification.Var3Parser.ClassDefContext;
-import com.codeverification.Var3Parser.ExprContext;
-import com.codeverification.Var3Parser.IdentifierContext;
-import com.codeverification.Var3Parser.InitExprContext;
-import com.codeverification.Var3Parser.MemberContext;
-import com.codeverification.Var3Parser.MemberExprContext;
-import com.codeverification.Var3Parser.PlaceExprContext;
-import com.codeverification.Var3Parser.SourceItemContext;
-import com.codeverification.Var3Parser.StatementContext;
+import static com.codeverification.compiler.DataType.BOOL;
+import static com.codeverification.compiler.DataType.CHAR;
+import static com.codeverification.compiler.DataType.LONG;
+import static com.codeverification.compiler.DataType.STRING;
+import static com.codeverification.compiler.DataType.UNDEFINED;
 
 /**
  * @author Dmitrii Nazukin
@@ -60,6 +49,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
 
     private boolean isNative;
     private String library;
+    private String nativeFunc;
 
     @Override
     public Void visitSourceItem(SourceItemContext ctx) {
@@ -88,6 +78,11 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         visit(ctx.funcSignature());
         isNative = true;
         library = ctx.library.getText().substring(1, ctx.library.getText().length()-1);
+        if (ctx.dllEntryName != null) {
+            nativeFunc = ctx.dllEntryName.getText().substring(1, ctx.dllEntryName.getText().length()-1);
+        } else {
+            nativeFunc = methodSignature.getFuncName();
+        }
         return null;
     }
 
@@ -558,6 +553,7 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         } else {
             methodDefinition.setNative(true);
             methodDefinition.setLibraryName(library);
+            methodDefinition.setNativeFunc(nativeFunc);
         }
 
         return methodDefinition;

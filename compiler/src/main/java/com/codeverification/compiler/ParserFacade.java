@@ -359,7 +359,7 @@ public class ParserFacade {
                             methodSignature.setFuncName(item.classDef().identifier().getText() + "." + methodSignature.getFuncName());
 
                             CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
-                            cfgVisitor.visit(memberContext.funcDef());
+                            cfgVisitor.visit(memberContext.nativeFunc());
                             if (funcCFG.containsKey(methodSignature)) {
                                 throw new Exception("Several functions with signature "
                                         + methodSignature);

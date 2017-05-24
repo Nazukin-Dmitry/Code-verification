@@ -14,7 +14,7 @@ funcDef
 ;
 
 nativeFunc
-:'function' funcSignature 'from' library=STR
+:'declare' 'function' funcSignature 'lib' library=STR ('alias' dllEntryName=STR)?
 ;
 
 classDef

@@ -1,15 +1,15 @@
 package com.codeverification.interpretator;
 
+import com.codeverification.compiler.ClassDefinition;
+import com.codeverification.compiler.DataType;
+import com.codeverification.compiler.MethodDefinition;
+import com.codeverification.compiler.Modificator;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-
-import com.codeverification.compiler.ClassDefinition;
-import com.codeverification.compiler.DataType;
-import com.codeverification.compiler.MethodDefinition;
-import com.codeverification.compiler.Modificator;
 
 /**
  * @author Dmitrii Nazukin
@@ -92,7 +92,8 @@ public class ObjectInstanceValue extends AbstractValue {
         MethodDefinition method = null;
             method = Interpretator.findMethod(funcName, argType, classDefinition.getFunctions());
             if (method == null) {
-                throw new RuntimeException("Class " + classDefinition.getClassName() + ". Method doesn't exist. " + funcName);
+                return null;
+//                throw new RuntimeException("Class " + classDefinition.getClassName() + ". Method doesn't exist. " + funcName);
             }
 
         Modificator m = classDefinition.getFunctionsModificator().get(method.getMethodSignature());
@@ -104,11 +105,13 @@ public class ObjectInstanceValue extends AbstractValue {
                     if (m == modificator) {
                         return method;
                     } else {
-                        throw new RuntimeException();
+                        return null;
+//                        throw new RuntimeException();
                     }
             }
         }
-        throw new RuntimeException();
+        return null;
+//        throw new RuntimeException();
     }
 
     @Override

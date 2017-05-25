@@ -219,7 +219,7 @@ public class FuncExecutor {
                     methodDefinition = interpretator.findMethod(funcs.get(command.getArgs().get(1)), argTypes, interpretator.functions);
                 }
                 if (methodDefinition == null) {
-                    throw new RuntimeException("Method doesn't exist. " + methodSignature);
+                    throw new RuntimeException("Method doesn't exist. " + funcs.get(command.getArgs().get(1)) + argTypes);
                 }
                 FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition, interpretator, null);
                 AbstractValue v3 = funcExecutor.executeMethod();

@@ -1,33 +1,36 @@
 declare function CreateFile(lpFileName as string,
-                    dwDesiredAccess as long,
-                    dwShareMode as long,
-                    lpSecurityAttributes as long,
-                    dwCreationDisposition as long,
-                    dwFlagsAndAttributes as long,
-                    hTemplateFile as long) as long
+                    dwDesiredAccess as int,
+                    dwShareMode as int,
+                    lpSecurityAttributes as int,
+                    dwCreationDisposition as int,
+                    dwFlagsAndAttributes as int,
+                    hTemplateFile as int) as int
                     lib "kernel32.dll" alias "CreateFileA"
 
-declare function WriteFile(hFile as long,
+declare function WriteFile(hFile as int,
                    lpBuffer as string,
-                   nNumberOfBytesToWrite as long,
-                   lpNumberOfBytesWritten as long,
-                   lpOverlapped as long) as long
+                   nNumberOfBytesToWrite as int,
+                   lpNumberOfBytesWritten as int,
+                   lpOverlapped as int) as int
                    lib "kernel32.dll"
 
-declare function CloseHandle(hFile as long) as long lib "kernel32.dll"
+declare function CloseHandle(hFile as int) as long lib "kernel32.dll"
+
+declare function lstrlen(hFile as string) as int lib "kernel32.dll" alias "lstrlenA"
 
 function main()
     f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
 
     a = minus(5,2);
-    WriteFile(f, "a= " + a + "\n", 5, 0, 0);
+    print("a= " + a + "\n", f);
 
     a = new User(3);
     a.setName("Ivan");
     increaseId(a);
-    WriteFile(f, "User= " + a.toString() +  "\n", 23, 0, 0);
-    a.setId("fdfd112");
-    WriteFile(f, "User= " + a.toString() +  "\n", 30, 0, 0);
+    print("User= " + a.toString() +  "\n", f);
+
+    a.setId("tratata");
+    print("User= " + a.toString() +  "\n", f);
 
     a.sum("55","44",f);
 
@@ -38,6 +41,10 @@ function main()
     CloseHandle(f);
 
     main = 0;
+end function
+
+function print(text as string, handle)
+    WriteFile(handle, text, lstrlen(text), 0, 0);
 end function
 
 function minus(A as long, B as long)
@@ -83,17 +90,17 @@ class User
 
     public function sum(A as long, B as long, f)
         sum = A+B;
-        WriteFile(f, "long sum= " + sum + "\n", 13, 0, 0);
+        print("long sum= " + sum + "\n", f);
     end function
 
     public function sum(A as string, B as string, f)
         sum = A+B;
-        WriteFile(f, "string sum= " + sum + "\n", 17, 0, 0);
+        print("string sum= " + sum + "\n", f);
     end function
 
     public function sum(A as bool, B as bool, f)
         sum = A||B;
-        WriteFile(f, "bool sum= " + sum + "\n", 15, 0, 0);
+        print("bool sum= " + sum + "\n", f);
     end function
 
     public function less(A, B)

@@ -16,60 +16,66 @@ declare function WriteFile(hFile as int,
 
 declare function CloseHandle(hFile as int) as int lib "kernel32.dll"
 
+declare function lstrlen(hFile as string) as int lib "kernel32.dll" alias "lstrlenA"
+
 function main()
     f = CreateFile("out.txt", 0x40000000, 0, 0, 2, 0, 0);
 
     calc = Evkl(52,44);
-    WriteFile(f, "Evkl(52,44) = " + calc + "\n", 16, 0, 0);
+    print("Evkl(52,44) = " + calc + "\n", f);
 
     andResult = and(false,true);
-    WriteFile(f, "and(true,false) = " + andResult + "\n", 23, 0, 0);
+    print("and(true,false) = " + andResult + "\n", f);
 
     calcResult = calc(10,44, '-');
-    WriteFile(f, "calc(10,44, '-') = " +calcResult + "\n", 25, 0, 0);
+    print("calc(10,44, '-') = " +calcResult + "\n", f);
 
     dummyResult = dummy();
-    WriteFile(f, "dummy() = " + dummyResult + "\n", 15, 0, 0);
+    print("dummy() = " + dummyResult + "\n", f);
 
     facResult = Factorial(5);
-    WriteFile(f, "Factorial(5) = " + facResult + "\n", 20, 0, 0);
+    print("Factorial(5) = " + facResult + "\n", f);
 
     fibResult = Fib(5);
-    WriteFile(f, "Fib(5) = " + fibResult + "\n", 20, 0, 0);
+    print("Fib(5) = " + fibResult + "\n", f);
 
     fun1Result = fun1(10, 100);
-    WriteFile(f, "fun1(10, 100) = " + fun1Result + "\n", 20, 0, 0);
+    print("fun1(10, 100) = " + fun1Result + "\n", f);
 
     helloResult = hello("World");
-    WriteFile(f, "hello(World) = " + helloResult + "\n", 20, 0, 0);
+    print("hello(World) = " + helloResult + "\n", f);
 
     stoResult = sto();
-    WriteFile(f, "sto() = " + stoResult + "\n", 20, 0, 0);
+    print("sto() = " + stoResult + "\n", f);
 
-    WriteFile(f, "------------- " + "\n", 20, 0, 0);
+    print("------------- " + "\n", f);
 
     sumResult = sum("55","44");
-    WriteFile(f, "string sum(55,44) = " + sumResult + "\n", 30, 0, 0);
+    print("string sum(55,44) = " + sumResult + "\n", f);
 
     sumResult = sum(55,44);
-    WriteFile(f, "number sum(55,44) = " + sumResult + "\n", 30, 0, 0);
+    print("number sum(55,44) = " + sumResult + "\n", f);
 
     sumResult = sum(true,false);
-    WriteFile(f, "boolean sum(true,false) = " + sumResult + "\n", 30, 0, 0);
+    print("boolean sum(true,false) = " + sumResult + "\n", f);
 
     WriteFile(f, "------------- " + "\n", 0, 0, 0);
 
     sumResult = less("55","44");
-    WriteFile(f, "string less(55,44) = " + sumResult + "\n", 30, 0, 0);
+    print("string less(55,44) = " + sumResult + "\n", f);
 
     sumResult = less(44, 55);
-    WriteFile(f, "number less(44, 55) = " + sumResult + "\n", 30, 0, 0);
+    print("number less(44, 55) = " + sumResult + "\n", f);
 
     sumResult = less(true,false);
-    WriteFile(f, "boolean less(true,false) = " + sumResult + "\n", 30, 0, 0);
+    print("boolean less(true,false) = " + sumResult + "\n", f);
 
     CloseHandle(f);
     main=0;
+end function
+
+function print(text as string, handle)
+    WriteFile(handle, text, lstrlen(text), 0, 0);
 end function
 
 function calc(A as long, B as long, Op as char)

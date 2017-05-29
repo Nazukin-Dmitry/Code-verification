@@ -45,7 +45,7 @@ public class BoolValue extends AbstractValue {
         return value;
     }
 
-    public void setValue(Boolean value) {
+    public void setValue(boolean value) {
         this.value = value;
     }
 

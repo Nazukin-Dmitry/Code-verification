@@ -210,9 +210,11 @@ public class FuncExecutor {
                 }
                 List<DataType> argTypes = args.stream().map(Value::getType).collect(Collectors.toList());
                 MethodDefinition methodDefinition = null;
+                ObjectInstanceValue objectInstance = null;
                 // 1. try to find method inside class
                 if (objectContext != null) {
                     methodDefinition = objectContext.getFunction(funcs.get(command.getArgs().get(1)), argTypes, ANY);
+                    objectInstance = objectContext;
                 }
                 // 2. else find outside
                 if (methodDefinition == null) {
@@ -221,7 +223,7 @@ public class FuncExecutor {
                 if (methodDefinition == null) {
                     throw new RuntimeException("Method doesn't exist. " + funcs.get(command.getArgs().get(1)) + argTypes);
                 }
-                FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition, interpretator, null);
+                FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition, interpretator, objectInstance);
                 AbstractValue v3 = funcExecutor.executeMethod();
                 registers.put(command.getArgs().get(0), v3);
                 currentCommand++;
@@ -588,7 +590,7 @@ public class FuncExecutor {
 //                break;
             case LONG:
                 Long longValue = first.asLong() * (-1);
-                registers.put(args.get(2), new LongValue(longValue));
+                registers.put(args.get(1), new LongValue(longValue));
                 break;
 //            case BYTE:
 //                int byteValue = first.asByte() * (-1);
@@ -674,7 +676,8 @@ public class FuncExecutor {
         ObjectInstanceValue objectInstance = registers.get(comArgs.get(1)).asObjectInstanceValue();
         MethodDefinition methodDefinition = objectInstance.getFunction(funcs.get(comArgs.get(2)), argTypes, PUBLIC);
         if (methodDefinition == null) {
-            throw new RuntimeException("Method doesn't exist. " + methodSignature);
+            throw new RuntimeException(objectInstance.getClassDefinition().getClassName() + " class. Public method doesn't exist. "
+                    + funcs.get(comArgs.get(2)) + argTypes);
         }
         FuncExecutor funcExecutor = FuncExecutor.getInstance(args, methodDefinition,
                 interpretator, objectInstance);
@@ -704,7 +707,7 @@ public class FuncExecutor {
                 throw new RuntimeException("Class " + classDefinition.getClassName() + ". Public constructor didn't found for args " + args);
             }
         } else {
-            throw new RuntimeException();
+            throw new RuntimeException("Class isn't found: "+ className);
         }
         currentCommand++;
     }

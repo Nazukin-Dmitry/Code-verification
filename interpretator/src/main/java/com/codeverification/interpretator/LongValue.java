@@ -49,7 +49,7 @@ public class LongValue extends AbstractValue {
         return value;
     }
 
-    public void setValue(Long value) {
+    public void setValue(long value) {
         this.value = value;
     }
 

@@ -41,7 +41,7 @@ public class CharValue extends AbstractValue {
         return value;
     }
 
-    public void setValue(Character value) {
+    public void setValue(char value) {
         this.value = value;
     }
 

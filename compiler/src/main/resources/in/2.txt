@@ -14,7 +14,7 @@ declare function WriteFile(hFile as int,
                    lpOverlapped as int) as int
                    lib "kernel32.dll"
 
-declare function CloseHandle(hFile as int) as long lib "kernel32.dll"
+declare function CloseHandle(hFile as int) as int lib "kernel32.dll"
 
 declare function lstrlen(hFile as string) as int lib "kernel32.dll" alias "lstrlenA"
 
@@ -24,8 +24,8 @@ function main()
     a = minus(5,2);
     print("a= " + a + "\n", f);
 
-    a = new User(3);
-    a.setName("Ivan");
+    a = new User(3, "Ivan");
+    a.setId(4);
     increaseId(a);
     print("User= " + a.toString() +  "\n", f);
 
@@ -59,7 +59,7 @@ class User
     private id, name
 
     public function toString()
-        toString = "id: " + id + " name: " + name;
+        toString = "id: " + getId() + " name: " + name;
     end function
 
     public function getName()

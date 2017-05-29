@@ -139,66 +139,6 @@ JNIEXPORT jobject JNICALL Java_com_codeverification_interpretator_NativeCaller_c
         return NULL;
     }
 
-    for (i = 0; i < length; i++) {
-        jobject argValue = (*env)->GetObjectArrayElement(env, args, i);
-        jstring argType = (jstring) (*env)->GetObjectArrayElement(env, argTypes, i);
-        if (NULL == argValue) return NULL;
-        if (NULL == argType) return NULL;
-        const char *argTypeC = (*env)->GetStringUTFChars(env, argType, NULL);
-
-        jclass thisClass = (*env)->GetObjectClass(env, argValue);
-        void* value = values[i];
-        if (strcmp (argTypeC, "bool")==0) {
-            jmethodID booleanValueMID = (*env)->GetMethodID(env, thisClass, "setValue", "(Z)V");
-            if (NULL == booleanValueMID) return NULL;
-            (*env)->CallVoidMethod(env, argValue, booleanValueMID, (jchar)(*(char*)value));
-
-        }
-        if (strcmp (argTypeC, "byte")==0) {
-            jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(J)V");
-            if (NULL == methodId) return NULL;
-            (*env)->CallVoidMethod(env, argValue, methodId, (jlong)(*(signed char*)value));
-
-        }
-        if (strcmp (argTypeC, "int")==0) {
-            jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(J)V");
-            if (NULL == methodId) return NULL;
-            (*env)->CallVoidMethod(env, argValue, methodId, (jlong)(*(int*)value));
-
-        }
-        if (strcmp (argTypeC, "uint")==0) {
-            jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(J)V");
-            if (NULL == methodId) return NULL;
-            (*env)->CallVoidMethod(env, argValue, methodId, (jlong)(*(unsigned int*)value));
-
-        }
-        if (strcmp (argTypeC, "long")==0) {
-            jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(J)V");
-            if (NULL == methodId) return NULL;
-            (*env)->CallVoidMethod(env, argValue, methodId, (jlong)(*(long*)value));
-
-        }
-        if (strcmp (argTypeC, "ulong")==0) {
-            jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(J)V");
-            if (NULL == methodId) return NULL;
-            (*env)->CallVoidMethod(env, argValue, methodId, (jlong)(*(unsigned long*)value));
-
-        }
-        if (strcmp (argTypeC, "char")==0) {
-            jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(C)V");
-            if (NULL == methodId) return NULL;
-            (*env)->CallVoidMethod(env, argValue, methodId, (jchar)(*(char*)value));
-
-        }
-        if (strcmp (argTypeC, "string")==0) {
-            jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(Ljava/lang/String;)V");
-            if (NULL == methodId) return NULL;
-            jstring value1 = (*env)->NewStringUTF(env, (char*)value);
-            (*env)->CallVoidMethod(env, argValue, methodId, value1);
-
-        }
-    }
-
     if (strcmp (retTypeC, "bool")==0) {
         jclass cclass = (*env)->FindClass(env, "com/codeverification/interpretator/BoolValue");
         jmethodID constr = (*env)->GetMethodID(env, cclass, "<init>", "(Z)V");

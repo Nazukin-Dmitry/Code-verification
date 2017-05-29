@@ -1,0 +1,72 @@
+class Console
+    private in, out
+
+    public declare function AllocConsole() as int lib "kernel32.dll"
+
+    public declare function WriteConsole(hConsole as int,
+                                             lpBuffer as string,
+                                             nNumberOfCharsToWrite as int,
+                                             lpNumberOfCharsWritten as int,
+                                             lpReserved as int) as int
+                                             lib "kernel32.dll" alias "WriteConsoleA"
+
+    public declare function ReadConsole(hConsole as int,
+                                             lpBuffer as string,
+                                             nNumberOfCharsToRead as int,
+                                             lpNumberOfCharsRead as int,
+                                             pInputControl as int) as int
+                                             lib "kernel32.dll" alias "ReadConsoleA"
+
+    private declare function WriteFile(hFile as int,
+                                   lpBuffer as string,
+                                   nNumberOfBytesToWrite as int,
+                                   lpNumberOfBytesWritten as int,
+                                   lpOverlapped as int) as int
+                                   lib "kernel32.dll"
+    private declare function ReadFile(hFile as int,
+                                  lpBuffer as char,
+                                  nNumberOfBytesToRead as int,
+                                  lpNumberOfBytesRead as int,
+                                  lpOverlapped as int) as int
+                                  lib "kernel32.dll"
+
+    public declare function GetStdHandle(nStdHandle as int) as int lib "kernel32.dll"
+
+    private declare function SetConsoleMode(hConsoleHandle as int,
+                                      dwMode as int) as int lib "kernel32.dll"
+
+    public declare function lstrlen(hFile as string) as int lib "kernel32.dll" alias "lstrlenA"
+
+    public function New()
+        out = GetStdHandle(-11);
+        in = GetStdHandle(-10);
+        SetConsoleMode(in, 0);
+    end function
+
+    public function Write(text as string)
+        WriteFile(out, text, lstrlen(text), 0, 0);
+    end function
+
+    public function WriteLine(text as string)
+        WriteFile(out, text + "\n", lstrlen(text + "\n"), 0, 0);
+    end function
+
+    public function Read()
+        result = "";
+        buffer = 'g';
+        do
+            ReadFile(in, buffer, 1, 0, 0);
+            result = result + buffer;
+        loop until (buffer == 'n')
+        Read = result;
+    end function
+
+end class
+
+function main()
+    textt = "Enter your name";
+    console = new Console();
+    console.WriteLine(textt);
+    name = console.Read();
+    console.WriteLine("Hello " + name);
+end function

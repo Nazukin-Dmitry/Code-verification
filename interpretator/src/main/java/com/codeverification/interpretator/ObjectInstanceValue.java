@@ -118,4 +118,8 @@ public class ObjectInstanceValue extends AbstractValue {
     public ObjectInstanceValue asObjectInstanceValue() {
         return this;
     }
+
+    public ClassDefinition getClassDefinition() {
+        return classDefinition;
+    }
 }

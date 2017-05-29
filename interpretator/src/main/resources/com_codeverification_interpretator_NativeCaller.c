@@ -9,9 +9,10 @@
 JNIEXPORT jobject JNICALL Java_com_codeverification_interpretator_NativeCaller_callNativeFunc
 (JNIEnv * env, jobject thisObj, jstring lib, jstring func, jobjectArray args, jobjectArray argTypes, jstring retType) {
 
-    char *funcC = (*env)->GetStringUTFChars(env, func, NULL);
+    jboolean tr = JNI_TRUE;
+    char *funcC = (*env)->GetStringUTFChars(env, func, &tr);
 
-    char *inCStr = (*env)->GetStringUTFChars(env, lib, NULL);
+    char *inCStr = (*env)->GetStringUTFChars(env, lib, &tr);
     if (NULL == inCStr) return NULL;
     HINSTANCE dllHandle = LoadLibrary(inCStr);
 
@@ -29,7 +30,7 @@ JNIEXPORT jobject JNICALL Java_com_codeverification_interpretator_NativeCaller_c
         jstring argType = (jstring) (*env)->GetObjectArrayElement(env, argTypes, i);
         if (NULL == argValue) return NULL;
         if (NULL == argType) return NULL;
-        const char *argTypeC = (*env)->GetStringUTFChars(env, argType, NULL);
+        const char *argTypeC = (*env)->GetStringUTFChars(env, argType, &tr);
 
         jclass thisClass = (*env)->GetObjectClass(env, argValue);
         if (strcmp (argTypeC, "bool")==0) {
@@ -90,7 +91,7 @@ JNIEXPORT jobject JNICALL Java_com_codeverification_interpretator_NativeCaller_c
             jmethodID methodId = (*env)->GetMethodID(env, thisClass, "asChar", "()C");
             if (NULL == methodId) return NULL;
             char* value = (char*) malloc(sizeof(char));
-            *value = (char) (*env)->CallLongMethod(env, argValue, methodId);
+            *value = (char) (*env)->CallCharMethod(env, argValue, methodId);
 
             values[i] = value;
             ffi_argTypes[i] = &ffi_type_uchar;
@@ -100,12 +101,13 @@ JNIEXPORT jobject JNICALL Java_com_codeverification_interpretator_NativeCaller_c
             if (NULL == methodId) return NULL;
             jstring value = (jstring) (*env)->CallObjectMethod(env, argValue, methodId);
 
-            const char *stringValue = (*env)->GetStringUTFChars(env, value, NULL);
-            values[i] = &stringValue;
+            char** stringValue = (char**) malloc(sizeof(char));
+            *stringValue = (*env)->GetStringUTFChars(env, value, &tr);
+            values[i] = stringValue;
             ffi_argTypes[i] = &ffi_type_pointer;
         }
     }
-    char *retTypeC = (*env)->GetStringUTFChars(env, retType, NULL);
+    char *retTypeC = (*env)->GetStringUTFChars(env, retType, &tr);
     if (strcmp (retTypeC, "bool")==0) {
         c_retType = &ffi_type_uchar;
     }
@@ -144,7 +146,7 @@ JNIEXPORT jobject JNICALL Java_com_codeverification_interpretator_NativeCaller_c
         jstring argType = (jstring) (*env)->GetObjectArrayElement(env, argTypes, i);
         if (NULL == argValue) return NULL;
         if (NULL == argType) return NULL;
-        const char *argTypeC = (*env)->GetStringUTFChars(env, argType, NULL);
+        const char *argTypeC = (*env)->GetStringUTFChars(env, argType, &tr);
 
         jclass thisClass = (*env)->GetObjectClass(env, argValue);
         void* value = values[i];
@@ -193,7 +195,7 @@ JNIEXPORT jobject JNICALL Java_com_codeverification_interpretator_NativeCaller_c
         if (strcmp (argTypeC, "string")==0) {
             jmethodID methodId = (*env)->GetMethodID(env, thisClass, "setValue", "(Ljava/lang/String;)V");
             if (NULL == methodId) return NULL;
-            jstring value1 = (*env)->NewStringUTF(env, (char*)value);
+            jstring value1 = (*env)->NewStringUTF(env, *(char**)value);
             (*env)->CallVoidMethod(env, argValue, methodId, value1);
 
         }

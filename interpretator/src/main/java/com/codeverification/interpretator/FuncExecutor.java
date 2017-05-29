@@ -664,6 +664,9 @@ public class FuncExecutor {
         }
         AbstractValue result = NativeCaller.instance.
                 callNativeFunc(libraryName, nativeFunc, args, argTypes, retType);
+//        if (nativeFunc.equals("ReadFile")) {
+//            System.out.println(args[1].asString());
+//        }
         vars.put(0, result);
     }
 

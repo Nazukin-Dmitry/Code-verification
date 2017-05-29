@@ -20,13 +20,13 @@ class Console
     private declare function WriteFile(hFile as int,
                                    lpBuffer as string,
                                    nNumberOfBytesToWrite as int,
-                                   lpNumberOfBytesWritten as int,
+                                   lpNumberOfBytesWritten as string,
                                    lpOverlapped as int) as int
                                    lib "kernel32.dll"
     private declare function ReadFile(hFile as int,
-                                  lpBuffer as char,
+                                  lpBuffer as string,
                                   nNumberOfBytesToRead as int,
-                                  lpNumberOfBytesRead as int,
+                                  lpNumberOfBytesRead as string,
                                   lpOverlapped as int) as int
                                   lib "kernel32.dll"
 
@@ -44,20 +44,21 @@ class Console
     end function
 
     public function Write(text as string)
-        WriteFile(out, text, lstrlen(text), 0, 0);
+        WriteFile(out, text, lstrlen(text), "", 0);
     end function
 
     public function WriteLine(text as string)
-        WriteFile(out, text + "\n", lstrlen(text + "\n"), 0, 0);
+        WriteFile(out, text + "\n", lstrlen(text + "\n"), "", 0);
     end function
 
     public function Read()
         result = "";
-        buffer = 'g';
+
         do
-            ReadFile(in, buffer, 1, 0, 0);
+            buffer = "";
+            ReadFile(in, buffer, 1, "", 0);
             result = result + buffer;
-        loop until (buffer == 'n')
+        loop until (buffer == "\n")
         Read = result;
     end function
 

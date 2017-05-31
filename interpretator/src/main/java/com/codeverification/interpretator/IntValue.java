@@ -76,4 +76,9 @@ public class IntValue extends AbstractValue {
     public String toString() {
         return "IntValue{" + "value=" + value + '}';
     }
+
+    @Override
+    public AbstractValue getCopy() {
+        return null;
+    }
 }

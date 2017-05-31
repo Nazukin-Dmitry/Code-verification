@@ -76,4 +76,8 @@ public class LongValue extends AbstractValue {
     }
 
 
+    @Override
+    public AbstractValue getCopy() {
+        return new LongValue(value);
+    }
 }

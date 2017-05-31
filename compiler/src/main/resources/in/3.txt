@@ -44,11 +44,11 @@ class Console
     end function
 
     public function Write(text as string)
-        WriteFile(out, text, lstrlen(text), "", 0);
+        WriteFile(out, text, lstrlen(text), "s", 0);
     end function
 
     public function WriteLine(text as string)
-        WriteFile(out, text + "\n", lstrlen(text + "\n"), "", 0);
+        WriteFile(out, text + "\n", lstrlen(text + "\n"), "a", 0);
     end function
 
     public function Read()
@@ -56,7 +56,9 @@ class Console
 
         do
             buffer = "";
-            ReadFile(in, buffer, 1, "", 0);
+            numBytes = 1;
+            bytesRead = "";
+            ReadFile(in, buffer, numBytes, bytesRead, 0);
             result = result + buffer;
         loop until (buffer == "\n")
         Read = result;

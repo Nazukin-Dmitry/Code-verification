@@ -122,4 +122,9 @@ public class ObjectInstanceValue extends AbstractValue {
     public ClassDefinition getClassDefinition() {
         return classDefinition;
     }
+
+    @Override
+    public AbstractValue getCopy() {
+        return new ObjectInstanceValue(classDefinition);
+    }
 }

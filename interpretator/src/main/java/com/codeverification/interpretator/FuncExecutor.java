@@ -181,7 +181,7 @@ public class FuncExecutor {
                 currentCommand++;
                 break;
             case PUSHCONST:
-                registers.put(command.getArgs().get(1), consts.get(command.getArgs().get(0)));
+                registers.put(command.getArgs().get(1), consts.get(command.getArgs().get(0)).getCopy());
                 currentCommand++;
                 break;
             case JMPFALSE:

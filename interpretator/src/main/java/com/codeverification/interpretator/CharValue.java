@@ -51,6 +51,11 @@ public class CharValue extends AbstractValue {
     }
 
     @Override
+    public AbstractValue getCopy() {
+        return new CharValue(value);
+    }
+
+    @Override
     public String toString() {
         return "CharValue{" +
                 "value=" + value +

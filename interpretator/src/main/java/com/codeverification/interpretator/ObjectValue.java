@@ -43,4 +43,9 @@ public class ObjectValue extends AbstractValue {
                 "value=" + value +
                 '}';
     }
+
+    @Override
+    public AbstractValue getCopy() {
+        return null;
+    }
 }

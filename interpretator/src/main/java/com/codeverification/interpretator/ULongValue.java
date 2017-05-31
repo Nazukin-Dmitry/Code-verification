@@ -52,4 +52,9 @@ public class ULongValue extends AbstractValue {
                 "value=" + value +
                 '}';
     }
+
+    @Override
+    public AbstractValue getCopy() {
+        return new ULongValue(value);
+    }
 }

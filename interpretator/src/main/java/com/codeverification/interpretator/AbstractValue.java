@@ -24,4 +24,6 @@ public abstract class AbstractValue implements Value {
     public void setRaw(String raw1) {
         raw = raw1;
     }
+
+    public abstract AbstractValue getCopy();
 }

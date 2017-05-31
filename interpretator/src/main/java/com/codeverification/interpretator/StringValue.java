@@ -52,4 +52,9 @@ public class StringValue extends AbstractValue {
                 "value='" + value + '\'' +
                 '}';
     }
+
+    @Override
+    public AbstractValue getCopy() {
+        return new StringValue(value);
+    }
 }

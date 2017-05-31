@@ -52,4 +52,9 @@ public class UIntValue extends AbstractValue {
                 "value=" + value +
                 '}';
     }
+
+    @Override
+    public AbstractValue getCopy() {
+        return new UIntValue(value);
+    }
 }

@@ -33,7 +33,7 @@ MethodSignature{funcName='Write', argCount=1, argsType=[string], returnType=unde
 .vars_count
 2
 .consts
-0:Const{constName='0', type=long}
+0:Const{constName='s', type=string}
 1:Const{constName='0', type=long}
 .programm
 0: PUSHCLASSVAR 1 0 
@@ -49,11 +49,6 @@ PUBLIC : MethodSignature{funcName='WriteConsole', argCount=5, argsType=[int, str
  .methodSignature
 MethodSignature{funcName='WriteConsole', argCount=5, argsType=[int, string, int, int, int], returnType=int}
 from kernel32.dll dllEntryName WriteConsoleA
-
-PRIVATE : MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, int, int], returnType=int} 
- .methodSignature
-MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, int, int], returnType=int}
-from kernel32.dll dllEntryName WriteFile
 
 PUBLIC : MethodSignature{funcName='New', argCount=0, argsType=[], returnType=undefined} 
  .methodSignature
@@ -86,47 +81,56 @@ PUBLIC : MethodSignature{funcName='AllocConsole', argCount=0, argsType=[], retur
 MethodSignature{funcName='AllocConsole', argCount=0, argsType=[], returnType=int}
 from kernel32.dll dllEntryName AllocConsole
 
-PRIVATE : MethodSignature{funcName='ReadFile', argCount=5, argsType=[int, char, int, int, int], returnType=int} 
- .methodSignature
-MethodSignature{funcName='ReadFile', argCount=5, argsType=[int, char, int, int, int], returnType=int}
-from kernel32.dll dllEntryName ReadFile
-
 PUBLIC : MethodSignature{funcName='Read', argCount=0, argsType=[], returnType=undefined} 
  .methodSignature
 MethodSignature{funcName='Read', argCount=0, argsType=[], returnType=undefined}
 .funcs
 0:ReadFile
 .vars_count
-3
+5
 .consts
 0:Const{constName='', type=string}
-1:Const{constName=''g'', type=char}
+1:Const{constName='', type=string}
 2:Const{constName='1', type=long}
-3:Const{constName='0', type=long}
+3:Const{constName='', type=string}
 4:Const{constName='0', type=long}
-5:Const{constName=''n'', type=char}
+5:Const{constName='\n', type=string}
 .programm
 0: PUSHCONST 0 0 
 1: LOADVAR 0 1 
 2: PUSHCONST 1 1 
 3: LOADVAR 1 2 
-4: PUSHCLASSVAR 0 2 
-5: PUSHVAR 2 3 
-6: PUSHCONST 2 4 
-7: PUSHCONST 3 5 
-8: PUSHCONST 4 6 
-9: CALL 2 0 2 3 4 5 6 
-10: PUSHVAR 1 3 
-11: PUSHVAR 2 4 
-12: ADD 3 4 3 
-13: LOADVAR 3 1 
-14: PUSHVAR 2 4 
-15: PUSHCONST 5 5 
-16: EQUAL 4 5 4 
-17: JMPFALSE 4 4 
-18: PUSHVAR 1 4 
-19: LOADVAR 4 0 
-20: END 
+4: PUSHCONST 2 2 
+5: LOADVAR 2 3 
+6: PUSHCONST 3 3 
+7: LOADVAR 3 4 
+8: PUSHCLASSVAR 0 4 
+9: PUSHVAR 2 5 
+10: PUSHVAR 3 6 
+11: PUSHVAR 4 7 
+12: PUSHCONST 4 8 
+13: CALL 4 0 4 5 6 7 8 
+14: PUSHVAR 1 5 
+15: PUSHVAR 2 6 
+16: ADD 5 6 5 
+17: LOADVAR 5 1 
+18: PUSHVAR 2 6 
+19: PUSHCONST 5 7 
+20: EQUAL 6 7 6 
+21: JMPFALSE 6 2 
+22: PUSHVAR 1 6 
+23: LOADVAR 6 0 
+24: END 
+
+PRIVATE : MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, string, int], returnType=int} 
+ .methodSignature
+MethodSignature{funcName='WriteFile', argCount=5, argsType=[int, string, int, string, int], returnType=int}
+from kernel32.dll dllEntryName WriteFile
+
+PRIVATE : MethodSignature{funcName='ReadFile', argCount=5, argsType=[int, string, int, string, int], returnType=int} 
+ .methodSignature
+MethodSignature{funcName='ReadFile', argCount=5, argsType=[int, string, int, string, int], returnType=int}
+from kernel32.dll dllEntryName ReadFile
 
 PUBLIC : MethodSignature{funcName='WriteLine', argCount=1, argsType=[string], returnType=undefined} 
  .methodSignature
@@ -139,7 +143,7 @@ MethodSignature{funcName='WriteLine', argCount=1, argsType=[string], returnType=
 .consts
 0:Const{constName='\n', type=string}
 1:Const{constName='\n', type=string}
-2:Const{constName='0', type=long}
+2:Const{constName='a', type=string}
 3:Const{constName='0', type=long}
 .programm
 0: PUSHCLASSVAR 1 0 

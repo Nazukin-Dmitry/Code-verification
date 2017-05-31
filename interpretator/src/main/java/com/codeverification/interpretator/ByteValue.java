@@ -37,6 +37,8 @@ public class ByteValue extends AbstractValue {
     public ByteValue() {
     }
 
+
+
     @Override
     public void parse(String value) {
         this.value = Byte.parseByte(value);
@@ -47,5 +49,10 @@ public class ByteValue extends AbstractValue {
         return "ByteValue{" +
                 "value=" + value +
                 '}';
+    }
+
+    @Override
+    public AbstractValue getCopy() {
+        return null;
     }
 }

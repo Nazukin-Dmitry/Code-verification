@@ -50,6 +50,11 @@ public class BoolValue extends AbstractValue {
     }
 
     @Override
+    public AbstractValue getCopy() {
+        return new BoolValue(value);
+    }
+
+    @Override
     public void parse(String value) {
         this.value = Boolean.parseBoolean(value);
     }

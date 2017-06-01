@@ -29,7 +29,7 @@ start -> 0
 6 f-> 1
 
 0:result=""
-1:buffer=""
+1:buffer="u"
 2:numBytes=1
 3:bytesRead=""
 4:ReadFile(in,buffer,numBytes,bytesRead,0)

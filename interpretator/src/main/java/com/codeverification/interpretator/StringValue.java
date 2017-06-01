@@ -33,6 +33,11 @@ public class StringValue extends AbstractValue {
         return value;
     }
 
+    @Override
+    public long asLong() {
+        return new Long(value);
+    }
+
     public String getValue() {
         return value;
     }

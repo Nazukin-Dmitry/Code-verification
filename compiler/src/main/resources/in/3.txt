@@ -53,9 +53,8 @@ class Console
 
     public function Read()
         result = "";
-
         do
-            buffer = "";
+            buffer = "u";
             numBytes = 1;
             bytesRead = "";
             ReadFile(in, buffer, numBytes, bytesRead, 0);

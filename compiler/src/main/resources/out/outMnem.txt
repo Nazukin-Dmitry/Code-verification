@@ -90,7 +90,7 @@ MethodSignature{funcName='Read', argCount=0, argsType=[], returnType=undefined}
 5
 .consts
 0:Const{constName='', type=string}
-1:Const{constName='', type=string}
+1:Const{constName='u', type=string}
 2:Const{constName='1', type=long}
 3:Const{constName='', type=string}
 4:Const{constName='0', type=long}

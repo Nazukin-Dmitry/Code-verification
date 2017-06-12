@@ -30,6 +30,7 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}
 0:main
 1:f
 2:a
+3:b
 .consts
 0:Const{constName='out.txt', type=string}
 1:Const{constName='0x40000000', type=long}
@@ -61,7 +62,11 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}
 27:Const{constName='44', type=string}
 28:Const{constName='true', type=bool}
 29:Const{constName='false', type=bool}
-30:Const{constName='0', type=long}
+30:Const{constName='MegaUser', type=string}
+31:Const{constName='5', type=long}
+32:Const{constName='Alex', type=string}
+33:Const{constName='\n', type=string}
+34:Const{constName='0', type=long}
 .programm
 0: PUSHCONST 0 0 
 1: PUSHCONST 1 1 
@@ -137,11 +142,21 @@ MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}
 71: PUSHCONST 29 26 
 72: PUSHVAR 1 27 
 73: CALLOBJECTFUN 25 24 7 25 26 27 
-74: PUSHVAR 1 26 
-75: CALL 26 8 26 
-76: PUSHCONST 30 27 
-77: LOADVAR 27 0 
-78: END 
+74: PUSHCONST 31 26 
+75: PUSHCONST 32 27 
+76: INITIALIZE 27 30 26 27 
+77: LOADVAR 27 3 
+78: PUSHVAR 3 28 
+79: CALLOBJECTFUN 29 28 5 
+80: PUSHCONST 33 30 
+81: ADD 29 30 29 
+82: PUSHVAR 1 30 
+83: CALL 29 2 29 30 
+84: PUSHVAR 1 30 
+85: CALL 30 8 30 
+86: PUSHCONST 34 31 
+87: LOADVAR 31 0 
+88: END 
 --------------------
 .methodSignature
 MethodSignature{funcName='print', argCount=2, argsType=[string, undefined], returnType=undefined}

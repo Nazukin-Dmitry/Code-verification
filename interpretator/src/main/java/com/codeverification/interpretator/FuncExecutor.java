@@ -213,8 +213,9 @@ public class FuncExecutor {
                 ObjectInstanceValue objectInstance = null;
                 // 1. try to find method inside class
                 if (objectContext != null) {
-                    methodDefinition = objectContext.getFunction(funcs.get(command.getArgs().get(1)), argTypes, ANY);
-                    objectInstance = objectContext;
+                    Wrapper wrapper = new Wrapper(objectInstance);
+                    methodDefinition = objectContext.getFunction(funcs.get(command.getArgs().get(1)), argTypes, ANY, wrapper);
+                    objectInstance = wrapper.objectInstanceValue;
                 }
                 // 2. else find outside
                 if (methodDefinition == null) {
@@ -657,7 +658,9 @@ public class FuncExecutor {
         }
         List<DataType> argTypes = args.stream().map(Value::getType).collect(Collectors.toList());
         ObjectInstanceValue objectInstance = registers.get(comArgs.get(1)).asObjectInstanceValue();
-        MethodDefinition methodDefinition = objectInstance.getFunction(funcs.get(comArgs.get(2)), argTypes, PUBLIC);
+        Wrapper w = new Wrapper(objectInstance);
+        MethodDefinition methodDefinition = objectInstance.getFunction(funcs.get(comArgs.get(2)), argTypes, PUBLIC, w);
+        objectInstance = w.objectInstanceValue;
         if (methodDefinition == null) {
             throw new RuntimeException(objectInstance.getClassDefinition().getClassName() + " class. Public method doesn't exist. "
                     + funcs.get(comArgs.get(2)) + argTypes);
@@ -680,8 +683,9 @@ public class FuncExecutor {
         ClassDefinition classDefinition = interpretator.classDefinitions.get(className);
         if (classDefinition != null) {
             ObjectInstanceValue objectInstanceValue = new ObjectInstanceValue(classDefinition);
+            Wrapper w = new Wrapper(objectInstanceValue);
             MethodDefinition aNew = objectInstanceValue.getFunction("New", args.stream().map(arg -> arg.getType()).collect(Collectors.toList()),
-                    PUBLIC);
+                    PUBLIC, w);
             if (aNew != null) {
                 FuncExecutor funcExecutor = FuncExecutor.getInstance(args, aNew, interpretator, new ObjectInstanceValue(classDefinition));
                 AbstractValue result = funcExecutor.executeMethod();

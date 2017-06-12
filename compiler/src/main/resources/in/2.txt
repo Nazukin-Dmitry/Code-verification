@@ -122,6 +122,6 @@ class MegaUser inherits User
            setName(_name);
         end function
         public function toString()
-            toString = "MegaUser user -" + "id: " + getId() + " name: " + getName();
+            toString = "MegaUser -" + "id: " + getId() + " name: " + getName();
         end function
 end class

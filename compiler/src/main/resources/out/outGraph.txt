@@ -15,7 +15,9 @@ start -> 0
 13 -> 14
 14 -> 15
 15 -> 16
-16 -> end
+16 -> 17
+17 -> 18
+18 -> end
 
 0:f=CreateFile("out.txt",0x40000000,0,0,2,0,0)
 1:a=minus(5,2)
@@ -32,8 +34,10 @@ start -> 0
 12:a.less(44,55,f)
 13:a.less("55","44",f)
 14:a.less(true,false,f)
-15:CloseHandle(f)
-16:main=0
+15:b=newMegaUser(5,"Alex")
+16:print(b.toString()+"\n",f)
+17:CloseHandle(f)
+18:main=0
 ---------------------------------------
 start -> 0
 0 -> end

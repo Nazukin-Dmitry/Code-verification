@@ -101,12 +101,13 @@ public class ObjectInstanceValue extends AbstractValue {
         throw new RuntimeException(classDefinition.getClassName() + " doesn't contain property " + name);
     }
 
-    public MethodDefinition getFunction(String funcName, List<DataType> argType, Modificator modificator) {
+    public MethodDefinition getFunction(String funcName, List<DataType> argType, Modificator modificator, Wrapper context) {
+        context.objectInstanceValue = this;
         MethodDefinition method = null;
         method = Interpretator.findMethod(funcName, argType, classDefinition.getFunctions());
         if (method == null) {
-            if (baseObject != null) {
-                return baseObject.getFunction(funcName, argType, Modificator.PUBLIC);
+            if (baseObject != null && !"New".equals(funcName)) {
+                return baseObject.getFunction(funcName, argType, Modificator.PUBLIC, context);
             }
             return null;
 //                throw new RuntimeException("Class " + classDefinition.getClassName() + ". Method doesn't exist. " + funcName);

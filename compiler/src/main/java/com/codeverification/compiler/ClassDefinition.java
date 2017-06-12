@@ -10,6 +10,7 @@ import java.util.Map;
  */
 public class ClassDefinition implements Serializable {
     private String className;
+    private String baseClass;
 
     private Map<String, Integer> fields = new LinkedHashMap<>();
     private Map<String, Modificator> fieldsModificator = new LinkedHashMap<>();
@@ -39,6 +40,14 @@ public class ClassDefinition implements Serializable {
 
     public Map<MethodSignature, Modificator> getFunctionsModificator() {
         return functionsModificator;
+    }
+
+    public String getBaseClass() {
+        return baseClass;
+    }
+
+    public void setBaseClass(String baseClass) {
+        this.baseClass = baseClass;
     }
 
     public Integer getField(String name) {

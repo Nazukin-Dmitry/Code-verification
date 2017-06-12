@@ -1,22 +1,6 @@
 class Console
     private in, out
 
-    public declare function AllocConsole() as int lib "kernel32.dll"
-
-    public declare function WriteConsole(hConsole as int,
-                                             lpBuffer as string,
-                                             nNumberOfCharsToWrite as int,
-                                             lpNumberOfCharsWritten as int,
-                                             lpReserved as int) as int
-                                             lib "kernel32.dll" alias "WriteConsoleA"
-
-    public declare function ReadConsole(hConsole as int,
-                                             lpBuffer as string,
-                                             nNumberOfCharsToRead as int,
-                                             lpNumberOfCharsRead as int,
-                                             pInputControl as int) as int
-                                             lib "kernel32.dll" alias "ReadConsoleA"
-
     private declare function WriteFile(hFile as int,
                                    lpBuffer as string,
                                    nNumberOfBytesToWrite as int,
@@ -33,7 +17,7 @@ class Console
     public declare function GetStdHandle(nStdHandle as int) as int lib "kernel32.dll"
 
     private declare function SetConsoleMode(hConsoleHandle as int,
-                                      dwMode as int) as int lib "kernel32.dll"
+                                        dwMode as int) as int lib "kernel32.dll"
 
     public declare function lstrlen(hFile as string) as int lib "kernel32.dll" alias "lstrlenA"
 
@@ -54,7 +38,7 @@ class Console
     public function Read()
         result = "";
         do
-            buffer = "u";
+            buffer = " ";
             numBytes = 1;
             bytesRead = "";
             ReadFile(in, buffer, numBytes, bytesRead, 0);

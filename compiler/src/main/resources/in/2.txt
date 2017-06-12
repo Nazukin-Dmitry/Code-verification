@@ -27,16 +27,23 @@ function main()
     a = new User(3, "Ivan");
     a.setId(4);
     increaseId(a);
-    print("User= " + a.toString() +  "\n", f);
+    print(a.toString() +  "\n", f);
 
     a.setId("tratata");
-    print("User= " + a.toString() +  "\n", f);
+    print(a.toString() +  "\n", f);
 
     a.sum("55","44",f);
 
     a.sum(55,44,f);
 
     a.sum(true,false,f);
+
+    a.less(44, 55, f);
+    a.less("55", "44", f);
+    a.less(true, false, f);
+
+    b = new MegaUser(5, "Alex");
+    print(b.toString() +  "\n", f);
 
     CloseHandle(f);
 
@@ -59,7 +66,7 @@ class User
     private id, name
 
     public function toString()
-        toString = "id: " + getId() + " name: " + name;
+        toString = "User -" +  "id: " + getId() + " name: " + name;
     end function
 
     public function getName()
@@ -103,7 +110,18 @@ class User
         print("bool sum= " + sum + "\n", f);
     end function
 
-    public function less(A, B)
+    public function less(A, B, f)
         less = A<B;
+        print("result= " + less + "\n", f);
     end function
+end class
+
+class MegaUser inherits User
+        public function New(_id as long, _name as string)
+           setId(_id);
+           setName(_name);
+        end function
+        public function toString()
+            toString = "MegaUser user -" + "id: " + getId() + " name: " + getName();
+        end function
 end class

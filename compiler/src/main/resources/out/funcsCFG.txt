@@ -1,2 +1,2 @@
-calc->minus
 calc->sum
+calc->minus

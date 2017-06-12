@@ -9,8 +9,8 @@ public class Verificator {
     public static void main(String[] args) {
         try {
             ParserFacade parserFacade = new ParserFacade();
-            SourceContext source = parserFacade.parse("C:\\Users\\dnazukin\\code_verification\\src\\main\\java\\com\\codeverification\\1all.txt");
-            parserFacade.printAST(source, "C:\\Users\\dnazukin\\code_verification\\src\\main\\java\\com\\codeverification\\1out.txt");
+            SourceContext source = parserFacade.parse("F:\\study\\codeerification\\compiler\\src\\main\\java\\com\\codeverification\\compiler\\1.txt");
+            parserFacade.printAST(source, "F:\\study\\codeerification\\compiler\\src\\main\\java\\com\\codeverification\\compiler\\1out.txt");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

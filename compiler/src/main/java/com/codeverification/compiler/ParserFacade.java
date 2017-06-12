@@ -345,7 +345,7 @@ public class ParserFacade {
                     for (MemberContext memberContext : item.classDef().member()) {
                         if (memberContext.funcDef() != null) {
                             methodSignature = new MethodSignature(memberContext.funcDef().funcSignature());
-                            methodSignature.setFuncName(item.classDef().identifier().getText() + "." + methodSignature.getFuncName());
+                            methodSignature.setFuncName(item.classDef().className.getText() + "." + methodSignature.getFuncName());
 
                             CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
                             cfgVisitor.visit(memberContext.funcDef());
@@ -356,7 +356,7 @@ public class ParserFacade {
                             funcCFG.put(methodSignature, cfgVisitor.getSet());
                         } else if (memberContext.nativeFunc() != null) {
                             methodSignature = new MethodSignature(memberContext.nativeFunc().funcSignature());
-                            methodSignature.setFuncName(item.classDef().identifier().getText() + "." + methodSignature.getFuncName());
+                            methodSignature.setFuncName(item.classDef().className.getText() + "." + methodSignature.getFuncName());
 
                             CFGBetweenFuncsVisitor cfgVisitor = new CFGBetweenFuncsVisitor();
                             cfgVisitor.visit(memberContext.nativeFunc());

@@ -89,7 +89,8 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
     @Override
     public Void visitClassDef(ClassDefContext ctx) {
         classDefinition = new ClassDefinition();
-        classDefinition.setClassName(ctx.identifier().getText());
+        classDefinition.setClassName(ctx.className.getText());
+        classDefinition.setBaseClass(ctx.baseClass != null ? ctx.baseClass.getText() : null);
         // visit all fields
         int counter = 0;
         for (MemberContext memberContext : ctx.member()) {
@@ -490,6 +491,17 @@ public class CodeGenerationVisitor extends com.codeverification.Var3BaseVisitor<
         programm.get(lastComNum).addArg(args.toArray(new Integer[args.size()]));
         return null;
     }
+
+//    @Override
+//    public Void visitArrayExpr(ArrayExprContext ctx) {
+//        ctx.typeRef().
+//        if (ctx.isInit == null) {
+//
+//        } else {
+//
+//        }
+//        return null;
+//    }
 
     private void gen(String com, int... strings) {
         Command command = new Command(com);

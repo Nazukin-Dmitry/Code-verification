@@ -259,40 +259,20 @@ public class FuncExecutor {
     private void addCommand(List<Integer> args) {
         AbstractValue first = registers.get(args.get(0));
         AbstractValue second = registers.get(args.get(1));
-//        if (first.getType() != second.getType() && (!second.isConst() && !first.isConst())) {
-//            throw new RuntimeException("+. Arguments with different data types!!!" +first.getType() + " "+second.getType());
-//        }
         DataType res = first.getType();
-//        if (first.isConst()) {
-//            res = second.getType();
-//        } else {
-//            res = first.getType();
-//        }
 
         switch (res.getRawText()) {
             case DataType.STRING:
                 String strValue = first.asString() + second.asString();
                 registers.put(args.get(2), new StringValue(strValue));
                 break;
-//            case INT:
-//                Integer intValue = first.asInt() + second.asInt();
-//                registers.put(args.get(2), new IntValue(intValue));
-//                break;
             case LONG:
                 Long longValue = first.asLong() + second.asLong();
                 registers.put(args.get(2), new LongValue(longValue));
                 break;
-//            case BYTE:
-//                int byteValue = first.asByte() + second.asByte();
-//                registers.put(args.get(2), new ByteValue((byte) byteValue));
-//                break;
             default:
                 throw new RuntimeException("+ is unavailable for data type" + first.getType());
         }
-
-//        if (first.isConst() && second.isConst()) {
-//            registers.get(args.get(2)).setConst(true);
-//        }
     }
 
     private void minusCommand(List<Integer> args) {

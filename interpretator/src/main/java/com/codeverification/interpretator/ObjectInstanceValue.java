@@ -19,8 +19,13 @@ public class ObjectInstanceValue extends AbstractValue {
     private ClassDefinition classDefinition;
     private Map<String, AbstractValue> properties = new HashMap<>();
 
+    private ObjectInstanceValue baseObject;
+
     public ObjectInstanceValue(ClassDefinition classDefinition) {
         this.classDefinition = classDefinition;
+        if (classDefinition.getBaseClass() != null) {
+            baseObject = new ObjectInstanceValue(Interpretator.instance.classDefinitions.get(classDefinition.getBaseClass()));
+        }
     }
 
     @Override
@@ -62,7 +67,13 @@ public class ObjectInstanceValue extends AbstractValue {
             } else {
                 return result;
             }
+        } else if (baseObject != null) {
+            result = baseObject.getProperty(name, Modificator.PUBLIC);
+            if (result != null) {
+                return result;
+            }
         }
+
         throw new RuntimeException(classDefinition.getClassName() + " doesn't contain property " + name);
     }
 
@@ -84,17 +95,22 @@ public class ObjectInstanceValue extends AbstractValue {
                 }
             }
             return;
+        } else if (baseObject != null) {
+            baseObject.setProperty(name, value, Modificator.PUBLIC);
         }
         throw new RuntimeException(classDefinition.getClassName() + " doesn't contain property " + name);
     }
 
     public MethodDefinition getFunction(String funcName, List<DataType> argType, Modificator modificator) {
         MethodDefinition method = null;
-            method = Interpretator.findMethod(funcName, argType, classDefinition.getFunctions());
-            if (method == null) {
-                return null;
-//                throw new RuntimeException("Class " + classDefinition.getClassName() + ". Method doesn't exist. " + funcName);
+        method = Interpretator.findMethod(funcName, argType, classDefinition.getFunctions());
+        if (method == null) {
+            if (baseObject != null) {
+                return baseObject.getFunction(funcName, argType, Modificator.PUBLIC);
             }
+            return null;
+//                throw new RuntimeException("Class " + classDefinition.getClassName() + ". Method doesn't exist. " + funcName);
+        }
 
         Modificator m = classDefinition.getFunctionsModificator().get(method.getMethodSignature());
         if (modificator != null) {
@@ -110,6 +126,7 @@ public class ObjectInstanceValue extends AbstractValue {
                     }
             }
         }
+
         return null;
 //        throw new RuntimeException();
     }

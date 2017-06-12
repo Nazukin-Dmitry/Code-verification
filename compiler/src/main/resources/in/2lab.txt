@@ -1,0 +1,16 @@
+function calc(A as long, B as long, Op as char)
+     if (Op == '+') then
+        calc = sum(A, B);
+     end if
+     if (Op == '-') then
+        calc = minus(A,B);
+     end if
+end function
+
+function minus(A as long, B as long)
+    minus = (A-B);
+end function
+
+function sum(A as long, B as long)
+    sum = A+B;
+end function

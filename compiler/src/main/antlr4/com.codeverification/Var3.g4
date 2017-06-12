@@ -18,7 +18,7 @@ nativeFunc
 ;
 
 classDef
-:'class' identifier member* 'end' 'class'
+:'class' className = identifier ('inherits' baseClass = identifier)? member* 'end' 'class'
 ;
 
 member
@@ -44,6 +44,7 @@ argDef
 typeRef
 :('bool'|'byte'|'int'|'uint'|'long'|'ulong'|'char'|'string') #builtin
  |identifier  #custom
+ |typeRef (dims +='[' ']')+ #array
 ;
 
 statement
@@ -61,6 +62,7 @@ expr
  | expr binOp expr #binaryExpr
  | unOp expr #unaryExpr
  | expr '=' expr #assignExpr
+ | (isInit = 'new')? typeRef ('[' args += expr ']')+ #ArrayExpr
  | 'new' identifier '(' listExpr ')' #initExpr
  | identifier #placeExpr
  | value = (BOOL|STR|CHAR|HEX|BITS|DEC) #literalExpr

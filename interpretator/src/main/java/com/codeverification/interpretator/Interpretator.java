@@ -30,6 +30,8 @@ import static com.codeverification.interpretator.FuncExecutor.checkCall;
  */
 public class Interpretator {
 
+    public static Interpretator instance = null;
+
     Pattern patternStr = Pattern.compile("\"[^ \\ \"]*(?:\\.[^ \\ \"]*)*\"");
 
     Pattern patternChar = Pattern.compile("'[^']'");
@@ -53,7 +55,7 @@ public class Interpretator {
         nativeLibs.put("kernel32.dll", Kernel32.INSTANCE);
     }
 
-    public Interpretator(Map<MethodSignature, MethodDefinition> functions, Map<String, ClassDefinition> classDefinitions) {
+    private Interpretator(Map<MethodSignature, MethodDefinition> functions, Map<String, ClassDefinition> classDefinitions) {
         this.functions = functions;
         this.classDefinitions = classDefinitions;
     }
@@ -82,8 +84,8 @@ public class Interpretator {
             List<Object> list = parserFacade.readBinCodes(args[0]);
             Map<MethodSignature, MethodDefinition> methodDefinitions = (Map<MethodSignature, MethodDefinition>) list.get(0);
             Map<String, ClassDefinition> classDefinitions = (Map<String, ClassDefinition>) list.get(1);
-            Interpretator interpretator = new Interpretator(methodDefinitions, classDefinitions);
-            interpretator.executeMainMethod();
+            instance = new Interpretator(methodDefinitions, classDefinitions);
+            instance.executeMainMethod();
             
         } catch (Throwable t) {
             t.printStackTrace();

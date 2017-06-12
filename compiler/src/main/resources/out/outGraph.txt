@@ -1,62 +1,157 @@
 start -> 0
 0 -> 1
 1 -> 2
-2 -> end
-
-0:out=GetStdHandle(-11)
-1:in=GetStdHandle(-10)
-2:SetConsoleMode(in,0)
----------------------------------------
-start -> 0
-0 -> end
-
-0:WriteFile(out,text,lstrlen(text),"s",0)
----------------------------------------
-start -> 0
-0 -> end
-
-0:WriteFile(out,text+"\n",lstrlen(text+"\n"),"a",0)
----------------------------------------
-start -> 0
-0 -> 1
-1 -> 2
 2 -> 3
 3 -> 4
 4 -> 5
 5 -> 6
-6 t-> 7
-7 -> end
-6 f-> 1
+6 -> 7
+7 -> 8
+8 -> 9
+9 -> 10
+10 -> 11
+11 -> 12
+12 -> 13
+13 -> 14
+14 -> 15
+15 -> 16
+16 -> end
 
-0:result=""
-1:buffer="u"
-2:numBytes=1
-3:bytesRead=""
-4:ReadFile(in,buffer,numBytes,bytesRead,0)
-5:result=result+buffer
-6:(buffer=="\n")
-7:Read=result
+0:f=CreateFile("out.txt",0x40000000,0,0,2,0,0)
+1:a=minus(5,2)
+2:print("a= "+a+"\n",f)
+3:a=newUser(3,"Ivan")
+4:a.setId(4)
+5:increaseId(a)
+6:print(a.toString()+"\n",f)
+7:a.setId("tratata")
+8:print(a.toString()+"\n",f)
+9:a.sum("55","44",f)
+10:a.sum(55,44,f)
+11:a.sum(true,false,f)
+12:a.less(44,55,f)
+13:a.less("55","44",f)
+14:a.less(true,false,f)
+15:CloseHandle(f)
+16:main=0
+---------------------------------------
+start -> 0
+0 -> end
+
+0:WriteFile(handle,text,lstrlen(text),0,0)
+---------------------------------------
+start -> 0
+0 -> end
+
+0:minus=(A-B)
+---------------------------------------
+start -> 0
+0 -> end
+
+0:user.setId(user.getId()+1)
+---------------------------------------
+start -> 0
+0 -> end
+
+0:toString="User -"+"id: "+getId()+" name: "+name
+---------------------------------------
+start -> 0
+0 -> end
+
+0:getName=name
+---------------------------------------
+start -> 0
+0 -> end
+
+0:name=_name
+---------------------------------------
+start -> 0
+0 -> end
+
+0:getId=id
+---------------------------------------
+start -> 0
+0 -> end
+
+0:id=newId
 ---------------------------------------
 start -> 0
 0 -> 1
-1 -> 2
-2 -> 3
-3 -> 4
-4 -> end
+1 -> end
 
-0:textt="Enter your name"
-1:console=newConsole()
-2:console.WriteLine(textt)
-3:name=console.Read()
-4:console.WriteLine("Hello "+name)
+0:id=_id
+1:name=_name
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> end
+
+0:id=_id
+1:name=""
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> end
+
+0:sum=A+B
+1:print("long sum= "+sum+"\n",f)
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> end
+
+0:sum=A+B
+1:print("string sum= "+sum+"\n",f)
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> end
+
+0:sum=A||B
+1:print("bool sum= "+sum+"\n",f)
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> end
+
+0:less=A<B
+1:print("result= "+less+"\n",f)
+---------------------------------------
+start -> 0
+0 -> 1
+1 -> end
+
+0:setId(_id)
+1:setName(_name)
+---------------------------------------
+start -> 0
+0 -> end
+
+0:toString="MegaUser user -"+"id: "+getId()+" name: "+getName()
 ---------------------------------------
 
 Functions CFG
-MethodSignature{funcName='Console.WriteLine', argCount=1, argsType=[string], returnType=undefined}->MethodSignature{funcName='WriteFile', argCount=5, argsType=[], returnType=undefined}
-MethodSignature{funcName='Console.New', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='GetStdHandle', argCount=1, argsType=[], returnType=undefined}
-MethodSignature{funcName='Console.New', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='SetConsoleMode', argCount=2, argsType=[], returnType=undefined}
-MethodSignature{funcName='Console.Read', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='ReadFile', argCount=5, argsType=[], returnType=undefined}
-MethodSignature{funcName='Console.Write', argCount=1, argsType=[string], returnType=undefined}->MethodSignature{funcName='WriteFile', argCount=5, argsType=[], returnType=undefined}
-MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='console.WriteLine("Hello "+name)', argCount=1, argsType=[], returnType=undefined}
-MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='console.Read()', argCount=0, argsType=[], returnType=undefined}
-MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='console.WriteLine(textt)', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='MegaUser.toString', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='getId', argCount=0, argsType=[], returnType=undefined}
+MethodSignature{funcName='MegaUser.toString', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='getName', argCount=0, argsType=[], returnType=undefined}
+MethodSignature{funcName='increaseId', argCount=1, argsType=[User], returnType=undefined}->MethodSignature{funcName='user.setId(user.getId()+1)', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='User.sum', argCount=3, argsType=[string, string, undefined], returnType=undefined}->MethodSignature{funcName='print', argCount=2, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.setId("tratata")', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.less(44,55,f)', argCount=3, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.setId(4)', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.sum(55,44,f)', argCount=3, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.less("55","44",f)', argCount=3, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='print', argCount=2, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='minus', argCount=2, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.less(true,false,f)', argCount=3, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.sum(true,false,f)', argCount=3, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='increaseId', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='a.sum("55","44",f)', argCount=3, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='CreateFile', argCount=7, argsType=[], returnType=undefined}
+MethodSignature{funcName='main', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='CloseHandle', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='User.less', argCount=3, argsType=[undefined, undefined, undefined], returnType=undefined}->MethodSignature{funcName='print', argCount=2, argsType=[], returnType=undefined}
+MethodSignature{funcName='print', argCount=2, argsType=[string, undefined], returnType=undefined}->MethodSignature{funcName='WriteFile', argCount=5, argsType=[], returnType=undefined}
+MethodSignature{funcName='MegaUser.New', argCount=2, argsType=[long, string], returnType=undefined}->MethodSignature{funcName='setId', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='MegaUser.New', argCount=2, argsType=[long, string], returnType=undefined}->MethodSignature{funcName='setName', argCount=1, argsType=[], returnType=undefined}
+MethodSignature{funcName='User.toString', argCount=0, argsType=[], returnType=undefined}->MethodSignature{funcName='getId', argCount=0, argsType=[], returnType=undefined}
+MethodSignature{funcName='User.sum', argCount=3, argsType=[long, long, undefined], returnType=undefined}->MethodSignature{funcName='print', argCount=2, argsType=[], returnType=undefined}
+MethodSignature{funcName='User.sum', argCount=3, argsType=[bool, bool, undefined], returnType=undefined}->MethodSignature{funcName='print', argCount=2, argsType=[], returnType=undefined}
